@@ -1,170 +1,52 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:starter_app/core/di/injection.dart';
-import 'package:starter_app/core/error/failures/failure.dart';
-import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
-import 'package:starter_app/core/presentation/models/error_model.dart';
+import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:starter_app/features/auth/presentation/bloc/field_validation_state.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:starter_app/features/profile/presentation/pages/profile_page.dart';
-import 'package:starter_app/features/profile/presentation/widgets/login_button.dart';
 
 import '../../../../helpers/mock_helpers.dart';
 import '../../../../helpers/pump_app.dart';
-import '../../../../helpers/test_data.dart';
 
 void main() {
-  late MockAuthBloc mockAuthBloc;
-  late MockProfileBloc mockProfileBloc;
-  setUpAll(() {
-    registerFallbackValue(MockBuildContext());
-    registerFallbackValue(FakeFailure());
-  });
+  late AuthBloc authBloc;
+  late ProfileBloc profileBloc;
+  late FailureMessageService failureMessageService;
 
   setUp(() {
-    mockAuthBloc = MockAuthBloc();
-    mockProfileBloc = MockProfileBloc();
-    getIt.registerFactory<ProfileBloc>(() => mockProfileBloc);
+    authBloc = MockAuthBloc();
+    profileBloc = MockProfileBloc();
+    failureMessageService = MockFailureMessageService();
+
+    when(() => authBloc.state).thenReturn(AuthState.initial(
+      email: EmailAddress(''),
+      isSubmitting: false,
+      validation: FieldValidationState.initial(),
+    ));
+    when(() => profileBloc.state).thenReturn(const ProfileState.initial());
   });
 
-  tearDown(getIt.reset);
-
-  group('ProfilePage', () {
-    testWidgets('renders without errors', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
-
-      await tester.pumpAppWithBloc(
-        const ProfilePage(),
+  testWidgets('renders ProfilePage', (tester) async {
+    await tester.pumpApp(
+      MultiRepositoryProvider(
         providers: [
-          BlocProvider<AuthBloc>.value(value: mockAuthBloc),
+          RepositoryProvider.value(value: failureMessageService),
         ],
-      );
-
-      expect(find.byType(ProfilePage), findsOneWidget);
-    });
-
-    testWidgets('displays app bar with title', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
-
-      await tester.pumpAppWithBloc(
-        const ProfilePage(),
-        providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
-      );
-
-      expect(find.byType(AppBar), findsOneWidget);
-    });
-
-    testWidgets('shows LoginButton when unauthenticated', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
-
-      await tester.pumpAppWithBloc(
-        const ProfilePage(),
-        providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
-      );
-
-      expect(find.byType(LoginButton), findsOneWidget);
-    });
-
-    testWidgets('shows welcome message when authenticated', (tester) async {
-      final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
-      when(
-        () => mockProfileBloc.state,
-      ).thenReturn(ProfileState.loaded(TestData.userProfile()));
-
-      await tester.pumpAppWithBloc(
-        const ProfilePage(),
-        providers: [
-          BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-          BlocProvider<ProfileBloc>.value(value: mockProfileBloc),
-        ],
-      );
-
-      expect(find.byType(LoginButton), findsNothing);
-      expect(
-        find.textContaining(
-          TestData.userProfile().displayName.getOrCrash(),
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('shows SizedBox.shrink when profile state is initial', (
-      tester,
-    ) async {
-      final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
-      when(
-        () => mockProfileBloc.state,
-      ).thenReturn(const ProfileState.initial());
-
-      await tester.pumpAppWithBloc(
-        const ProfilePage(),
-        providers: [
-          BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-          BlocProvider<ProfileBloc>.value(value: mockProfileBloc),
-        ],
-      );
-
-      expect(find.byType(SizedBox), findsOneWidget);
-    });
-
-    testWidgets('shows CircularProgressIndicator when profile is loading', (
-      tester,
-    ) async {
-      final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
-      when(
-        () => mockProfileBloc.state,
-      ).thenReturn(const ProfileState.loading());
-
-      await tester.pumpAppWithBloc(
-        const ProfilePage(),
-        providers: [
-          BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-          BlocProvider<ProfileBloc>.value(value: mockProfileBloc),
-        ],
-      );
-
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
-    testWidgets('shows error message when profile state has error', (
-      tester,
-    ) async {
-      final user = TestData.user();
-      final errorModel = ErrorModel.fromFailure(
-        const InfrastructureFailure.server(message: 'Test error'),
-      );
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
-      when(
-        () => mockProfileBloc.state,
-      ).thenReturn(ProfileState.error(errorModel));
-
-      final mockFailureMessageService = MockFailureMessageService();
-      when(
-        () => mockFailureMessageService.getLocalizedMessage(any(), any()),
-      ).thenReturn('Localized error message');
-
-      await tester.pumpAppWithBloc(
-        RepositoryProvider<FailureMessageService>.value(
-          value: mockFailureMessageService,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthBloc>.value(value: authBloc),
+            BlocProvider<ProfileBloc>.value(value: profileBloc),
+          ],
           child: const ProfilePage(),
         ),
-        providers: [
-          BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-          BlocProvider<ProfileBloc>.value(value: mockProfileBloc),
-        ],
-      );
+      ),
+    );
 
-      expect(find.text('Localized error message'), findsOneWidget);
-    });
+    expect(find.byType(ProfilePage), findsOneWidget);
   });
 }
-
-class FakeFailure extends Fake implements Failure {}

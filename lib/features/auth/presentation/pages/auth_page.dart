@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:starter_app/core/constants/constants.dart';
@@ -17,6 +18,7 @@ import 'package:starter_app/features/auth/presentation/widgets/email_form.dart';
 part '../widgets/login_form.dart';
 part '../widgets/register_form.dart';
 
+@RoutePage()
 final class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
 
@@ -47,7 +49,8 @@ final class AuthPage extends StatelessWidget {
         }
 
         state.maybeWhen(
-          authenticated: (user) => const DashboardRoute().go(context),
+          authenticated: (user) =>
+              context.router.replaceAll([const DashboardRoute()]),
           orElse: () => null,
         );
       },
@@ -71,7 +74,8 @@ final class AuthPage extends StatelessWidget {
             floatingActionButton: Padding(
               padding: PaddingWidgets.allMedium,
               child: TextButton(
-                onPressed: () => const DashboardRoute().go(context),
+                onPressed: () =>
+                    context.router.replaceAll([const DashboardRoute()]),
                 child: Text(context.authL10n.returnHome),
               ),
             ),

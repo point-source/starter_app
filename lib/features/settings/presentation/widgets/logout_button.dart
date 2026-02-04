@@ -24,9 +24,8 @@ final class LogoutButton extends StatelessWidget {
         return Padding(
           padding: PaddingWidgets.allMedium,
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              fixedSize: Size.infinite,
-            ),
+            // Removed Size.infinite as it causes layout issues
+            // Let the button size itself naturally
             onPressed: () => _onLogoutPressed(context),
             child: Text(context.settingsL10n.logOut),
           ),

@@ -14,7 +14,6 @@ import 'package:flutter/material.dart' as _i409;
 import 'package:flutter_bloc/flutter_bloc.dart' as _i331;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
-import 'package:go_router/go_router.dart' as _i583;
 import 'package:hydrated_bloc/hydrated_bloc.dart' as _i67;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -31,7 +30,6 @@ import 'package:starter_app/core/application/bootstrap_service.dart' as _i715;
 import 'package:starter_app/core/di/modules/bloc_module.dart' as _i728;
 import 'package:starter_app/core/di/modules/error_module.dart' as _i895;
 import 'package:starter_app/core/di/modules/logging_module.dart' as _i216;
-import 'package:starter_app/core/di/modules/navigation_module.dart' as _i874;
 import 'package:starter_app/core/di/modules/network_module.dart' as _i823;
 import 'package:starter_app/core/di/modules/platform_module.dart' as _i815;
 import 'package:starter_app/core/di/modules/storage_module.dart' as _i513;
@@ -76,11 +74,9 @@ import 'package:starter_app/core/infrastructure/token/token_refresh_notifier_imp
 import 'package:starter_app/core/infrastructure/websocket/websocket_manager.dart'
     as _i944;
 import 'package:starter_app/core/logging/i_app_logger.dart' as _i632;
-import 'package:starter_app/core/navigation/app_router.dart' as _i954;
 import 'package:starter_app/core/navigation/auth_change_notifier.dart' as _i247;
 import 'package:starter_app/core/navigation/navigation_tracking_service.dart'
     as _i122;
-import 'package:starter_app/core/navigation/page_builder.dart' as _i18;
 import 'package:starter_app/core/presentation/bloc/bloc.dart' as _i455;
 import 'package:starter_app/core/presentation/failure_message/email_failure_mapper.dart'
     as _i1023;
@@ -162,7 +158,6 @@ extension GetItInjectableX on _i174.GetIt {
     final storageModule = _$StorageModule();
     final blocModule = _$BlocModule();
     final platformModule = _$PlatformModule();
-    final navigationModule = _$NavigationModule();
     final loggingModule = _$LoggingModule();
     final errorModule = _$ErrorModule();
     gh.factory<_i161.AuthExceptionMapper>(
@@ -204,6 +199,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i752.IMonitoringInitializer>(
       () => const _i245.SentryMonitoringInitializer(),
     );
+    gh.lazySingleton<_i176.INavigationTrackingService>(
+      () => _i122.NavigationTrackingService(),
+      dispose: (i) => i.dispose(),
+    );
     gh.singleton<_i533.ITokenRefreshNotifier>(
       () => _i540.TokenRefreshNotifierImpl(),
       dispose: (i) => i.dispose(),
@@ -223,7 +222,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i79.SessionManagerImpl(),
       dispose: (i) => i.dispose(),
     );
-    gh.singleton<_i18.PageBuilder>(() => navigationModule.providePageBuilder());
     gh.lazySingleton<_i632.IAppLogger>(
       () => loggingModule.provideLogger(),
       registerFor: {_development, _staging, _production},
@@ -231,6 +229,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i449.IErrorReporter>(
       () => errorModule.provideDevelopmentReporter(),
       registerFor: {_development},
+    );
+    gh.singleton<_i10.AppNavigationLoggingService>(
+      () => _i10.AppNavigationLoggingService(
+        gh<_i176.INavigationTrackingService>(),
+        gh<_i632.IAppLogger>(),
+      ),
+      dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i185.IFeatureFlagService>(
       () => _i1025.FeatureFlagService(gh<_i632.IAppLogger>()),
@@ -331,6 +336,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i632.IAppLogger>(),
       ),
     );
+    gh.singleton<_i715.BootstrapService>(
+      () => _i715.BootstrapService(
+        gh<_i67.HydratedStorage>(),
+        gh<_i67.BlocObserver>(),
+        gh<_i329.AppMonitoringService>(),
+        gh<_i287.AppErrorHandlingService>(),
+        gh<_i10.AppNavigationLoggingService>(),
+        gh<_i787.ICertificateService>(),
+      ),
+    );
     gh.lazySingleton<_i937.IUserProfileRemoteDataSource>(
       () =>
           _i937.UserProfileRemoteDataSourceImpl(gh<_i927.ProfileApiService>()),
@@ -407,31 +422,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i247.AuthChangeNotifier>(
       () => _i247.AuthChangeNotifier(gh<_i55.AuthBloc>()),
     );
-    gh.lazySingleton<_i954.AppRouter>(
-      () => _i954.AppRouter(
-        gh<_i18.PageBuilder>(),
-        gh<_i247.AuthChangeNotifier>(),
-      ),
-    );
-    gh.singleton<_i583.GoRouter>(
-      () => navigationModule.provideGoRouter(gh<_i954.AppRouter>()),
-    );
-    gh.lazySingleton<_i176.INavigationTrackingService>(
-      () => _i122.NavigationTrackingService(gh<_i583.GoRouter>()),
-      dispose: (i) => i.dispose(),
-    );
-    gh.singleton<_i10.AppNavigationLoggingService>(
-      () => _i10.AppNavigationLoggingService(
-        gh<_i176.INavigationTrackingService>(),
-        gh<_i632.IAppLogger>(),
-      ),
-      dispose: (i) => i.dispose(),
-    );
     gh.factoryParam<_i508.App, _i409.Key?, dynamic>(
       (key, _) => _i508.App(
-        routerConfig: gh<_i583.GoRouter>(),
         logger: gh<_i632.IAppLogger>(),
-        pageBuilder: gh<_i18.PageBuilder>(),
+        authChangeNotifier: gh<_i247.AuthChangeNotifier>(),
         themeCubit: gh<_i455.ThemeCubit>(),
         localeCubit: gh<_i455.LocaleCubit>(),
         authBloc: gh<_i55.AuthBloc>(),
@@ -439,16 +433,6 @@ extension GetItInjectableX on _i174.GetIt {
         failureMessageService: gh<_i313.FailureMessageService>(),
         appTheme: gh<_i238.AppTheme>(),
         key: key,
-      ),
-    );
-    gh.singleton<_i715.BootstrapService>(
-      () => _i715.BootstrapService(
-        gh<_i67.HydratedStorage>(),
-        gh<_i67.BlocObserver>(),
-        gh<_i329.AppMonitoringService>(),
-        gh<_i287.AppErrorHandlingService>(),
-        gh<_i10.AppNavigationLoggingService>(),
-        gh<_i787.ICertificateService>(),
       ),
     );
     return this;
@@ -462,8 +446,6 @@ class _$StorageModule extends _i513.StorageModule {}
 class _$BlocModule extends _i728.BlocModule {}
 
 class _$PlatformModule extends _i815.PlatformModule {}
-
-class _$NavigationModule extends _i874.NavigationModule {}
 
 class _$LoggingModule extends _i216.LoggingModule {}
 

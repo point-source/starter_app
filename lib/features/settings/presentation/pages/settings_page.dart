@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:starter_app/core/constants/constants.dart';
 import 'package:starter_app/core/presentation/responsive/responsive.dart';
@@ -12,6 +13,7 @@ import 'package:starter_app/features/settings/presentation/widgets/theme_selecto
 /// - Language selection (English/Spanish)
 /// - Theme selection (Light/Dark/System)
 /// - Logout button (only when authenticated)
+@RoutePage()
 final class SettingsPage extends StatelessWidget {
   /// Creates a settings page.
   const SettingsPage({super.key});
@@ -24,27 +26,29 @@ final class SettingsPage extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.appBarTitle)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: const LogoutButton(),
-      body: const ResponsiveContainer(
-        child: ResponsivePadding(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Language Section
-              LanguageSelector(),
-              SpacingWidgets.verticalXl,
-              // Theme Section
-              ThemeSelector(),
-              // Add bottom padding to prevent content from
-              // being hidden by logout button
-              ResponsiveGap(
-                mobileSize:
-                    ButtonConstants.heightMedium + PaddingConstants.large,
-                tabletSize:
-                    ButtonConstants.heightMedium + PaddingConstants.xLarge,
-                desktopSize:
-                    ButtonConstants.heightMedium + PaddingConstants.xLarge,
-              ),
-            ],
+      body: SingleChildScrollView(
+        child: const ResponsiveContainer(
+          child: ResponsivePadding(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Language Section
+                LanguageSelector(),
+                SpacingWidgets.verticalXl,
+                // Theme Section
+                ThemeSelector(),
+                // Add bottom padding to prevent content from
+                // being hidden by logout button
+                ResponsiveGap(
+                  mobileSize:
+                      ButtonConstants.heightMedium + PaddingConstants.large,
+                  tabletSize:
+                      ButtonConstants.heightMedium + PaddingConstants.xLarge,
+                  desktopSize:
+                      ButtonConstants.heightMedium + PaddingConstants.xLarge,
+                ),
+              ],
+            ),
           ),
         ),
       ),
