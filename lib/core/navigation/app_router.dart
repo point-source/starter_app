@@ -1,11 +1,10 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+// Export generated routes
+import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/core/navigation/auth_change_notifier.dart';
 import 'package:starter_app/core/navigation/auth_guard.dart';
 
-// Export generated routes
-import 'package:starter_app/core/navigation/app_router.gr.dart';
 export 'package:starter_app/core/navigation/app_router.gr.dart';
 
 @lazySingleton
@@ -53,7 +52,7 @@ class AppRouter extends RootStackRouter {
       page: AuthRoute.page,
       path: '/auth',
       transitionsBuilder: TransitionsBuilders.slideBottom,
-      durationInMilliseconds: 400,
+      duration: const Duration(milliseconds: 400),
     ),
 
     // Redirects

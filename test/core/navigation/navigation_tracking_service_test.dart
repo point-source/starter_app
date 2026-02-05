@@ -162,7 +162,7 @@ void main() {
       final route = MockRoute();
       when(
         () => route.settings,
-      ).thenReturn(const RouteSettings(name: null)); // unnamed
+      ).thenReturn(const RouteSettings()); // unnamed
 
       service.didPush(route, null);
       await Future<void>.delayed(Duration.zero);

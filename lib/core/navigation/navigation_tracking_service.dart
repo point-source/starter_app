@@ -92,8 +92,9 @@ class NavigationTrackingService extends AutoRouterObserver
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     if (route.settings.name != null) {
       _logger.info('didPop: ${route.settings.name}');
-      // Note: History management for pop is tricky to sync perfectly with strictly observer methods
-      // without checking actual stack, but valid for tracking.
+      // Note: History management for pop is tricky to sync perfectly with
+      // strictly observer methods without checking actual stack, but valid
+      // for tracking.
       _handlePop();
     }
   }

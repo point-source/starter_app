@@ -4,17 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-
 import 'package:mocktail/mocktail.dart';
-import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/domain/value_objects/name.dart';
 import 'package:starter_app/core/domain/value_objects/password.dart';
 import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
+import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
-
 import 'package:starter_app/features/auth/domain/failure/auth_failure.dart';
 import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -1017,7 +1015,7 @@ void main() {
         // Stub router methods BEFORE pumpWidget - listener fires immediately
         when(() => mockRouter.push(any())).thenAnswer((_) async => null);
         when(() => mockRouter.replace(any())).thenAnswer((_) async => null);
-        when(() => mockRouter.canPop()).thenReturn(false);
+        when(mockRouter.canPop).thenReturn(false);
 
         // Mimic authenticated state emission
         whenListen(

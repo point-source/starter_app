@@ -42,8 +42,10 @@ void main() {
       expect(find.text('Some error details'), findsNothing);
     });
 
-    // Note: To test actual navigation, we would need to mock AutoRouter or wrap with one.
-    // For unit testing the page, verifying the button exists is sufficient for now,
+    // Note: To test actual navigation, we would need to mock AutoRouter or wrap
+    // with one.
+    // For unit testing the page, verifying the button exists is sufficient for
+    // now,
     // as AppRouter tests cover navigation flows.
   });
 }

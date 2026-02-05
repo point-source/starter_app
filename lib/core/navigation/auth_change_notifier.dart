@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/navigation/app_router.dart';
+import 'package:starter_app/core/navigation/auth_guard.dart' show AuthGuard;
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_state.dart';
 

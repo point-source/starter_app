@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:starter_app/core/navigation/app_router.dart';
-import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/core/navigation/auth_change_notifier.dart';
 
 class MockAuthChangeNotifier extends Mock implements AuthChangeNotifier {}

@@ -38,9 +38,12 @@ class MockAppLogger extends Mock implements IAppLogger {}
 
 class MockAppTheme extends Mock implements AppTheme {}
 
-// Use a mixin to mock AutoRouterObserver effectively or just implement the interface?
-// NavigationTrackingService extends AutoRouterObserver and implements INavigationTrackingService
-// We can mock INavigationTrackingService. App checks if it is NavigatorObserver.
+// Use a mixin to mock AutoRouterObserver effectively or just implement the
+// interface?
+// NavigationTrackingService extends AutoRouterObserver and
+// implements INavigationTrackingService
+// We can mock INavigationTrackingService. App checks if it is
+// NavigatorObserver.
 // So our mock must Implement NavigatorObserver.
 class MockNavigationTrackingService extends Mock
     implements INavigationTrackingService, NavigatorObserver {}
@@ -89,20 +92,20 @@ void main() {
       when(() => mockAppTheme.darkTheme).thenReturn(ThemeData.dark());
 
       // Setup GetIt
-      final getIt = GetIt.instance;
-      getIt.reset();
-      getIt.registerLazySingleton<AppRouter>(() => appRouter);
-      getIt.registerLazySingleton<FailureMessageService>(
-        () => mockFailureMessageService,
-      );
-      getIt.registerLazySingleton<IAppLogger>(() => mockAppLogger);
-      getIt.registerLazySingleton<INavigationTrackingService>(
-        () => mockNavigationTrackingService,
-      );
+      GetIt.instance
+        ..reset()
+        ..registerLazySingleton<AppRouter>(() => appRouter)
+        ..registerLazySingleton<FailureMessageService>(
+          () => mockFailureMessageService,
+        )
+        ..registerLazySingleton<IAppLogger>(() => mockAppLogger)
+        ..registerLazySingleton<INavigationTrackingService>(
+          () => mockNavigationTrackingService,
+        );
     });
 
-    tearDown(() {
-      GetIt.instance.reset();
+    tearDown(() async {
+      await GetIt.instance.reset();
     });
 
     testWidgets('renders MaterialApp.router', (tester) async {

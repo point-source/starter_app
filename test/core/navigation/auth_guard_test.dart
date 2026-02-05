@@ -32,12 +32,12 @@ void main() {
   });
 
   group('AuthGuard', () {
-    test('onNavigation continues when authenticated', () {
+    test('onNavigation continues when authenticated', () async {
       // Arrange
       when(() => mockAuthChangeNotifier.isAuthenticated).thenReturn(true);
 
       // Act
-      authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
+      await authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
 
       // Assert
       verify(() => mockNavigationResolver.next()).called(1);
@@ -52,14 +52,16 @@ void main() {
       ).thenAnswer((_) async => true); // Push returns true (success)
 
       // Act
-      authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
+      await authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
 
       // Assert
       verify(() => mockStackRouter.push(any(that: isA<AuthRoute>()))).called(1);
 
       // Since push is async, we need to wait for the then closure.
-      // However, mocktail doesn't easily wait for future chaining inside the void method.
-      // We can verify that push IS called. Verify next(true) is harder without a real future or async test structure.
+      // However, mocktail doesn't easily wait for future chaining inside the
+      // void method.
+      // We can verify that push IS called. Verify next(true) is harder without
+      // a real future or async test structure.
       // But we can assume the logic holds if push is called.
     });
 
@@ -71,13 +73,13 @@ void main() {
         when(() => mockStackRouter.push(any())).thenAnswer((_) async => true);
 
         // Act
-        authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
+        await authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
 
         // Wait for microtasks (the .then callback)
         await Future<void>.delayed(Duration.zero);
 
         // Assert
-        verify(() => mockNavigationResolver.next(true)).called(1);
+        verify(() => mockNavigationResolver.next()).called(1);
       },
     );
 
@@ -89,7 +91,7 @@ void main() {
         when(() => mockStackRouter.push(any())).thenAnswer((_) async => false);
 
         // Act
-        authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
+        await authGuard.onNavigation(mockNavigationResolver, mockStackRouter);
 
         // Wait for microtasks
         await Future<void>.delayed(Duration.zero);

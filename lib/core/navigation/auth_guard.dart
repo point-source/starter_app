@@ -8,7 +8,10 @@ class AuthGuard extends AutoRouteGuard {
   final AuthChangeNotifier _authChangeNotifier;
 
   @override
-  void onNavigation(NavigationResolver resolver, StackRouter router) {
+  Future<void> onNavigation(
+    NavigationResolver resolver,
+    StackRouter router,
+  ) async {
     // Should be authenticated?
     // This guard is applied to specific routes (e.g. Orders)
     // or we can check the path being accessed.
@@ -23,7 +26,7 @@ class AuthGuard extends AutoRouteGuard {
       // Redirect to Login (AuthRoute)
       // We can pass onResult to resume navigation after login if needed
       // Redirect to Login (AuthRoute)
-      router.push(const AuthRoute()).then((success) {
+      await router.push(const AuthRoute()).then((success) {
         // Resume navigation if login successful (true)
         resolver.next(success == true);
       });

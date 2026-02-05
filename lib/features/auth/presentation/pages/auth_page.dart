@@ -25,7 +25,7 @@ final class AuthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         final error = state.mapOrNull(
           initial: (s) => s.error,
           loginRequired: (s) => s.error,
@@ -48,12 +48,12 @@ final class AuthPage extends StatelessWidget {
           return;
         }
 
-        state.maybeWhen(
-          authenticated: (user) {
+        await state.maybeWhen(
+          authenticated: (user) async {
             if (context.router.canPop()) {
               context.router.pop(true);
             } else {
-              context.router.replace(const DashboardRoute());
+              await context.router.replace(const DashboardRoute());
             }
           },
           orElse: () => null,
