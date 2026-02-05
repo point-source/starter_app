@@ -1,23 +1,24 @@
 # Stack Migration Implementation Plan
 
-Migrate Flutter starter app from **BLoC/get_it/freezed/go_router** to **Riverpod/dart_mappable/auto_route/Drift**.
-
 > [!IMPORTANT]
-> This plan is designed for autonomous AI (Jules) execution. Each phase includes explicit file paths, code patterns, and verification commands.
+> **Base Branch**: `stack_swap` (not main)
+> **Approach**: Requirements-focused — document WHAT must work, let AI determine HOW to implement.
+> **Tests are the source of truth for verification.**
 
 ---
 
-## Important Notes
+## Guiding Principles
 
-> [!CAUTION]
-> **Breaking Changes**: This is a complete state management rewrite. All widget tests and BLoC tests will need migration. The app will not compile between phases.
-
-### Key Decisions:
-1. **Phase Order**: Navigation first (lowest risk), then data classes, persistence, state management (highest risk)
-2. **Drift for Persistence**: Replaces HydratedBloc
-3. **Riverpod Generator**: Use `riverpod_annotation` + `riverpod_generator` for codegen consistency
-4. **Dart 3 Sealed Classes**: Replace freezed unions with native sealed classes (no codegen)
-5. **Backend**: Not yet implemented — keep as abstract interfaces (ports) in domain layer
+1. **Tests verify correctness** — Existing tests define the expected behavior. All tests must pass after each phase.
+2. **Coverage mustbe maintained or improved** — Check coverage BEFORE and AFTER each phase. Never let coverage drop.
+3. **Deleting tests is not the same as passing them** — A test may only be deleted if the underlying functionality is no longer required (i.e., requirements changed). Tests cannot be deleted simply because they fail.
+4. **Preserve existing functionality and modularity** — The codebase's architecture (Clean Architecture, Hexagonal, DDD) must remain intact.
+5. **Preserve flavor-specific behavior** — The app has 3 environments (development, staging, production) with different configurations. Environment-specific DI and behavior must be preserved.
+6. **All new code must have docstrings** — Every new public class, method, and function must have documentation.
+7. **Modified code with docstrings must have updated docstrings** — If you modify documented code, update the documentation to match.
+8. **Update docs, don't delete them** — Documentation files should be updated to reflect changes, not removed.
+9. **Backend is abstract** — Backend APIs are not implemented. Keep interfaces (ports) in the domain layer as abstract contracts.
+10. **Use latest package versions** — Use the latest versions of all packages that pass dependency resolution. Do not pin to current versions.
 
 ---
 
@@ -28,15 +29,15 @@ Migrate Flutter starter app from **BLoC/get_it/freezed/go_router** to **Riverpod
 
 ```bash
 # Before starting each phase:
-git checkout main
-git pull origin main
+git checkout stack_swap
+git pull origin stack_swap
 git checkout -b migration/phase-N-description
 
 # After completing phase:
 git add .
 git commit -m "feat: Phase N - [description]"
 git push origin migration/phase-N-description
-# Create PR targeting main
+# Create PR targeting stack_swap
 ```
 
 | Phase | Branch Name | PR Title |
@@ -51,1228 +52,444 @@ git push origin migration/phase-N-description
 
 ---
 
-## Test Requirements
+## Pre-Phase Checklist (Run Before EVERY Phase)
 
-> [!IMPORTANT]
-> **Tests must pass and coverage must be maintained or improved after each phase.**
+```bash
+# 1. Ensure you're on a clean branch from stack_swap
+git status  # Should be clean
 
-- Run `very_good test --coverage` after each phase
-- If coverage drops, add tests before proceeding
-- All existing tests must pass (after migration to new patterns)
-- Use the same testing rigor as the original codebase
+# 2. Record baseline test count and coverage
+flutter test --coverage
+# Record: Total tests, passing tests, coverage percentage
 
----
-
-## Current State Analysis
-
-| Category | Current | Count | Migration Target |
-|----------|---------|-------|------------------|
-| State Management | flutter_bloc, hydrated_bloc | 2 BLoCs, 2 HydratedCubits | Riverpod Notifiers |
-| DI | get_it + injectable | 7 modules | Riverpod Providers |
-| Navigation | go_router + go_router_builder | 13 files | auto_route |
-| Data Classes | freezed | 23 files | dart_mappable + sealed classes |
-| Persistence | HydratedBloc | 2 cubits | Drift |
-| Tests | bloc_test, mocktail | ~167 tests | riverpod test patterns |
-
-### Files Affected Per Phase:
-
-| Phase | Files to Modify | Files to Delete | New Files |
-|-------|-----------------|-----------------|-----------|
-| 1. Navigation | ~15 | ~4 | ~8 |
-| 2. Data Classes | ~23 | ~23 (.freezed.dart) | ~0 |
-| 3. Persistence | ~5 | ~2 | ~4 |
-| 4. State Management | ~40 | ~10 | ~15 |
-| 5. Tests | ~50 | ~0 | ~5 |
-| 6. Mason Bricks | ~6 | ~0 | ~0 |
-| 7. Documentation | ~10 | ~0 | ~0 |
+# 3. Ensure all tests pass
+flutter test  # All tests must pass before starting
+```
 
 ---
 
 ## Phase 1: Navigation Migration (auto_route)
 
-**Risk Level**: Low ⭐  
-**Rationale**: Navigation is independent of state management. Can verify immediately.
+**Risk Level**: Low  
+**Dependencies to replace**: `go_router`, `go_router_builder` → `auto_route`, `auto_route_generator`
 
----
+### Current Navigation Functionality (Requirements)
 
-### Step 1.1: Update Dependencies
+The following behaviors are tested and must continue to work:
 
-#### [MODIFY] [pubspec.yaml](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/pubspec.yaml)
+| Requirement | Verified By |
+|-------------|-------------|
+| **Initial Route**: App starts on `/dashboard` for ALL users (authenticated or not) | `lib/core/navigation/route_definitions.dart` |
+| **Unprotected Routes**: Dashboard, Profile, Settings, Auth are accessible without login | `RouteDefinitions.unProtectedRoutes` |
+| **Deep Link Protected Routes**: Only `/orders` (and similar) require authentication | `RouteDefinitions.deepLinkProtectedRoutes` |
+| **Auth Guard Redirect**: Unauthenticated users accessing protected routes are redirected to dashboard | `test/core/navigation/app_router_test.dart` |
+| **Opt-in Authentication**: Users navigate to login voluntarily (e.g., Profile → Login) | Current app flow |
+| **Return to Home**: Login page has "Return to home" button that returns to dashboard | Auth page UI |
+| **Shell Navigation**: Dashboard has tabbed/nested navigation with state preservation | `test/core/navigation/app_router_test.dart` |
+| **Navigation Tracking**: Navigation events are tracked/logged | `test/core/navigation/navigation_tracking_service_test.dart` |
+| **Custom Page Transitions**: Routes use custom transitions (fade, slide) | `test/core/navigation/page_builder_test.dart` |
+| **Reactive Auth Redirects**: Router re-evaluates redirects when auth state changes | `AuthChangeNotifier` + `refreshListenable` |
+
+
+### Files to Modify/Replace
+
+| Current File | Action | New File (if renamed) |
+|--------------|--------|-----------------------|
+| `lib/core/navigation/app_router.dart` | Replace | Keep same name |
+| `lib/core/navigation/app_router.g.dart` | Delete (will be regenerated as `.gr.dart`) | `app_router.gr.dart` |
+| `lib/core/navigation/base_route.dart` | Remove if not needed by auto_route | — |
+| `lib/core/navigation/auth_change_notifier.dart` | Review — may need to adapt for auto_route guards | — |
+| `lib/core/navigation/page_builder.dart` | Review — auto_route has its own transition system | — |
+| Feature route files (`*_routes.dart`) | Migrate or remove in favor of centralized routing | — |
+
+### Dependencies to Change
 
 **Remove**:
-```yaml
-# dependencies:
-go_router: ^17.1.0
+- `go_router`
+- `go_router_builder`
 
-# dev_dependencies:
-go_router_builder: ^4.1.3
-```
+**Add** (latest versions):
+- `auto_route`
+- `auto_route_generator` (dev dependency)
 
-**Add**:
-```yaml
-# dependencies:
-auto_route: ^10.0.0
-
-# dev_dependencies:
-auto_route_generator: ^10.0.0
-```
-
-Run: `flutter pub get`
-
----
-
-### Step 1.2: Create New Router
-
-#### [NEW] [app_router.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/navigation/app_router.dart)
-
-Replace the go_router implementation with auto_route. The existing file has 216 lines; completely rewrite it.
-
-**Pattern to follow**:
-```dart
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
-
-part 'app_router.gr.dart';
-
-@AutoRouterConfig(replaceInRouteName: 'Page|Screen,Route')
-class AppRouter extends RootStackRouter {
-  AppRouter({required this.authGuard});
-
-  final AutoRouteGuard authGuard;
-
-  @override
-  List<AutoRoute> get routes => [
-    AutoRoute(path: '/auth', page: AuthRoute.page),
-    AutoRoute(
-      path: '/',
-      page: DashboardShellRoute.page,
-      guards: [authGuard],
-      children: [
-        AutoRoute(path: '', page: DashboardRoute.page),
-        AutoRoute(path: 'profile', page: ProfileRoute.page),
-        AutoRoute(path: 'settings', page: SettingsRoute.page),
-        AutoRoute(path: 'orders', page: OrdersRoute.page),
-      ],
-    ),
-  ];
-
-  @override
-  RouteType get defaultRouteType => const RouteType.custom(
-    transitionsBuilder: TransitionsBuilders.fadeIn,
-    durationInMilliseconds: 200,
-  );
-}
-```
-
----
-
-### Step 1.3: Create Auth Guard
-
-#### [NEW] [auth_guard.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/navigation/auth_guard.dart)
-
-```dart
-import 'package:auto_route/auto_route.dart';
-import 'package:starter_app/core/navigation/app_router.dart';
-
-class AuthGuard extends AutoRouteGuard {
-  AuthGuard({required this.isAuthenticated});
-
-  final bool Function() isAuthenticated;
-
-  @override
-  void onNavigation(NavigationResolver resolver, StackRouter router) {
-    if (isAuthenticated()) {
-      resolver.next();
-    } else {
-      resolver.redirect(const AuthRoute());
-    }
-  }
-}
-```
-
----
-
-### Step 1.4: Update Feature Pages with @RoutePage Annotation
-
-Each page needs the `@RoutePage()` annotation. Update these files:
-
-#### [MODIFY] [auth_page.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/presentation/pages/auth_page.dart)
-
-Add at top of class:
-```dart
-@RoutePage()
-class AuthPage extends StatelessWidget { ... }
-```
-
-Repeat for:
-- [dashboard_page.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/dashboard/presentation/pages/dashboard_page.dart)
-- [profile_page.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/profile/presentation/pages/profile_page.dart)
-- [settings_page.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/settings/presentation/pages/settings_page.dart)
-- [orders_page.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/orders/presentation/pages/orders_page.dart)
-
----
-
-### Step 1.5: Create Dashboard Shell for Nested Navigation
-
-#### [NEW] [dashboard_shell_page.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/dashboard/presentation/pages/dashboard_shell_page.dart)
-
-```dart
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
-
-@RoutePage()
-class DashboardShellPage extends StatelessWidget {
-  const DashboardShellPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AutoTabsRouter.tabBar(
-      routes: const [
-        DashboardRoute(),
-        ProfileRoute(),
-        SettingsRoute(),
-        OrdersRoute(),
-      ],
-      builder: (context, child, tabController) {
-        return Scaffold(
-          body: child,
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: context.tabsRouter.activeIndex,
-            onTap: context.tabsRouter.setActiveIndex,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-              BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-              BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Orders'),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-```
-
----
-
-### Step 1.6: Update App Entry Point
-
-#### [MODIFY] [app.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/app/view/app.dart)
-
-Replace `GoRouter` with `AppRouter`:
-
-```dart
-class App extends StatelessWidget {
-  App({super.key}) : _appRouter = AppRouter(
-    authGuard: AuthGuard(isAuthenticated: () => /* check auth state */),
-  );
-
-  final AppRouter _appRouter;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: _appRouter.config(),
-      // ... rest of config
-    );
-  }
-}
-```
-
----
-
-### Step 1.7: Delete Old Navigation Files
-
-#### [DELETE] [app_router.g.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/navigation/app_router.g.dart)
-#### [DELETE] [base_route.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/navigation/base_route.dart)
-#### [DELETE] Feature route files:
-- `lib/features/auth/presentation/routes/auth_routes.dart`
-- `lib/features/dashboard/presentation/routes/dashboard_routes.dart`
-- `lib/features/profile/presentation/routes/profile_routes.dart`
-- `lib/features/settings/presentation/routes/settings_routes.dart`
-- `lib/features/orders/presentation/routes/orders_route.dart`
-
----
-
-### Step 1.8: Run Code Generation
+### Verification
 
 ```bash
+flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-```
-
-This generates `app_router.gr.dart`.
-
----
-
-### Step 1.9: Verification
-
-```bash
-# Verify build
 flutter analyze
-flutter build apk --debug --flavor development --target lib/main_development.dart --dart-define-from-file=config/development.json
-
-# Run navigation-specific tests (if any exist)
-very_good test test/core/navigation/
+flutter test test/core/navigation/
+flutter test --coverage
+# Compare coverage to baseline
 ```
 
-**Manual Check**: Launch app and verify:
-- Auth page loads on cold start
-- After login, dashboard loads with bottom navigation
-- Tab switching works
-- Logout redirects to auth
+**All 471 lines of `app_router_test.dart` must have equivalent tests passing (or be adapted for auto_route patterns).**
 
 ---
 
-## Phase 2: Data Classes Migration (dart_mappable + sealed classes)
+## Phase 2: Data Classes Migration (dart_mappable + Dart 3 sealed classes)
 
-**Risk Level**: Medium ⭐⭐  
-**Rationale**: Freezed is used extensively but changes are mechanical.
+**Risk Level**: Medium  
+**Dependencies to replace**: `freezed`, `freezed_annotation` → `dart_mappable`, `dart_mappable_builder`, `fast_immutable_collections`, native Dart 3 sealed classes
 
----
+### Current Data Class Functionality (Requirements)
 
-### Step 2.1: Update Dependencies
+| Requirement | File Pattern |
+|-------------|--------------|
+| **JSON Serialization**: DTOs serialize to/from JSON for API requests/responses | `*_model.dart` files in `infrastructure/models/` |
+| **Immutability**: All data classes are immutable with `copyWith` support | All freezed classes |
+| **Equality**: Value-based equality for domain entities and DTOs | All freezed classes |
+| **Union Types (Failures)**: Sealed class hierarchies for failure handling | `*_failure.dart` files |
+| **Union Types (States)**: Sealed class hierarchies for BLoC states | `*_state.dart`, `*_event.dart` files (handled in Phase 4) |
+| **Pattern Matching**: Code uses `when`/`map` or switch expressions on sealed types | Throughout codebase |
 
-#### [MODIFY] [pubspec.yaml](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/pubspec.yaml)
+### Files to Migrate
+
+**Infrastructure DTOs** (convert freezed → dart_mappable):
+- `lib/features/auth/infrastructure/models/user_model.dart`
+- `lib/features/auth/infrastructure/models/auth_response_model.dart`
+- `lib/features/auth/infrastructure/models/auth_tokens_model.dart`
+- `lib/features/auth/infrastructure/models/login_request_model.dart`
+- `lib/features/auth/infrastructure/models/register_request_model.dart`
+- `lib/features/auth/infrastructure/models/check_user_exists_request_model.dart`
+- `lib/features/auth/infrastructure/models/check_user_exists_response_model.dart`
+- `lib/features/auth/infrastructure/models/websocket/auth_ws_event_model.dart`
+- `lib/features/profile/infrastructure/models/user_profile_model.dart`
+- `lib/core/presentation/models/error_model.dart`
+
+**Domain Failures** (convert freezed → Dart 3 sealed classes, NO codegen needed):
+- `lib/core/error/failures/infrastructure_failures.dart`
+- `lib/features/auth/domain/failure/auth_failure.dart`
+- `lib/features/profile/domain/failure/profile_failure.dart`
+- `lib/core/domain/base/unique_id_failure.dart`
+- `lib/core/domain/value_objects/email_failure.dart`
+- `lib/core/domain/value_objects/name_failure.dart`
+- `lib/core/domain/value_objects/password_failure.dart`
+- `lib/features/auth/domain/value_objects/token_failure.dart`
+
+### Generated Files to Delete
+
+All `*.freezed.dart` files (23 files total) — these will not be regenerated.
+
+### Dependencies to Change
 
 **Remove**:
-```yaml
-# dependencies:
-freezed_annotation: ^3.1.0
+- `freezed`
+- `freezed_annotation`
 
-# dev_dependencies:
-freezed: ^3.2.3
-```
+**Add** (latest versions):
+- `dart_mappable`
+- `dart_mappable_builder` (dev dependency)
+- `fast_immutable_collections`
 
-**Add**:
-```yaml
-# dependencies:
-dart_mappable: ^4.4.0
-fast_immutable_collections: ^11.0.0
+### Verification
 
-# dev_dependencies:
-dart_mappable_builder: ^4.4.0
-```
-
----
-
-### Step 2.2: Migrate DTOs to dart_mappable
-
-DTOs are simple data classes with JSON serialization. Migrate each file.
-
-**Example Pattern** - Convert from freezed:
-```dart
-// BEFORE (freezed)
-@freezed
-class UserModel with _$UserModel {
-  const factory UserModel({
-    required String id,
-    required String email,
-  }) = _UserModel;
-
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
-}
-```
-
-```dart
-// AFTER (dart_mappable)
-import 'package:dart_mappable/dart_mappable.dart';
-
-part 'user_model.mapper.dart';
-
-@MappableClass()
-class UserModel with UserModelMappable {
-  const UserModel({
-    required this.id,
-    required this.email,
-  });
-
-  final String id;
-  final String email;
-}
-```
-
-#### Files to migrate (Infrastructure Models):
-
-| File | Location |
-|------|----------|
-| [user_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/user_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [auth_response_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/auth_response_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [auth_tokens_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/auth_tokens_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [login_request_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/login_request_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [register_request_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/register_request_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [check_user_exists_request_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/check_user_exists_request_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [check_user_exists_response_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/check_user_exists_response_model.dart) | `lib/features/auth/infrastructure/models/` |
-| [auth_ws_event_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/infrastructure/models/websocket/auth_ws_event_model.dart) | `lib/features/auth/infrastructure/models/websocket/` |
-| [user_profile_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/profile/infrastructure/models/user_profile_model.dart) | `lib/features/profile/infrastructure/models/` |
-| [error_model.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/presentation/models/error_model.dart) | `lib/core/presentation/models/` |
-
----
-
-### Step 2.3: Migrate Failures to Dart 3 Sealed Classes
-
-Failures use freezed unions. Replace with Dart 3 sealed classes.
-
-**Example Pattern** - Convert from freezed union:
-```dart
-// BEFORE (freezed)
-@freezed
-sealed class AuthFailure with _$AuthFailure {
-  const factory AuthFailure.invalidCredentials() = InvalidCredentials;
-  const factory AuthFailure.serverError(String message) = ServerError;
-  const factory AuthFailure.networkError() = NetworkError;
-}
-```
-
-```dart
-// AFTER (Dart 3 sealed class - no codegen needed!)
-sealed class AuthFailure {
-  const AuthFailure();
-}
-
-class InvalidCredentials extends AuthFailure {
-  const InvalidCredentials();
-}
-
-class ServerError extends AuthFailure {
-  const ServerError(this.message);
-  final String message;
-}
-
-class NetworkError extends AuthFailure {
-  const NetworkError();
-}
-```
-
-#### Files to migrate (Failures):
-
-| File | Location |
-|------|----------|
-| [infrastructure_failures.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/error/failures/infrastructure_failures.dart) | `lib/core/error/failures/` |
-| [auth_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/domain/failure/auth_failure.dart) | `lib/features/auth/domain/failure/` |
-| [profile_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/profile/domain/failure/profile_failure.dart) | `lib/features/profile/domain/failure/` |
-| [unique_id_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/domain/base/unique_id_failure.dart) | `lib/core/domain/base/` |
-| [email_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/domain/value_objects/email_failure.dart) | `lib/core/domain/value_objects/` |
-| [name_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/domain/value_objects/name_failure.dart) | `lib/core/domain/value_objects/` |
-| [password_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/domain/value_objects/password_failure.dart) | `lib/core/domain/value_objects/` |
-| [token_failure.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/domain/value_objects/token_failure.dart) | `lib/features/auth/domain/value_objects/` |
-
----
-
-### Step 2.4: Delete All .freezed.dart Files
-
-Run this command to find and delete:
 ```bash
+# Delete generated files
 find lib -name "*.freezed.dart" -delete
-```
 
-Or delete these 23 files individually (list from earlier analysis).
-
----
-
-### Step 2.5: Run Code Generation
-
-```bash
+flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-```
-
----
-
-### Step 2.6: Verification
-
-```bash
 flutter analyze
-very_good test test/features/auth/infrastructure/
-very_good test test/core/domain/
+flutter test test/features/auth/infrastructure/
+flutter test test/core/domain/
+flutter test test/core/error/
+flutter test --coverage
 ```
 
 ---
 
 ## Phase 3: Persistence Migration (Drift)
 
-**Risk Level**: Medium ⭐⭐  
-**Rationale**: Replaces HydratedBloc storage for theme/locale. Isolated change.
+**Risk Level**: Medium  
+**Dependencies to replace**: `hydrated_bloc` (persistence portion) → `drift`, `sqlite3_flutter_libs`
 
----
+### Current Persistence Functionality (Requirements)
 
-### Step 3.1: Update Dependencies
+| Requirement | Current Implementation |
+|-------------|------------------------|
+| **Theme Persistence**: User's selected theme mode persists across app restarts | `HydratedCubit` in `theme_cubit.dart` |
+| **Locale Persistence**: User's selected locale persists across app restarts | `HydratedCubit` in `locale_cubit.dart` |
+| **Token Storage**: Auth tokens are stored securely | `flutter_secure_storage` (KEEP — not being replaced) |
+| **Platform Support**: Must work on iOS, Android, Web, macOS, Windows, Linux | Current `HydratedStorage` supports all |
 
-#### [MODIFY] [pubspec.yaml](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/pubspec.yaml)
+### New Drift Database Requirements
 
-**Remove**:
-```yaml
-# dependencies:
-hydrated_bloc: ^10.1.1
-```
+1. **Create a SQLite database** using Drift for settings persistence
+2. **Provide a key-value style API** for storing theme mode and locale
+3. **Initialize during app bootstrap** before any UI renders
+4. **Handle migrations** (schemaVersion management for future changes)
+5. **Support all platforms** via `sqlite3_flutter_libs`
 
-**Add**:
-```yaml
-# dependencies:
-drift: ^2.26.0
-sqlite3_flutter_libs: ^0.5.31
-path_provider: ^2.1.5  # (already exists)
-path: ^1.9.1
+### Files to Create
 
-# dev_dependencies:
-drift_dev: ^2.26.0
-```
+- `lib/core/infrastructure/database/app_database.dart` — Main Drift database
+- `lib/core/infrastructure/database/daos/settings_dao.dart` — Data access object for settings (optional, can be methods on database)
 
----
+### Files to Modify
 
-### Step 3.2: Create Drift Database
+- `lib/core/application/bootstrap_service.dart` — Remove HydratedStorage initialization
+- `lib/core/di/modules/storage_module.dart` — Wire up Drift database
 
-#### [NEW] [app_database.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/infrastructure/database/app_database.dart)
+### Dependencies to Change
 
-```dart
-import 'dart:io';
+**Remove** (in Phase 4, when HydratedCubit is removed):
+- `hydrated_bloc`
 
-import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+**Add** (latest versions):
+- `drift`
+- `drift_dev` (dev dependency)
+- `sqlite3_flutter_libs`
+- `path` (if not already present)
 
-part 'app_database.g.dart';
-
-class SettingsTable extends Table {
-  TextColumn get key => text()();
-  TextColumn get value => text()();
-
-  @override
-  Set<Column> get primaryKey => {key};
-}
-
-@DriftDatabase(tables: [SettingsTable])
-class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
-
-  @override
-  int get schemaVersion => 1;
-
-  // Theme persistence
-  Future<String?> getThemeMode() async {
-    final result = await (select(settingsTable)
-          ..where((t) => t.key.equals('themeMode')))
-        .getSingleOrNull();
-    return result?.value;
-  }
-
-  Future<void> setThemeMode(String mode) async {
-    await into(settingsTable).insertOnConflictUpdate(
-      SettingsTableCompanion.insert(key: 'themeMode', value: mode),
-    );
-  }
-
-  // Locale persistence
-  Future<String?> getLocale() async {
-    final result = await (select(settingsTable)
-          ..where((t) => t.key.equals('locale')))
-        .getSingleOrNull();
-    return result?.value;
-  }
-
-  Future<void> setLocale(String locale) async {
-    await into(settingsTable).insertOnConflictUpdate(
-      SettingsTableCompanion.insert(key: 'locale', value: locale),
-    );
-  }
-}
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'starter_app.sqlite'));
-    return NativeDatabase.createInBackground(file);
-  });
-}
-```
-
----
-
-### Step 3.3: Run Drift Code Generation
+### Verification
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
----
-
-### Step 3.4: Remove HydratedBloc Storage Setup
-
-#### [MODIFY] [bootstrap_service.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/application/bootstrap_service.dart)
-
-Remove these lines:
-```dart
-// Remove:
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-HydratedBloc.storage = _storage;
-```
-
-#### [DELETE] [storage_module.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/di/modules/storage_module.dart) 
-
-(The HydratedStorage parts - keep flutter_secure_storage if used elsewhere)
-
----
-
-### Step 3.5: Verification
-
-```bash
 flutter analyze
-# Drift-specific tests will be added in Phase 5
+flutter test test/core/presentation/  # Theme/locale tests
+flutter test --coverage
 ```
 
 ---
 
 ## Phase 4: State Management Migration (Riverpod)
 
-**Risk Level**: High ⭐⭐⭐  
-**Rationale**: Core architecture change. Most files affected.
+**Risk Level**: High  
+**Dependencies to replace**: `flutter_bloc`, `bloc_concurrency`, `get_it`, `injectable` → `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`
 
----
+### Current State Management Functionality (Requirements)
 
-### Step 4.1: Update Dependencies
+**AuthBloc** (972 lines of tests in `auth_bloc_test.dart`):
 
-#### [MODIFY] [pubspec.yaml](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/pubspec.yaml)
+| Requirement | Test Coverage |
+|-------------|---------------|
+| Initial state with email input form | Tested |
+| Email validation (shows error for invalid emails) | Tested |
+| Check if user exists → transition to login or registration flow | Tested |
+| Password validation | Tested |
+| Name validation (for registration) | Tested |
+| Login submission → success shows authenticated state | Tested |
+| Login submission → failure shows error state | Tested |
+| Registration submission → success shows authenticated state | Tested |
+| Registration submission → failure shows error state | Tested |
+| Logout → returns to unauthenticated state | Tested |
+| Session expiration stream handling | Tested |
+| Auth state changes stream handling | Tested |
+| Concurrent event handling (debounced, throttled, sequential as appropriate) | Uses `bloc_concurrency` |
+
+**ProfileBloc**:
+| Requirement | Test Coverage |
+|-------------|---------------|
+| Load user profile | Tested |
+| Update profile fields | Tested |
+| Profile loading states | Tested |
+
+**ThemeCubit** (currently HydratedCubit):
+| Requirement | Test Coverage |
+|-------------|---------------|
+| Toggle between light/dark/system | Tested |
+| State persists across app restart | Via HydratedBloc |
+
+**LocaleCubit** (currently HydratedCubit):
+| Requirement | Test Coverage |
+|-------------|---------------|
+| Switch between supported locales | Tested |
+| State persists across app restart | Via HydratedBloc |
+
+**Dependency Injection** (90 lines of tests in `injection_test.dart`):
+| Requirement | Test Coverage |
+|-------------|---------------|
+| Configures successfully for development environment | Tested |
+| Configures successfully for staging environment | Tested |
+| Configures successfully for production environment | Tested |
+| Environment-specific implementations are used (dev vs prod error reporting) | `error_module.dart` uses `@LazySingleton(env: [...])` |
+
+### State Classes to Migrate to Dart 3 Sealed Classes
+
+- `lib/features/auth/presentation/bloc/auth_state.dart`
+- `lib/features/auth/presentation/bloc/auth_event.dart` (convert events to notifier methods)
+- `lib/features/auth/presentation/bloc/field_validation_state.dart`
+- `lib/features/profile/presentation/bloc/profile_state.dart`
+- `lib/features/profile/presentation/bloc/profile_event.dart`
+
+### BLoCs to Convert to Riverpod Notifiers
+
+- `AuthBloc` → `AuthNotifier` (using `@riverpod` annotation)
+- `ProfileBloc` → `ProfileNotifier`
+- `ThemeCubit` → `ThemeNotifier` (integrate with Drift for persistence)
+- `LocaleCubit` → `LocaleNotifier` (integrate with Drift for persistence)
+
+### DI Modules to Replace with Providers
+
+All files in `lib/core/di/modules/`:
+- `bloc_module.dart`
+- `error_module.dart` (must preserve environment-specific behavior)
+- `logging_module.dart`
+- `navigation_module.dart`
+- `network_module.dart`
+- `storage_module.dart`
+- `websocket_module.dart`
+
+### Environment-Specific Behavior (CRITICAL)
+
+The current DI uses injectable's `env` parameter to provide different implementations per environment:
+
+```dart
+@LazySingleton(env: [AppEnvironment.devEnv])
+IErrorReporter get devErrorReporter => ...
+
+@LazySingleton(env: [AppEnvironment.stagingEnv, AppEnvironment.prodEnv])
+IErrorReporter get prodErrorReporter => ...
+```
+
+**This behavior MUST be preserved** using Riverpod's family providers or conditional logic based on current environment.
+
+### Files to Delete
+
+- Entire `lib/core/di/` directory (but document this in updated ARCHITECTURE.md)
+- `lib/core/di/injection.dart`
+- `lib/core/di/injection.config.dart`
+- All `*_event.dart` files (events become methods on notifiers)
+
+### Dependencies to Change
 
 **Remove**:
-```yaml
-# dependencies:
-bloc_concurrency: ^0.3.0
-flutter_bloc: ^9.1.1
-get_it: ^9.2.0
-injectable: ^2.7.1+2
-
-# dev_dependencies:
-bloc_lint: ^0.3.5
-bloc_test: ^10.0.0
-injectable_generator: ^2.9.1
-```
-
-**Add**:
-```yaml
-# dependencies:
-flutter_riverpod: ^2.6.1
-riverpod_annotation: ^2.6.1
-
-# dev_dependencies:
-riverpod_generator: ^2.6.4
-riverpod_lint: ^2.6.4
-```
-
----
-
-### Step 4.2: Migrate BLoC States to Dart 3 Sealed Classes
-
-These files already use freezed unions. Convert to Dart 3 sealed classes.
-
-#### [MODIFY] [auth_state.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/presentation/bloc/auth_state.dart)
-
-**Current states** (from analysis): Initial, Unauthenticated, RegistrationRequired, LoginRequired, Authenticated
-
-```dart
-// AFTER (Dart 3 sealed class)
-import 'package:starter_app/core/domain/value_objects/email_address.dart';
-import 'package:starter_app/core/domain/value_objects/name.dart';
-import 'package:starter_app/core/domain/value_objects/password.dart';
-import 'package:starter_app/core/presentation/models/error_model.dart';
-import 'package:starter_app/features/auth/domain/entities/user.dart';
-import 'package:starter_app/features/auth/presentation/bloc/field_validation_state.dart';
-
-sealed class AuthState {
-  const AuthState();
-}
-
-class Initial extends AuthState {
-  const Initial({
-    required this.email,
-    required this.isSubmitting,
-    required this.validation,
-    this.error,
-  });
-
-  final EmailAddress email;
-  final bool isSubmitting;
-  final FieldValidationState validation;
-  final ErrorModel? error;
-
-  Initial copyWith({
-    EmailAddress? email,
-    bool? isSubmitting,
-    FieldValidationState? validation,
-    ErrorModel? error,
-  }) => Initial(
-    email: email ?? this.email,
-    isSubmitting: isSubmitting ?? this.isSubmitting,
-    validation: validation ?? this.validation,
-    error: error ?? this.error,
-  );
-}
-
-class Unauthenticated extends AuthState {
-  const Unauthenticated();
-}
-
-class RegistrationRequired extends AuthState {
-  const RegistrationRequired({
-    required this.email,
-    required this.password,
-    required this.name,
-    required this.isSubmitting,
-    required this.validation,
-    this.passwordVisible = false,
-    this.error,
-  });
-
-  final EmailAddress email;
-  final Password password;
-  final Name name;
-  final bool isSubmitting;
-  final FieldValidationState validation;
-  final bool passwordVisible;
-  final ErrorModel? error;
-
-  RegistrationRequired copyWith({
-    EmailAddress? email,
-    Password? password,
-    Name? name,
-    bool? isSubmitting,
-    FieldValidationState? validation,
-    bool? passwordVisible,
-    ErrorModel? error,
-  }) => RegistrationRequired(
-    email: email ?? this.email,
-    password: password ?? this.password,
-    name: name ?? this.name,
-    isSubmitting: isSubmitting ?? this.isSubmitting,
-    validation: validation ?? this.validation,
-    passwordVisible: passwordVisible ?? this.passwordVisible,
-    error: error ?? this.error,
-  );
-}
-
-class LoginRequired extends AuthState {
-  const LoginRequired({
-    required this.email,
-    required this.password,
-    required this.isSubmitting,
-    required this.validation,
-    this.passwordVisible = false,
-    this.error,
-  });
-
-  final EmailAddress email;
-  final Password password;
-  final bool isSubmitting;
-  final FieldValidationState validation;
-  final bool passwordVisible;
-  final ErrorModel? error;
-
-  LoginRequired copyWith({
-    EmailAddress? email,
-    Password? password,
-    bool? isSubmitting,
-    FieldValidationState? validation,
-    bool? passwordVisible,
-    ErrorModel? error,
-  }) => LoginRequired(
-    email: email ?? this.email,
-    password: password ?? this.password,
-    isSubmitting: isSubmitting ?? this.isSubmitting,
-    validation: validation ?? this.validation,
-    passwordVisible: passwordVisible ?? this.passwordVisible,
-    error: error ?? this.error,
-  );
-}
-
-class Authenticated extends AuthState {
-  const Authenticated(this.user);
-  final User user;
-}
-```
-
-Repeat for:
-- [profile_state.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/profile/presentation/bloc/profile_state.dart)
-- [field_validation_state.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/presentation/bloc/field_validation_state.dart)
-
----
-
-### Step 4.3: Delete Event Files
-
-With Riverpod, events become methods on the Notifier. Delete:
-
-#### [DELETE] [auth_event.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/presentation/bloc/auth_event.dart)
-#### [DELETE] [auth_event.freezed.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/presentation/bloc/auth_event.freezed.dart)
-#### [DELETE] [profile_event.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/profile/presentation/bloc/profile_event.dart)
-#### [DELETE] [profile_event.freezed.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/profile/presentation/bloc/profile_event.freezed.dart)
-
----
-
-### Step 4.4: Create Provider Infrastructure
-
-#### [NEW] [providers.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/providers/providers.dart)
-
-```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:starter_app/core/infrastructure/database/app_database.dart';
-
-part 'providers.g.dart';
-
-// Database provider
-@Riverpod(keepAlive: true)
-AppDatabase appDatabase(Ref ref) {
-  return AppDatabase();
-}
-
-// Add other core providers here (ApiClient, SecureStorage, etc.)
-```
-
----
-
-### Step 4.5: Migrate AuthBloc to AuthNotifier
-
-#### [MODIFY] [auth_bloc.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/presentation/bloc/auth_bloc.dart) → Rename to `auth_notifier.dart`
-
-```dart
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:starter_app/features/auth/application/usecases/login.dart';
-import 'package:starter_app/features/auth/application/usecases/register.dart';
-// ... other imports
-
-part 'auth_notifier.g.dart';
-
-@riverpod
-class Auth extends _$Auth {
-  @override
-  AuthState build() {
-    // Initialize use cases from providers
-    _loginUseCase = ref.read(loginUseCaseProvider);
-    _registerUseCase = ref.read(registerUseCaseProvider);
-    // ... etc
-
-    // Return initial state
-    return Initial(
-      email: EmailAddress(''),
-      isSubmitting: false,
-      validation: const FieldValidationState(),
-    );
-  }
-
-  late final Login _loginUseCase;
-  late final Register _registerUseCase;
-
-  // Convert events to methods
-  void emailChanged(String email) {
-    // Logic from _onEmailChanged
-  }
-
-  void passwordChanged(String password) {
-    // Logic from _onPasswordChanged
-  }
-
-  Future<void> loginSubmitted() async {
-    // Logic from _onLoginSubmitted
-    state = (state as LoginRequired).copyWith(isSubmitting: true);
-    
-    final result = await _loginUseCase.execute(/* params */);
-    
-    result.fold(
-      (failure) => state = (state as LoginRequired).copyWith(
-        isSubmitting: false,
-        error: ErrorModel.fromFailure(failure),
-      ),
-      (user) => state = Authenticated(user),
-    );
-  }
-
-  // ... convert all event handlers to methods
-}
-```
-
----
-
-### Step 4.6: Create Use Case Providers
-
-#### [NEW] [auth_providers.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/features/auth/providers/auth_providers.dart)
-
-```dart
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:starter_app/features/auth/application/usecases/login.dart';
-// ... other imports
-
-part 'auth_providers.g.dart';
-
-@riverpod
-Login loginUseCase(Ref ref) {
-  return Login(ref.read(authRepositoryProvider));
-}
-
-@riverpod
-IAuthRepository authRepository(Ref ref) {
-  return AuthRepositoryImpl(
-    ref.read(authRemoteDataSourceProvider),
-    ref.read(tokenStorageProvider),
-  );
-}
-
-// ... etc
-```
-
----
-
-### Step 4.7: Migrate HydratedCubits to Riverpod + Drift
-
-#### [MODIFY] [theme_cubit.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/presentation/bloc/theme_cubit.dart) → Rename to `theme_notifier.dart`
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:starter_app/core/providers/providers.dart';
-
-part 'theme_notifier.g.dart';
-
-@riverpod
-class Theme extends _$Theme {
-  @override
-  Future<ThemeMode> build() async {
-    final db = ref.read(appDatabaseProvider);
-    final saved = await db.getThemeMode();
-    return switch (saved) {
-      'dark' => ThemeMode.dark,
-      'light' => ThemeMode.light,
-      _ => ThemeMode.system,
-    };
-  }
-
-  Future<void> setThemeMode(ThemeMode mode) async {
-    final db = ref.read(appDatabaseProvider);
-    await db.setThemeMode(mode.name);
-    state = AsyncData(mode);
-  }
-}
-```
-
-Repeat for `locale_cubit.dart` → `locale_notifier.dart`.
-
----
-
-### Step 4.8: Update Widgets to Use Riverpod
-
-#### [MODIFY] [app.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/app/view/app.dart)
-
-Wrap with ProviderScope:
-```dart
-// In main entry point
-runApp(
-  const ProviderScope(
-    child: App(),
-  ),
-);
-```
-
-Convert widgets to ConsumerWidget:
-```dart
-class App extends ConsumerWidget {
-  const App({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
-    
-    return MaterialApp.router(
-      themeMode: themeMode.when(
-        data: (mode) => mode,
-        loading: () => ThemeMode.system,
-        error: (_, __) => ThemeMode.system,
-      ),
-      // ...
-    );
-  }
-}
-```
-
-Update all pages that use BlocProvider/BlocBuilder:
-- Replace `BlocProvider` with direct provider access via `ref.watch`
-- Replace `BlocBuilder` with `Consumer` or `ConsumerWidget`
-- Replace `context.read<Bloc>().add(Event)` with `ref.read(notifierProvider.notifier).method()`
-
----
-
-### Step 4.9: Delete DI Module Files
-
-#### [DELETE] Entire directory: [lib/core/di/](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/lib/core/di/)
-
-Including:
-- `injection.dart`
-- `injection.config.dart`
-- `modules/` directory (7 files)
-- `README.md`
-
----
-
-### Step 4.10: Run Code Generation
+- `flutter_bloc`
+- `bloc_concurrency`
+- `get_it`
+- `injectable`
+- `hydrated_bloc`
+- `injectable_generator` (dev)
+- `bloc_test` (dev)
+- `bloc_lint` (dev)
+
+**Add** (latest versions):
+- `flutter_riverpod`
+- `riverpod_annotation`
+- `riverpod_generator` (dev)
+- `riverpod_lint` (dev)
+
+### Verification
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
----
-
-### Step 4.11: Verification
-
-```bash
 flutter analyze
-very_good test --coverage
+
+# This is the critical test — all widget and BLoC tests must pass
+flutter test --coverage
 ```
 
 ---
 
 ## Phase 5: Test Migration
 
-**Risk Level**: Medium ⭐⭐  
-**Rationale**: Tests must be updated to work with Riverpod patterns.
+**Risk Level**: Medium
 
----
+### Test Helper Modifications
 
-### Step 5.1: Update Test Helpers
+| File | Modification |
+|------|--------------|
+| `test/helpers/pump_app.dart` | Update `pumpApp` and `pumpAppWithBloc` to use `ProviderScope` |
+| `test/helpers/mock_helpers.dart` | Add mock providers for Riverpod |
+| `test/helpers/test_bloc.dart` | Delete (no longer needed) |
+| `integration_test/helpers/fake_auth_bloc.dart` | Convert to fake notifier |
 
-#### [MODIFY] [pump_app.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/test/helpers/pump_app.dart) (or equivalent)
+### Test Pattern Changes
 
-```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+| Current Pattern | New Pattern |
+|-----------------|-------------|
+| `BlocProvider` in tests | `ProviderScope` with overrides |
+| `blocTest<B, S>()` | Standard `test()` with `ProviderContainer` |
+| `context.read<Bloc>()` | `ref.read(provider)` |
+| `BlocBuilder` in widget tests | `Consumer` / `ConsumerWidget` |
 
-extension PumpApp on WidgetTester {
-  Future<void> pumpApp(
-    Widget widget, {
-    List<Override>? overrides,
-  }) async {
-    await pumpWidget(
-      ProviderScope(
-        overrides: overrides ?? [],
-        child: MaterialApp(
-          home: widget,
-        ),
-      ),
-    );
-  }
-}
-```
-
----
-
-### Step 5.2: Migrate BLoC Tests to Riverpod Tests
-
-**Pattern** - Convert from `bloc_test` to Riverpod testing:
-
-```dart
-// BEFORE (bloc_test)
-blocTest<AuthBloc, AuthState>(
-  'emits [loading, authenticated] when login succeeds',
-  build: () => AuthBloc(mockLogin, mockRegister),
-  act: (bloc) => bloc.add(const AuthLoginSubmitted()),
-  expect: () => [
-    isA<AuthState>().having((s) => s.isSubmitting, 'isSubmitting', true),
-    isA<Authenticated>(),
-  ],
-);
-```
-
-```dart
-// AFTER (Riverpod)
-test('emits authenticated when login succeeds', () async {
-  final container = ProviderContainer(
-    overrides: [
-      loginUseCaseProvider.overrideWithValue(mockLogin),
-    ],
-  );
-  addTearDown(container.dispose);
-
-  final notifier = container.read(authProvider.notifier);
-  
-  // Set up mock
-  when(() => mockLogin.execute(any())).thenAnswer(
-    (_) async => right(testUser),
-  );
-
-  await notifier.loginSubmitted();
-
-  expect(
-    container.read(authProvider),
-    isA<Authenticated>(),
-  );
-});
-```
-
----
-
-### Step 5.3: Delete BLoC Test Helpers
-
-#### [DELETE] [test_bloc.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/test/helpers/test_bloc.dart)
-#### [DELETE] [fake_auth_bloc.dart](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/integration_test/helpers/fake_auth_bloc.dart)
-
----
-
-### Step 5.4: Run Full Test Suite
+### Verification
 
 ```bash
-very_good test --coverage
-genhtml coverage/lcov.info -o coverage/html
-open coverage/html/index.html
+flutter test --coverage
+# Coverage MUST be >= baseline coverage from before Phase 1
+# All tests MUST pass
 ```
-
-Target: Maintain 100% coverage.
 
 ---
 
 ## Phase 6: Mason Bricks Update
 
-Update templates to generate Riverpod-compatible code.
+Update templates in `bricks/` directory to generate code using the new stack.
 
----
+### Bricks to Update
 
-### Step 6.1: Update Feature Brick
+| Brick | Changes |
+|-------|---------|
+| `bricks/bloc/` | Rename to `notifier/`, generate Riverpod notifiers |
+| `bricks/feature/` | Update to generate providers instead of BLoCs, use sealed classes |
+| `bricks/entity/` | Review — may need updates for dart_mappable |
+| `bricks/repository/` | Review — update DI annotations |
+| `bricks/use_case/` | Review — update provider patterns |
+| `bricks/value_object/` | Review — update for sealed class failures |
 
-#### [MODIFY] [bricks/feature/](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/bricks/feature/)
+### Verification
 
-Update templates to:
-- Generate providers instead of BLoCs
-- Use Dart 3 sealed classes instead of freezed
-- Remove injectable annotations
-
----
-
-### Step 6.2: Update BLoC Brick → Notifier Brick
-
-#### [MODIFY] [bricks/bloc/](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/bricks/bloc/) → Rename/refactor to notifier template
+```bash
+# Test brick generation
+mason make feature --name test_feature --output-dir /tmp
+# Verify generated code follows new patterns
+```
 
 ---
 
 ## Phase 7: Documentation Update
 
----
+### Files to Update (NOT delete)
 
-### Step 7.1: Update Core Documentation
+| File | Updates |
+|------|---------|
+| `ARCHITECTURE.md` | Update state management, DI, navigation sections |
+| `README.md` | Update tech stack table, commands, dependencies |
+| `lib/core/di/README.md` | Rewrite for Riverpod providers (or move to new location) |
+| `lib/core/navigation/README.md` | Update for auto_route |
+| `lib/core/navigation/ARCHITECTURE.md` | Update for auto_route |
+| `test/README.md` | Update test patterns for Riverpod |
+| ADR documents in `docs/architecture/decisions/` | Add new ADRs for migration decisions |
 
-#### [MODIFY] [ARCHITECTURE.md](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/ARCHITECTURE.md)
+### New Documentation to Create
 
-Update:
-- State management section: BLoC → Riverpod
-- DI section: get_it/injectable → Riverpod providers
-- Navigation section: go_router → auto_route
-- Data flow diagrams
-
-#### [MODIFY] [README.md](file:///Users/andrew/Documents/Git/GitHub/PointSource/starter_app/README.md)
-
-Update:
-- Tech stack table
-- Quick start commands
-- Dependencies list
-
----
-
-### Step 7.2: Update ADRs
-
-Add new ADR files or update existing:
-- ADR-002: ~~flutter_bloc~~ → Riverpod
-- ADR-004: ~~go_router~~ → auto_route  
-- ADR-005: ~~injectable + get_it~~ → Riverpod providers
-- ADR-008: ~~freezed~~ → dart_mappable + Dart 3 sealed classes
+- ADR: Migration from BLoC to Riverpod
+- ADR: Migration from go_router to auto_route
+- ADR: Migration from freezed to dart_mappable + sealed classes
+- ADR: Migration from HydratedBloc to Drift
 
 ---
 
-## Verification Plan
+## Post-Migration Verification Checklist
 
-### Automated Tests
-
-After each phase, run:
 ```bash
-# 1. Code generation
+# Final verification
+flutter clean
+flutter pub get
 dart run build_runner build --delete-conflicting-outputs
+flutter analyze --fatal-infos
 
-# 2. Static analysis
-flutter analyze
+# Full test suite
+flutter test --coverage
 
-# 3. Unit/Widget tests
-very_good test --coverage
-
-# 4. Build verification
+# Build all flavors
 flutter build apk --debug --flavor development --target lib/main_development.dart --dart-define-from-file=config/development.json
+flutter build apk --debug --flavor staging --target lib/main_staging.dart --dart-define-from-file=config/staging.json
+flutter build apk --debug --flavor production --target lib/main_production.dart --dart-define-from-file=config/production.json
+
+# Coverage report
+genhtml coverage/lcov.info -o coverage/html
+open coverage/html/index.html
 ```
 
-### Manual Verification
+### Final Checks
 
-After Phase 4 (State Management), manually test:
-
-1. **Cold Start**: App should show auth page
-2. **Login Flow**: Enter email → password → submit → dashboard appears
-3. **Registration Flow**: New user can register
-4. **Tab Navigation**: All 4 tabs work, state preserved on switch
-5. **Settings Persistence**: 
-   - Change theme to dark → kill app → reopen → theme is still dark
-   - Change locale → kill app → reopen → locale preserved
-6. **Logout**: Returns to auth page, can log in again
-
----
-
-## Rollback Strategy
-
-If migration fails partway through:
-
-1. Each phase should be committed separately
-2. Git tags at each phase completion: `migration/phase-1-navigation`, etc.
-3. Can revert to any phase checkpoint
-
----
-
-## Dependencies Summary
-
-### Final pubspec.yaml dependencies:
-
-```yaml
-dependencies:
-  auto_route: ^10.0.0
-  chopper: ^8.5.0
-  dart_mappable: ^4.4.0
-  drift: ^2.26.0
-  fast_immutable_collections: ^11.0.0
-  flex_color_scheme: ^8.4.0
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  flutter_riverpod: ^2.6.1
-  flutter_secure_storage: ^10.0.0
-  fpdart: ^1.2.0
-  http: ^1.6.0
-  intl: ^0.20.2
-  json_annotation: ^4.9.0
-  logging: ^1.3.0
-  meta: ^1.16.0
-  path: ^1.9.1
-  path_provider: ^2.1.5
-  riverpod_annotation: ^2.6.1
-  sentry_flutter: ^9.9.2
-  shared_preferences: ^2.5.4
-  sqlite3_flutter_libs: ^0.5.31
-  synchronized: ^3.4.0
-  url_strategy: ^0.3.0
-  uuid: ^4.5.2
-  web: ^1.1.1
-  web_socket_channel: ^3.0.3
-
-dev_dependencies:
-  auto_route_generator: ^10.0.0
-  build_runner: ^2.10.4
-  chopper_generator: ^8.5.0
-  dart_mappable_builder: ^4.4.0
-  drift_dev: ^2.26.0
-  flutter_test:
-    sdk: flutter
-  glados: ^1.1.7
-  integration_test:
-    sdk: flutter
-  json_serializable: ^6.11.2
-  mocktail: ^1.0.4
-  riverpod_generator: ^2.6.4
-  riverpod_lint: ^2.6.4
-  very_good_analysis: ^10.0.0
-```
+- [ ] All 2311+ tests pass
+- [ ] Coverage is >= baseline (check before Phase 1)
+- [ ] All 3 flavors build successfully
+- [ ] No analyzer warnings or errors
+- [ ] All docstrings updated for modified code
+- [ ] All documentation updated (not deleted)
+- [ ] No tests were deleted unless functionality was intentionally removed

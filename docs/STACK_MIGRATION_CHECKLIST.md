@@ -1,109 +1,130 @@
-# Stack Migration Task Checklist
+# Stack Migration Checklist
 
-## Overview
-Migrate Flutter starter app from:
-- **BLoC + get_it/injectable** → **Riverpod**
-- **freezed** → **dart_mappable + fast_immutable_collections + Dart 3 sealed classes**
-- **go_router + go_router_builder** → **auto_route**
-- **HydratedBloc** → **Drift** (for persistence)
+> **Branch**: `stack_swap`
+> **Target**: Riverpod + dart_mappable + auto_route + Drift
 
 ---
 
-## Phase 1: Navigation Migration (auto_route)
-- [ ] Add auto_route dependencies to pubspec.yaml
-- [ ] Create `lib/core/navigation/app_router.dart` with auto_route setup
-- [ ] Migrate route definitions from go_router to auto_route format
-- [ ] Migrate AuthRoute, DashboardRoute to auto_route
-- [ ] Migrate feature routes (profile, settings, orders)
-- [ ] Update route guards for auth redirect logic
-- [ ] Update shell/nested navigation (StatefulShellRoute → AutoTabsRouter)
-- [ ] Remove go_router dependencies
-- [ ] Run `dart run build_runner build`
-- [ ] Run tests to verify navigation works
+## Pre-Phase Actions (EVERY Phase)
 
-## Phase 2: Data Classes Migration (dart_mappable + Dart 3 sealed classes)
-- [ ] Add dart_mappable, fast_immutable_collections dependencies
-- [ ] Migrate infrastructure DTOs from freezed to dart_mappable
-  - [ ] `user_model.dart`
-  - [ ] `auth_response_model.dart`
-  - [ ] `auth_tokens_model.dart`
-  - [ ] `login_request_model.dart`
-  - [ ] `register_request_model.dart`
-  - [ ] `check_user_exists_request_model.dart`
-  - [ ] `check_user_exists_response_model.dart`
-  - [ ] `auth_ws_event_model.dart`
-  - [ ] `user_profile_model.dart`
-- [ ] Migrate Failures to Dart 3 sealed classes
-  - [ ] `infrastructure_failures.dart`
-  - [ ] `auth_failure.dart`
-  - [ ] `profile_failure.dart`
-  - [ ] `unique_id_failure.dart`
-  - [ ] `email_failure.dart`, `name_failure.dart`, `password_failure.dart`, `token_failure.dart`
-- [ ] Migrate presentation models (`error_model.dart`)
-- [ ] Delete freezed generated files (*.freezed.dart)
-- [ ] Remove freezed/freezed_annotation from pubspec.yaml
-- [ ] Run code generation and verify
+- [ ] Checkout from `stack_swap` to new branch: `migration/phase-N-description`
+- [ ] Run `flutter test --coverage` and record baseline
+- [ ] Verify all tests pass before starting
 
-## Phase 3: Persistence Migration (Drift)
-- [ ] Add drift and drift_dev dependencies
-- [ ] Create Drift database class with tables for settings
-- [ ] Create SettingsDao for theme/locale persistence
-- [ ] Create DriftStorageService as replacement for HydratedBloc storage
-- [ ] Wire persistence into DI/providers
-- [ ] Remove HydratedBloc dependencies
+---
 
-## Phase 4: State Management Migration (Riverpod)
-- [ ] Add flutter_riverpod and riverpod_annotation dependencies
-- [ ] Create core Riverpod provider infrastructure
-  - [ ] `lib/core/di/providers/` directory structure
-  - [ ] Core providers (ApiClient, Storage, etc.)
+## Phase 1: Navigation (auto_route)
+
+- [ ] Add `auto_route` and `auto_route_generator` dependencies (latest versions)
+- [ ] Migrate route definitions to auto_route format
+- [ ] Migrate auth guard functionality  
+- [ ] Migrate shell/nested navigation (dashboard tabs)
+- [ ] Update navigation tracking service for auto_route
+- [ ] Update page transition configurations
+- [ ] Remove `go_router` and `go_router_builder` dependencies
+- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
+- [ ] Run `flutter analyze` — no errors
+- [ ] Run `flutter test test/core/navigation/` — all pass
+- [ ] Run `flutter test --coverage` — coverage >= baseline
+- [ ] Commit, push, create PR
+
+---
+
+## Phase 2: Data Classes (dart_mappable + sealed classes)
+
+- [ ] Add `dart_mappable`, `dart_mappable_builder`, `fast_immutable_collections` (latest)
+- [ ] Migrate DTOs (10 files in `infrastructure/models/`)
+- [ ] Migrate Failures to Dart 3 sealed classes (8 files)
+- [ ] Delete all `*.freezed.dart` files
+- [ ] Remove `freezed` and `freezed_annotation` dependencies
+- [ ] Run build_runner and verify
+- [ ] Run `flutter test test/features/auth/infrastructure/`
+- [ ] Run `flutter test test/core/domain/`
+- [ ] Run `flutter test test/core/error/`
+- [ ] Coverage >= baseline
+- [ ] Commit, push, create PR
+
+---
+
+## Phase 3: Persistence (Drift)
+
+- [ ] Add `drift`, `drift_dev`, `sqlite3_flutter_libs` dependencies (latest)
+- [ ] Create Drift database for settings persistence
+- [ ] Implement theme/locale storage via Drift
+- [ ] Update bootstrap to initialize Drift database
+- [ ] Verify theme persistence works manually
+- [ ] Verify locale persistence works manually
+- [ ] Run `flutter test test/core/presentation/`
+- [ ] Coverage >= baseline
+- [ ] Commit, push, create PR
+
+---
+
+## Phase 4: State Management (Riverpod)
+
+- [ ] Add `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`, `riverpod_lint` (latest)
 - [ ] Migrate BLoC states to Dart 3 sealed classes
-  - [ ] `auth_state.dart`
-  - [ ] `auth_event.dart` (convert to methods)
-  - [ ] `profile_state.dart`
-  - [ ] `profile_event.dart`
-  - [ ] `field_validation_state.dart`
-- [ ] Migrate BLoCs to Riverpod Notifiers
-  - [ ] `AuthBloc` → `AuthNotifier`
-  - [ ] `ProfileBloc` → `ProfileNotifier`
-  - [ ] `ThemeCubit` → `ThemeNotifier` (with Drift persistence)
-  - [ ] `LocaleCubit` → `LocaleNotifier` (with Drift persistence)
-- [ ] Update UI to use Riverpod (ConsumerWidget, ref.watch)
-  - [ ] Wrap MaterialApp with ProviderScope
-  - [ ] Update auth pages
-  - [ ] Update profile pages
-  - [ ] Update settings pages
-  - [ ] Update dashboard pages
-- [ ] Remove get_it, injectable, flutter_bloc, hydrated_bloc from pubspec.yaml
-- [ ] Delete DI modules directory
-- [ ] Run code generation and verify
-
-## Phase 5: Test Migration
-- [ ] Update test helpers for Riverpod (ProviderContainer)
-- [ ] Migrate bloc_test tests to Riverpod-style tests
-- [ ] Update widget tests to use ProviderScope
-- [ ] Update integration tests
-- [ ] Verify 100% test coverage
-
-## Phase 6: Mason Bricks Update
-- [ ] Update `bloc` brick → Riverpod notifier template
-- [ ] Update `feature` brick → Riverpod structure
-- [ ] Update other bricks as needed
-- [ ] Test brick generation
-
-## Phase 7: Documentation & Cleanup
-- [ ] Update ARCHITECTURE.md
-- [ ] Update README.md
-- [ ] Update ADR documents
-- [ ] Update architecture-rules docs
-- [ ] Final cleanup of unused imports/files
+- [ ] Convert `AuthBloc` → `AuthNotifier` (preserve all tested behaviors)
+- [ ] Convert `ProfileBloc` → `ProfileNotifier`
+- [ ] Convert `ThemeCubit` → `ThemeNotifier` (use Drift)
+- [ ] Convert `LocaleCubit` → `LocaleNotifier` (use Drift)
+- [ ] Create Riverpod providers to replace DI modules
+- [ ] **Preserve environment-specific behavior** (dev vs staging vs prod)
+- [ ] Update all UI widgets to use `ConsumerWidget` / `ref.watch`
+- [ ] Wrap app with `ProviderScope`
+- [ ] Remove `flutter_bloc`, `bloc_concurrency`, `get_it`, `injectable`, `hydrated_bloc`
+- [ ] Remove `bloc_test`, `bloc_lint`, `injectable_generator` (dev)
+- [ ] Delete `lib/core/di/` directory
+- [ ] Run build_runner and verify
+- [ ] Run `flutter analyze` — no errors
+- [ ] Run `flutter test` — ALL tests pass
+- [ ] Coverage >= baseline
+- [ ] Commit, push, create PR
 
 ---
 
-## Verification Checkpoints
-After each phase, run:
-```bash
-dart run build_runner build --delete-conflicting-outputs
-very_good test --coverage
-flutter analyze
-```
+## Phase 5: Tests
+
+- [ ] Update `test/helpers/pump_app.dart` for Riverpod
+- [ ] Update `test/helpers/mock_helpers.dart` with mock providers
+- [ ] Delete `test/helpers/test_bloc.dart` (BLoC-specific helper)
+- [ ] Update integration test helpers
+- [ ] Verify all tests pass
+- [ ] Verify no tests were deleted (only modified)
+- [ ] Coverage >= baseline
+- [ ] Commit, push, create PR
+
+---
+
+## Phase 6: Mason Bricks
+
+- [ ] Update `bricks/bloc/` → notifier template
+- [ ] Update `bricks/feature/` for Riverpod structure
+- [ ] Update other bricks as needed
+- [ ] Test brick generation in `/tmp`
+- [ ] Verify generated code follows new patterns
+- [ ] Commit, push, create PR
+
+---
+
+## Phase 7: Documentation
+
+- [ ] Update `ARCHITECTURE.md`
+- [ ] Update `README.md`
+- [ ] Update `lib/core/di/README.md` (or relocate)
+- [ ] Update `lib/core/navigation/README.md`
+- [ ] Update `test/README.md`
+- [ ] Add ADRs for migration decisions
+- [ ] Verify all docstrings updated for modified code
+- [ ] Commit, push, create PR
+
+---
+
+## Final Verification
+
+- [ ] All tests pass (2311+ tests)
+- [ ] Coverage >= baseline from before Phase 1
+- [ ] All 3 flavors build successfully
+- [ ] No analyzer warnings
+- [ ] No tests deleted (unless functionality removed)
+- [ ] All docstrings present on new/modified code
