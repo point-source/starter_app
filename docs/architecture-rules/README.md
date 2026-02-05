@@ -127,7 +127,7 @@ dart run build_runner watch --delete-conflicting-outputs
 ### Core
 - **State Management**: flutter_bloc, hydrated_bloc
 - **DI**: get_it, injectable
-- **Navigation**: go_router
+- **Navigation**: auto_route
 - **Data Modeling**: freezed, json_serializable
 - **Functional Programming**: fpdart
 

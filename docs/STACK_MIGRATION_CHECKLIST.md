@@ -15,18 +15,18 @@
 
 ## Phase 1: Navigation (auto_route)
 
-- [ ] Add `auto_route` and `auto_route_generator` dependencies (latest versions)
-- [ ] Migrate route definitions to auto_route format
-- [ ] Migrate auth guard functionality  
-- [ ] Migrate shell/nested navigation (dashboard tabs)
-- [ ] Update navigation tracking service for auto_route
-- [ ] Update page transition configurations
-- [ ] Remove `go_router` and `go_router_builder` dependencies
-- [ ] Run `dart run build_runner build --delete-conflicting-outputs`
-- [ ] Run `flutter analyze` — no errors
-- [ ] Run `flutter test test/core/navigation/` — all pass
-- [ ] Run `flutter test --coverage` — coverage >= baseline
-- [ ] Commit, push, create PR
+- [x] Add `auto_route` and `auto_route_generator` dependencies (latest versions)
+- [x] Migrate route definitions to auto_route format
+- [x] Migrate auth guard functionality  
+- [x] Migrate shell/nested navigation (dashboard tabs)
+- [x] Update navigation tracking service for auto_route
+- [x] Update page transition configurations
+- [x] Remove `go_router` and `go_router_builder` dependencies
+- [x] Run `dart run build_runner build --delete-conflicting-outputs`
+- [x] Run `flutter analyze` — no errors
+- [x] Run `flutter test test/core/navigation/` — all pass
+- [x] Run `flutter test --coverage` — coverage >= baseline
+- [x] Commit, push, create PR
 
 ---
 

@@ -1014,7 +1014,10 @@ void main() {
         tester,
       ) async {
         final mockRouter = MockStackRouter();
+        // Stub router methods BEFORE pumpWidget - listener fires immediately
         when(() => mockRouter.push(any())).thenAnswer((_) async => null);
+        when(() => mockRouter.replace(any())).thenAnswer((_) async => null);
+        when(() => mockRouter.canPop()).thenReturn(false);
 
         // Mimic authenticated state emission
         whenListen(
@@ -1051,33 +1054,10 @@ void main() {
           ),
         );
 
-        // Advance past Sentry timer and stream emissions
+        // Advance past Sentry timer and process stream emissions
         await tester.pump(const Duration(seconds: 4));
-        await tester.pumpAndSettle();
-
-        // Should try to pop (return true) or push dashboard
-        // In AuthPage we do: if (context.router.canPop()) ... pop(true) else ... replace(DashboardRoute())
-
-        // Since we are mocking, we can verify what was called.
-        // However, canPop() on mock might default to false unless stubbed.
-        // Let's stub canPop to false to verify dashboard navigation, or true to verify pop.
-
-        // Actually, let's look at what AuthPage does exactly.
-        // It calls AutoRouter.of(context).maybePop(true) or .replace(DashboardRoute())
-
-        // We can just verify interactions with mockRouter.
-        // But first let's see what the original test was checking.
-        // It was checking if 'Dashboard Page' text was found, meaning it navigated there.
-
-        // Since we can't easily perform real navigation with mocks in this setup without a full AutoRouter,
-        // we'll verify the router method was called.
-
-        // Let's stub replace.
-        when(() => mockRouter.replace(any())).thenAnswer((_) async => null);
-        when(() => mockRouter.canPop()).thenReturn(false);
-
-        // Rerun the pump with these stubs
-        await tester.pumpAndSettle();
+        // Process any remaining microtasks
+        await tester.pump();
 
         verify(
           () => mockRouter.replace(any(that: isA<DashboardRoute>())),
@@ -1088,7 +1068,8 @@ void main() {
         tester,
       ) async {
         final mockRouter = MockStackRouter();
-        when(() => mockRouter.replace(any())).thenAnswer((_) async => null);
+        // Stub router methods BEFORE pumpWidget
+        when(() => mockRouter.navigate(any())).thenAnswer((_) async => null);
         when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
 
         await tester.pumpWidget(
@@ -1125,9 +1106,9 @@ void main() {
         await tester.tap(returnHomeButton);
         await tester.pumpAndSettle();
 
-        // Verify navigation
+        // Verify navigation - AuthPage uses navigate(), not replace()
         verify(
-          () => mockRouter.replace(any(that: isA<DashboardRoute>())),
+          () => mockRouter.navigate(any(that: isA<DashboardRoute>())),
         ).called(1);
       });
     });

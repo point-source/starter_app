@@ -2,8 +2,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:starter_app/features/profile/presentation/widgets/login_button.dart';
+import 'package:starter_app/core/l10n/arb/app_localizations.dart';
 import 'package:starter_app/core/navigation/app_router.gr.dart';
+import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
+import 'package:starter_app/features/profile/presentation/widgets/login_button.dart';
 
 import '../../../../helpers/pump_app.dart';
 
@@ -34,10 +36,16 @@ void main() {
 
     testWidgets('triggers navigation when tapped', (tester) async {
       final mockRouter = MockStackRouter();
-      when(() => mockRouter.push(any())).thenAnswer((_) async => null);
+      // Use thenAnswer with async {} to return Future<void?>
+      when(() => mockRouter.push<void>(any())).thenAnswer((_) async {});
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            AuthLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: StackRouterScope(
             controller: mockRouter,
             stateHash: 0,
@@ -45,11 +53,15 @@ void main() {
           ),
         ),
       );
+      // Advance past Sentry timer
+      await tester.pump(const Duration(seconds: 4));
 
       await tester.tap(find.byType(LoginButton));
       await tester.pump();
 
-      verify(() => mockRouter.push(any(that: isA<AuthRoute>()))).called(1);
+      verify(
+        () => mockRouter.push<void>(any(that: isA<AuthRoute>())),
+      ).called(1);
     });
   });
 }

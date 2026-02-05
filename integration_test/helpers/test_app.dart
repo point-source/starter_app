@@ -1,21 +1,19 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
+import 'package:starter_app/core/navigation/app_router.dart';
+import 'package:starter_app/core/navigation/auth_change_notifier.dart';
 import 'package:starter_app/core/presentation/bloc/bloc.dart';
 import 'package:starter_app/core/theme/app_theme.dart';
 import 'package:starter_app/core/theme/app_theme_extension.dart';
 import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:starter_app/features/auth/presentation/pages/auth_page.dart';
 import 'package:starter_app/features/dashboard/l10n/dashboard_localizations.dart';
-import 'package:starter_app/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:starter_app/features/orders/l10n/orders_localizations.dart';
 import 'package:starter_app/features/profile/l10n/profile_localizations.dart';
-import 'package:starter_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
-import 'package:starter_app/features/settings/presentation/pages/settings_page.dart';
 
 import 'fake_auth_bloc.dart';
 import 'fake_locale_cubit.dart';
@@ -34,9 +32,13 @@ class TestAppConfig {
        themeCubit = themeCubit ?? FakeThemeCubit(),
        localeCubit = localeCubit ?? FakeLocaleCubit() {
     authBloc = FakeAuthBloc(controller: this.authBlocController);
+    authChangeNotifier = AuthChangeNotifier(authBloc);
+    router = AppRouter(authChangeNotifier);
   }
 
   late final FakeAuthBloc authBloc;
+  late final AuthChangeNotifier authChangeNotifier;
+  late final AppRouter router;
   final FakeAuthBlocController authBlocController;
   final FakeThemeCubit themeCubit;
   final FakeLocaleCubit localeCubit;
@@ -74,7 +76,7 @@ Widget createTestApp(TestAppConfig config) {
           builder: (context, appLocale) {
             const appTheme = AppTheme();
             return MaterialApp.router(
-              routerConfig: _createTestRouter(config.authBloc),
+              routerConfig: config.router.config(),
               theme: appTheme.lightTheme,
               darkTheme: appTheme.darkTheme,
               themeMode: appThemeMode.toThemeMode(),
@@ -97,97 +99,4 @@ Widget createTestApp(TestAppConfig config) {
       },
     ),
   );
-}
-
-/// Creates a simple test router for integration tests.
-GoRouter _createTestRouter(AuthBloc authBloc) {
-  return GoRouter(
-    initialLocation: '/',
-    routes: [
-      // Shell route with bottom navigation
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return _TestNavigationScaffold(navigationShell: navigationShell);
-        },
-        branches: [
-          // Dashboard branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/',
-                name: 'Dashboard',
-                builder: (context, state) => const DashboardPage(),
-              ),
-            ],
-          ),
-          // Profile branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/profile',
-                name: 'profile',
-                builder: (context, state) => const ProfilePage(),
-              ),
-            ],
-          ),
-          // Settings branch
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/settings',
-                name: 'settings',
-                builder: (context, state) => const SettingsPage(),
-              ),
-            ],
-          ),
-        ],
-      ),
-      // Auth route (outside shell)
-      GoRoute(
-        path: '/auth',
-        name: 'auth',
-        builder: (context, state) => const AuthPage(),
-      ),
-    ],
-  );
-}
-
-/// Simple navigation scaffold for testing.
-class _TestNavigationScaffold extends StatelessWidget {
-  const _TestNavigationScaffold({required this.navigationShell});
-
-  final StatefulNavigationShell navigationShell;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
-    );
-  }
 }
