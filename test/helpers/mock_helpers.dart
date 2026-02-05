@@ -4,7 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:starter_app/core/domain/base/domain_event.dart';
@@ -15,7 +15,7 @@ import 'package:starter_app/core/domain/ports/i_token_storage.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
 import 'package:starter_app/core/navigation/app_router.dart';
 import 'package:starter_app/core/navigation/auth_change_notifier.dart';
-import 'package:starter_app/core/navigation/page_builder.dart';
+
 import 'package:starter_app/core/presentation/bloc/bloc.dart';
 import 'package:starter_app/core/presentation/failure_message/failure_mapper_registry.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
@@ -43,17 +43,7 @@ class MockStorage extends Mock implements Storage {}
 // Navigation mocks
 class MockAppRouter extends Mock implements AppRouter {}
 
-class MockPageBuilder extends Mock implements PageBuilder {}
-
 class MockAuthChangeNotifier extends Mock implements AuthChangeNotifier {}
-
-class MockGoRouterState extends Mock implements GoRouterState {
-  @override
-  final String name = 'mock_route';
-
-  @override
-  final ValueKey<String> pageKey = const ValueKey('mock_key');
-}
 
 class MockTokenStorage extends Mock implements ITokenStorage {}
 

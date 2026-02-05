@@ -1,16 +1,20 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:starter_app/core/di/injection.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:starter_app/features/profile/l10n/l10n_extensions.dart';
+import 'package:starter_app/features/profile/l10n/profile_localizations.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:starter_app/features/profile/presentation/widgets/login_button.dart';
 import 'package:starter_app/features/profile/presentation/widgets/profile_content.dart';
 
 /// Profile page with language and theme settings.
+@RoutePage()
 final class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 

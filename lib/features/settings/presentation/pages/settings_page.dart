@@ -1,7 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:starter_app/core/constants/constants.dart';
+import 'package:starter_app/core/presentation/bloc/locale_cubit.dart';
+import 'package:starter_app/core/presentation/bloc/theme_cubit.dart';
 import 'package:starter_app/core/presentation/responsive/responsive.dart';
 import 'package:starter_app/features/settings/l10n/l10n_extensions.dart';
+import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 import 'package:starter_app/features/settings/presentation/widgets/language_selector.dart';
 import 'package:starter_app/features/settings/presentation/widgets/logout_button.dart';
 import 'package:starter_app/features/settings/presentation/widgets/theme_selector.dart';
@@ -12,6 +17,7 @@ import 'package:starter_app/features/settings/presentation/widgets/theme_selecto
 /// - Language selection (English/Spanish)
 /// - Theme selection (Light/Dark/System)
 /// - Logout button (only when authenticated)
+@RoutePage()
 final class SettingsPage extends StatelessWidget {
   /// Creates a settings page.
   const SettingsPage({super.key});

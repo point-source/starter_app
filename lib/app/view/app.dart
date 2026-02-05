@@ -1,13 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
+import 'package:starter_app/core/domain/ports/i_navigation_tracking_service.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
 import 'package:starter_app/core/navigation/app_router.dart';
 import 'package:starter_app/core/navigation/auth_change_notifier.dart';
-import 'package:starter_app/core/navigation/page_builder.dart';
 import 'package:starter_app/core/presentation/bloc/bloc.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
 import 'package:starter_app/core/theme/app_theme.dart';
@@ -27,47 +27,44 @@ import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 /// - ThemeCubit for dynamic theme switching with persistence
 /// - LocaleCubit for language/locale management
 /// - AuthBloc for authentication state
-/// - GoRouter for type-safe navigation with reactive auth redirects
+/// - AppRouter for type-safe navigation with reactive auth redirects
 /// - Localization support (English, Spanish)
-/// - PageBuilder for custom transitions
 ///
 /// ## Authentication Redirects
 ///
 /// Auth-based redirects (logout, session expiry, protected routes) are handled
-/// by [GoRouter] via refreshListenable with [AuthChangeNotifier].
-/// See [AppRouter] for redirect logic.
+/// by [AppRouter] via AutoRoute guards and [AuthChangeNotifier].
 ///
 /// All dependencies are resolved from GetIt DI container.
 @injectable
 final class App extends StatelessWidget {
   const App({
-    required this.routerConfig,
+    required this.appRouter,
     required this.logger,
-    required this.pageBuilder,
     required this.themeCubit,
     required this.localeCubit,
     required this.authBloc,
     required this.profileBloc,
     required this.failureMessageService,
     required this.appTheme,
+    required this.navigationTrackingService,
     @factoryParam super.key,
   });
 
-  final GoRouter routerConfig;
+  final AppRouter appRouter;
   final IAppLogger logger;
-  final PageBuilder pageBuilder;
   final ThemeCubit themeCubit;
   final LocaleCubit localeCubit;
   final AuthBloc authBloc;
   final ProfileBloc profileBloc;
   final FailureMessageService failureMessageService;
   final AppTheme appTheme;
+  final INavigationTrackingService navigationTrackingService;
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider.value(value: pageBuilder),
         RepositoryProvider.value(value: logger),
         RepositoryProvider.value(value: failureMessageService),
       ],
@@ -87,7 +84,12 @@ final class App extends StatelessWidget {
             return BlocBuilder<LocaleCubit, AppLocale>(
               builder: (context, appLocale) {
                 return MaterialApp.router(
-                  routerConfig: routerConfig,
+                  routerConfig: appRouter.config(
+                    navigatorObservers: () => [
+                      if (navigationTrackingService is NavigatorObserver)
+                        navigationTrackingService as NavigatorObserver,
+                    ],
+                  ),
                   // Theme configuration
                   // (Material Design 3 with FlexColorScheme)
                   theme: appTheme.lightTheme,

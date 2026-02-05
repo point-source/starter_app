@@ -1,5 +1,5 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:starter_app/core/constants/constants.dart';
 import 'package:starter_app/core/l10n/l10n_extensions.dart';
 import 'package:starter_app/core/presentation/responsive/responsive.dart';
@@ -16,32 +16,24 @@ import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 /// - **Large/Extra Large** (desktop): Permanent NavigationDrawer
 ///
 /// This follows Material Design 3 navigation guidelines and integrates
-/// with GoRouter's StatefulNavigationShell for proper state management.
-///
-/// Example:
-/// ```dart
-/// StatefulShellRoute(
-///   builder: (context, state, navigationShell) {
-///     return AdaptiveNavigationScaffold(
-///       navigationShell: navigationShell,
-///     );
-///   },
-///   branches: [...],
-/// )
-/// ```
+/// with AutoRoute's TabsRouter for proper state management.
 final class AdaptiveNavigationScaffold extends StatelessWidget {
   /// Creates an [AdaptiveNavigationScaffold].
   const AdaptiveNavigationScaffold({
-    required this.navigationShell,
+    required this.tabsRouter,
+    required this.child,
     super.key,
   });
 
-  /// The navigation shell that manages the tab state and navigation.
-  final StatefulNavigationShell navigationShell;
+  /// The tabs router that manages the tab state and navigation.
+  final TabsRouter tabsRouter;
+
+  /// The content of the current tab.
+  final Widget child;
 
   /// Get navigation destinations with localized labels.
   static List<_NavigationDestination> _getDestinations(BuildContext context) {
-    return [
+    final destinations = [
       _NavigationDestination(
         label: DashboardLocalizations.of(context).appBarTitle,
         icon: Icons.dashboard_outlined,
@@ -58,22 +50,20 @@ final class AdaptiveNavigationScaffold extends StatelessWidget {
         selectedIcon: Icons.settings,
       ),
     ];
+
+    return destinations;
   }
 
-  /// Get the currently selected tab index from the navigation shell.
-  int get _selectedIndex => navigationShell.currentIndex;
+  /// Get the currently selected tab index.
+  int get _selectedIndex => tabsRouter.activeIndex;
 
-  /// Handle tab selection using goBranch for proper state management.
+  /// Handle tab selection.
   void _onDestinationSelected(int index) {
     // Don't navigate if already on the same branch
     if (index == _selectedIndex) return;
 
-    // Use goBranch to switch tabs while preserving individual stack states
-    navigationShell.goBranch(
-      index,
-      // Navigate to the initial location when switching to a new branch
-      initialLocation: index == _selectedIndex,
-    );
+    // Switch tabs
+    tabsRouter.setActiveIndex(index);
   }
 
   @override
@@ -85,7 +75,7 @@ final class AdaptiveNavigationScaffold extends StatelessWidget {
           return _CompactLayout(
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onDestinationSelected,
-            child: navigationShell,
+            child: child,
           );
         }
 
@@ -94,7 +84,7 @@ final class AdaptiveNavigationScaffold extends StatelessWidget {
           return _MediumLayout(
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onDestinationSelected,
-            child: navigationShell,
+            child: child,
           );
         }
 
@@ -103,7 +93,7 @@ final class AdaptiveNavigationScaffold extends StatelessWidget {
           return _ExpandedLayout(
             selectedIndex: _selectedIndex,
             onDestinationSelected: _onDestinationSelected,
-            child: navigationShell,
+            child: child,
           );
         }
 
@@ -111,7 +101,7 @@ final class AdaptiveNavigationScaffold extends StatelessWidget {
         return _LargeLayout(
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onDestinationSelected,
-          child: navigationShell,
+          child: child,
         );
       },
     );

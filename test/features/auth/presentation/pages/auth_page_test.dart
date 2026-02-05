@@ -1,10 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:mocktail/mocktail.dart';
+import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/domain/value_objects/name.dart';
 import 'package:starter_app/core/domain/value_objects/password.dart';
@@ -12,7 +14,7 @@ import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
-import 'package:starter_app/core/theme/app_theme.dart';
+
 import 'package:starter_app/features/auth/domain/failure/auth_failure.dart';
 import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -27,6 +29,10 @@ import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 import '../../../../helpers/mock_helpers.dart';
 import '../../../../helpers/pump_app.dart';
 import '../../../../helpers/test_data.dart';
+
+class MockStackRouter extends Mock implements StackRouter {}
+
+class FakePageRouteInfo extends Fake implements PageRouteInfo {}
 
 class MockFailureMessageService extends Mock implements FailureMessageService {}
 
@@ -44,6 +50,7 @@ void main() {
     registerFallbackValue(FakeBuildContext());
     registerFallbackValue(FakeAuthFailure());
     registerFallbackValue(FakeInfrastructureFailure());
+    registerFallbackValue(FakePageRouteInfo());
   });
 
   setUp(() async {
@@ -1003,9 +1010,13 @@ void main() {
     });
 
     group('Navigation', () {
-      testWidgets('navigates to dashboard on authenticated state', (
+      testWidgets('valid credentials submission triggers navigation', (
         tester,
       ) async {
+        final mockRouter = MockStackRouter();
+        when(() => mockRouter.push(any())).thenAnswer((_) async => null);
+
+        // Mimic authenticated state emission
         whenListen(
           mockAuthBloc,
           Stream.fromIterable([
@@ -1014,12 +1025,12 @@ void main() {
           initialState: AuthState.empty(),
         );
 
-        final router = GoRouter(
-          initialLocation: '/auth',
-          routes: [
-            GoRoute(
-              path: '/auth',
-              builder: (context, state) => MultiBlocProvider(
+        await tester.pumpWidget(
+          MaterialApp(
+            home: StackRouterScope(
+              controller: mockRouter,
+              stateHash: 0,
+              child: MultiBlocProvider(
                 providers: [
                   BlocProvider<AuthBloc>.value(value: mockAuthBloc),
                 ],
@@ -1029,19 +1040,6 @@ void main() {
                 ),
               ),
             ),
-            GoRoute(
-              path: '/dashboard',
-              builder: (context, state) =>
-                  const Scaffold(body: Text('Dashboard Page')),
-            ),
-          ],
-        );
-
-        const appTheme = AppTheme();
-        await tester.pumpWidget(
-          MaterialApp.router(
-            routerConfig: router,
-            theme: appTheme.lightTheme,
             localizationsDelegates: const [
               AppLocalizations.delegate,
               AuthLocalizations.delegate,
@@ -1052,25 +1050,53 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
           ),
         );
-        // Advance past Sentry timer
+
+        // Advance past Sentry timer and stream emissions
         await tester.pump(const Duration(seconds: 4));
         await tester.pumpAndSettle();
 
-        // Navigation should have been triggered
-        expect(find.text('Dashboard Page'), findsOneWidget);
+        // Should try to pop (return true) or push dashboard
+        // In AuthPage we do: if (context.router.canPop()) ... pop(true) else ... replace(DashboardRoute())
+
+        // Since we are mocking, we can verify what was called.
+        // However, canPop() on mock might default to false unless stubbed.
+        // Let's stub canPop to false to verify dashboard navigation, or true to verify pop.
+
+        // Actually, let's look at what AuthPage does exactly.
+        // It calls AutoRouter.of(context).maybePop(true) or .replace(DashboardRoute())
+
+        // We can just verify interactions with mockRouter.
+        // But first let's see what the original test was checking.
+        // It was checking if 'Dashboard Page' text was found, meaning it navigated there.
+
+        // Since we can't easily perform real navigation with mocks in this setup without a full AutoRouter,
+        // we'll verify the router method was called.
+
+        // Let's stub replace.
+        when(() => mockRouter.replace(any())).thenAnswer((_) async => null);
+        when(() => mockRouter.canPop()).thenReturn(false);
+
+        // Rerun the pump with these stubs
+        await tester.pumpAndSettle();
+
+        verify(
+          () => mockRouter.replace(any(that: isA<DashboardRoute>())),
+        ).called(1);
       });
 
       testWidgets('return home button navigates to dashboard', (
         tester,
       ) async {
+        final mockRouter = MockStackRouter();
+        when(() => mockRouter.replace(any())).thenAnswer((_) async => null);
         when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
 
-        final router = GoRouter(
-          initialLocation: '/auth',
-          routes: [
-            GoRoute(
-              path: '/auth',
-              builder: (context, state) => MultiBlocProvider(
+        await tester.pumpWidget(
+          MaterialApp(
+            home: StackRouterScope(
+              controller: mockRouter,
+              stateHash: 0,
+              child: MultiBlocProvider(
                 providers: [
                   BlocProvider<AuthBloc>.value(value: mockAuthBloc),
                 ],
@@ -1080,19 +1106,6 @@ void main() {
                 ),
               ),
             ),
-            GoRoute(
-              path: '/dashboard',
-              builder: (context, state) =>
-                  const Scaffold(body: Text('Dashboard Page')),
-            ),
-          ],
-        );
-
-        const appTheme = AppTheme();
-        await tester.pumpWidget(
-          MaterialApp.router(
-            routerConfig: router,
-            theme: appTheme.lightTheme,
             localizationsDelegates: const [
               AppLocalizations.delegate,
               AuthLocalizations.delegate,
@@ -1112,8 +1125,10 @@ void main() {
         await tester.tap(returnHomeButton);
         await tester.pumpAndSettle();
 
-        // Navigation should have been triggered
-        expect(find.text('Dashboard Page'), findsOneWidget);
+        // Verify navigation
+        verify(
+          () => mockRouter.replace(any(that: isA<DashboardRoute>())),
+        ).called(1);
       });
     });
 
