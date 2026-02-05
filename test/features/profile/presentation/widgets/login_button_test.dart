@@ -1,104 +1,67 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
+import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
-import 'package:starter_app/features/dashboard/l10n/dashboard_localizations.dart';
-import 'package:starter_app/features/profile/l10n/profile_localizations.dart';
 import 'package:starter_app/features/profile/presentation/widgets/login_button.dart';
-import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 
 import '../../../../helpers/pump_app.dart';
 
+class MockStackRouter extends Mock implements StackRouter {}
+
+class FakePageRouteInfo extends Fake implements PageRouteInfo {}
+
 void main() {
+  setUpAll(() {
+    registerFallbackValue(FakePageRouteInfo());
+  });
+
   group('LoginButton', () {
     testWidgets('renders without errors', (tester) async {
       await tester.pumpApp(const LoginButton());
-
       expect(find.byType(LoginButton), findsOneWidget);
     });
 
     testWidgets('renders as TextButton', (tester) async {
       await tester.pumpApp(const LoginButton());
-
       expect(find.byType(TextButton), findsOneWidget);
     });
 
-    testWidgets('displays login text from localization', (tester) async {
+    testWidgets('displays login text', (tester) async {
       await tester.pumpApp(const LoginButton());
-
-      // The button should contain text (from l10n)
       expect(find.byType(Text), findsOneWidget);
     });
 
-    testWidgets('button exists and can be found', (tester) async {
-      await tester.pumpApp(const LoginButton());
-
-      final button = find.byType(TextButton);
-      expect(button, findsOneWidget);
-    });
-
-    testWidgets('onPressed callback is executable', (tester) async {
-      // We can verify the button has an onPressed callback
-      await tester.pumpApp(const LoginButton());
-
-      final textButton = tester.widget<TextButton>(find.byType(TextButton));
-
-      // Verify the button has an onPressed callback (not null)
-      expect(textButton.onPressed, isNotNull);
-    });
-
-    testWidgets('tapping button triggers navigation to auth', (tester) async {
-      // Create a GoRouter with the auth route matching what LoginButton uses
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, state) => const Scaffold(
-              body: Center(child: LoginButton()),
-            ),
-          ),
-          GoRoute(
-            path: '/auth',
-            name: 'auth',
-            builder: (context, state) {
-              return const Scaffold(body: Text('Auth Page'));
-            },
-          ),
-        ],
-      );
+    testWidgets('triggers navigation when tapped', (tester) async {
+      final mockRouter = MockStackRouter();
+      // Use thenAnswer with async {} to return Future<void?>
+      when(() => mockRouter.push<void>(any())).thenAnswer((_) async {});
 
       await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: router,
+        MaterialApp(
           localizationsDelegates: const [
             AppLocalizations.delegate,
             AuthLocalizations.delegate,
-            DashboardLocalizations.delegate,
-            ProfileLocalizations.delegate,
-            SettingsLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
+          home: StackRouterScope(
+            controller: mockRouter,
+            stateHash: 0,
+            child: const Scaffold(body: LoginButton()),
+          ),
         ),
       );
       // Advance past Sentry timer
       await tester.pump(const Duration(seconds: 4));
 
-      // Find and tap the button
-      final button = find.byType(TextButton);
-      expect(button, findsOneWidget);
+      await tester.tap(find.byType(LoginButton));
+      await tester.pump();
 
-      await tester.tap(button);
-      await tester.pumpAndSettle();
-
-      // The onPressed callback was executed. It uses AuthRoute().push(context)
-      // which uses go_router_builder generated code.
-      // Since our test router doesn't have that exact route, it may show
-      // an error page, or stay on the same page - but the important thing is
-      // the callback code was exercised.
-      // At minimum we verify the tap didn't crash and the test completes.
-      expect(tester.takeException(), isNull);
+      verify(
+        () => mockRouter.push<void>(any(that: isA<AuthRoute>())),
+      ).called(1);
     });
   });
 }

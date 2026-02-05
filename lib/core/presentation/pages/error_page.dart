@@ -1,5 +1,5 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:starter_app/core/constants/constants.dart'
     show IconConstants, SpacingWidgets;
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
@@ -20,9 +20,9 @@ import 'package:starter_app/core/navigation/app_router.dart';
 /// ),
 /// ```
 final class ErrorPage extends StatelessWidget {
-  const ErrorPage({required this.state, super.key});
+  const ErrorPage({this.errorData, super.key});
 
-  final GoRouterState state;
+  final Object? errorData;
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +45,16 @@ final class ErrorPage extends StatelessWidget {
               l10n.pageNotFound,
               style: textTheme.headlineSmall,
             ),
-            SpacingWidgets.verticalSm,
-            Text(
-              state.uri.path,
-              style: textTheme.bodyMedium,
-            ),
+            if (errorData != null) ...[
+              SpacingWidgets.verticalSm,
+              Text(
+                errorData.toString(),
+                style: textTheme.bodyMedium,
+              ),
+            ],
             SpacingWidgets.verticalLg,
             FilledButton(
-              onPressed: () => const DashboardRoute().go(context),
+              onPressed: () => context.router.replace(const DashboardRoute()),
               child: Text(l10n.goBack),
             ),
           ],

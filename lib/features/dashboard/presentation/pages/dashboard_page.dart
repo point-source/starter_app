@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:starter_app/core/presentation/responsive/responsive.dart';
 import 'package:starter_app/features/dashboard/l10n/l10n_extensions.dart';
@@ -9,6 +10,7 @@ import 'package:starter_app/features/dashboard/l10n/l10n_extensions.dart';
 /// This page demonstrates the responsive grid system with colored boxes
 /// that adapt to different screen sizes.
 
+@RoutePage()
 final class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 

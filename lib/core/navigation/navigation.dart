@@ -57,10 +57,7 @@
 library;
 
 export 'app_router.dart';
-export 'base_route.dart';
-export 'branch_navigator_observer.dart';
 export 'navigation_event.dart';
 export 'navigation_event_type.dart';
 export 'navigation_tracking_service.dart';
-export 'page_builder.dart';
 export 'route_definitions.dart';

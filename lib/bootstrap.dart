@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:starter_app/core/application/application_environment.dart';
 import 'package:starter_app/core/application/bootstrap_service.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -42,7 +42,6 @@ Future<void> bootstrap<T extends Widget>({
   if (kIsWeb) {
     // Remove '#' from URLs for cleaner web navigation
     setPathUrlStrategy();
-    GoRouter.optionURLReflectsImperativeAPIs = true;
   }
 
   // Wrap everything in a guarded zone to catch async errors

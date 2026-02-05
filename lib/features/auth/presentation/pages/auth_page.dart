@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:starter_app/core/constants/constants.dart';
@@ -17,13 +18,14 @@ import 'package:starter_app/features/auth/presentation/widgets/email_form.dart';
 part '../widgets/login_form.dart';
 part '../widgets/register_form.dart';
 
+@RoutePage()
 final class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         final error = state.mapOrNull(
           initial: (s) => s.error,
           loginRequired: (s) => s.error,
@@ -46,8 +48,14 @@ final class AuthPage extends StatelessWidget {
           return;
         }
 
-        state.maybeWhen(
-          authenticated: (user) => const DashboardRoute().go(context),
+        await state.maybeWhen(
+          authenticated: (user) async {
+            if (context.router.canPop()) {
+              context.router.pop(true);
+            } else {
+              await context.router.replace(const DashboardRoute());
+            }
+          },
           orElse: () => null,
         );
       },
@@ -71,7 +79,8 @@ final class AuthPage extends StatelessWidget {
             floatingActionButton: Padding(
               padding: PaddingWidgets.allMedium,
               child: TextButton(
-                onPressed: () => const DashboardRoute().go(context),
+                onPressed: () =>
+                    context.router.navigate(const DashboardRoute()),
                 child: Text(context.authL10n.returnHome),
               ),
             ),

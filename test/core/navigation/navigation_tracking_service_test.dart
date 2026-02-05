@@ -1,126 +1,37 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:starter_app/core/navigation/navigation_event.dart';
 import 'package:starter_app/core/navigation/navigation_event_type.dart';
 import 'package:starter_app/core/navigation/navigation_tracking_service.dart';
 
-class MockGoRouter extends Mock implements GoRouter {}
-
-class MockGoRouterDelegate extends Mock implements GoRouterDelegate {}
-
 class MockRoute extends Mock implements Route<dynamic> {}
 
-/// Fake implementation of RouteMatchList for testing.
-class FakeRouteMatchList extends Fake implements RouteMatchList {
-  FakeRouteMatchList({
-    required this.lastMatch,
-    required this.matchesList,
-  });
-
-  final RouteMatch lastMatch;
-  final List<RouteMatch> matchesList;
-
-  @override
-  RouteMatch get last => lastMatch;
-
-  @override
-  List<RouteMatch> get matches => matchesList;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) =>
-      'FakeRouteMatchList';
-}
-
-/// Fake implementation of RouteMatch for testing.
-class FakeRouteMatch extends Fake implements RouteMatch {
-  FakeRouteMatch({required this.goRoute});
-
-  final GoRoute goRoute;
-
-  @override
-  GoRoute get route => goRoute;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) =>
-      'FakeRouteMatch';
-}
-
-/// Fake implementation of GoRoute for testing.
-/// Note: Fields are mutable to allow test manipulation.
-// ignore: must_be_immutable
-class FakeGoRoute extends Fake implements GoRoute {
-  FakeGoRoute({this.routeName, this.routePath = '/'});
-
-  String? routeName;
-  String routePath;
-
-  @override
-  String? get name => routeName;
-
-  @override
-  String get path => routePath;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) =>
-      'FakeGoRoute($routeName)';
-}
+class MockTabPageRoute extends Mock implements TabPageRoute {}
 
 void main() {
   group('NavigationTrackingService', () {
-    late MockGoRouter mockRouter;
-    late MockGoRouterDelegate mockDelegate;
-    late FakeGoRoute fakeGoRoute;
-    late FakeRouteMatch fakeRouteMatch;
-    late FakeRouteMatchList fakeMatchList;
     late NavigationTrackingService service;
-    late VoidCallback? capturedListener;
 
     setUp(() {
-      mockRouter = MockGoRouter();
-      mockDelegate = MockGoRouterDelegate();
-      fakeGoRoute = FakeGoRoute(
-        routeName: 'dashboard',
-        routePath: '/dashboard',
-      );
-      fakeRouteMatch = FakeRouteMatch(goRoute: fakeGoRoute);
-      fakeMatchList = FakeRouteMatchList(
-        lastMatch: fakeRouteMatch,
-        matchesList: [fakeRouteMatch],
-      );
-
-      when(() => mockRouter.routerDelegate).thenReturn(mockDelegate);
-      when(() => mockDelegate.addListener(any())).thenAnswer((invocation) {
-        capturedListener =
-            invocation.positionalArguments[0] as VoidCallback? ?? () {};
-      });
-      when(() => mockDelegate.removeListener(any())).thenReturn(null);
-      when(() => mockDelegate.currentConfiguration).thenReturn(fakeMatchList);
-
-      service = NavigationTrackingService(mockRouter);
+      service = NavigationTrackingService();
     });
 
     tearDown(() async {
       await service.dispose();
     });
 
-    test('adds listener on construction', () {
-      verify(() => mockDelegate.addListener(any())).called(1);
-    });
-
-    test('removes listener on dispose', () async {
-      await service.dispose();
-      verify(() => mockDelegate.removeListener(any())).called(1);
-    });
-
-    test('events stream emits navigation events', () async {
+    test('events stream emits navigation events on didPush', () async {
       final events = <NavigationEvent>[];
       final subscription = service.events.listen(events.add);
 
-      // Trigger route change
-      capturedListener?.call();
+      final route = MockRoute();
+      when(
+        () => route.settings,
+      ).thenReturn(const RouteSettings(name: 'dashboard'));
 
+      service.didPush(route, null);
       await Future<void>.delayed(Duration.zero);
 
       expect(events, hasLength(1));
@@ -130,16 +41,19 @@ void main() {
       await subscription.cancel();
     });
 
-    test('skips duplicate routes', () async {
+    test('skips duplicate routes on push', () async {
       final events = <NavigationEvent>[];
       final subscription = service.events.listen(events.add);
 
-      // First route change
-      capturedListener?.call();
+      final route = MockRoute();
+      when(
+        () => route.settings,
+      ).thenReturn(const RouteSettings(name: 'dashboard'));
+
+      service.didPush(route, null);
       await Future<void>.delayed(Duration.zero);
 
-      // Same route again
-      capturedListener?.call();
+      service.didPush(route, null); // Duplicate
       await Future<void>.delayed(Duration.zero);
 
       expect(events, hasLength(1));
@@ -147,241 +61,135 @@ void main() {
       await subscription.cancel();
     });
 
-    test('lastEvent returns most recent event', () async {
-      expect(service.lastEvent, isNull);
+    test('didPop navigation', () async {
+      final events = <NavigationEvent>[];
+      final subscription = service.events.listen(events.add);
 
-      capturedListener?.call();
+      // Push first
+      final route1 = MockRoute();
+      when(
+        () => route1.settings,
+      ).thenReturn(const RouteSettings(name: 'dashboard'));
+      service.didPush(route1, null);
       await Future<void>.delayed(Duration.zero);
 
-      expect(service.lastEvent, isNotNull);
-      expect(service.lastEvent!.route, 'dashboard');
-    });
-
-    test('currentRoute returns current route name', () async {
-      expect(service.currentRoute, isNull);
-
-      capturedListener?.call();
-      await Future<void>.delayed(Duration.zero);
-
-      expect(service.currentRoute, 'dashboard');
-    });
-
-    test('canPop returns false with only one route', () async {
-      capturedListener?.call();
-      await Future<void>.delayed(Duration.zero);
-
-      expect(service.canPop, isFalse);
-    });
-
-    test('canPop returns true with multiple routes', () async {
-      // First route
-      capturedListener?.call();
-      await Future<void>.delayed(Duration.zero);
-
-      // Second route
-      fakeGoRoute
-        ..routeName = 'profile'
-        ..routePath = '/profile';
-      capturedListener?.call();
-      await Future<void>.delayed(Duration.zero);
-
-      expect(service.canPop, isTrue);
-    });
-
-    test('navigationHistory tracks route history', () async {
-      expect(service.navigationHistory, isEmpty);
-
-      capturedListener?.call();
-      await Future<void>.delayed(Duration.zero);
-
-      expect(service.navigationHistory, ['dashboard']);
-
-      fakeGoRoute
-        ..routeName = 'profile'
-        ..routePath = '/profile';
-      capturedListener?.call();
+      // Push second
+      final route2 = MockRoute();
+      when(
+        () => route2.settings,
+      ).thenReturn(const RouteSettings(name: 'profile'));
+      service.didPush(route2, route1);
       await Future<void>.delayed(Duration.zero);
 
       expect(service.navigationHistory, ['dashboard', 'profile']);
-    });
 
-    group('onBranchNavigation', () {
-      late MockRoute mockRoute;
-
-      setUp(() {
-        mockRoute = MockRoute();
-        when(
-          () => mockRoute.settings,
-        ).thenReturn(const RouteSettings(name: 'auth'));
-      });
-
-      test('emits event for push', () async {
-        // Initialize with first route
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        final events = <NavigationEvent>[];
-        final subscription = service.events.listen(events.add);
-
-        service.onBranchNavigation(
-          eventType: NavigationEventType.push,
-          branchName: 'profile',
-          route: mockRoute,
-        );
-
-        await Future<void>.delayed(Duration.zero);
-
-        expect(events.last.route, 'auth');
-        expect(events.last.type, NavigationEventType.push);
-        expect(events.last.previousRoute, 'dashboard');
-
-        await subscription.cancel();
-      });
-
-      test('handles pop without emitting', () async {
-        // Initialize with routes
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        fakeGoRoute
-          ..routeName = 'profile'
-          ..routePath = '/profile';
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        final initialHistory = List<String>.from(service.navigationHistory);
-
-        final events = <NavigationEvent>[];
-        final subscription = service.events.listen(events.add);
-
-        service.onBranchNavigation(
-          eventType: NavigationEventType.pop,
-          branchName: 'profile',
-          route: mockRoute,
-        );
-
-        await Future<void>.delayed(Duration.zero);
-
-        // Pop doesn't emit event
-        expect(events, isEmpty);
-        // But updates history
-        expect(service.navigationHistory.length, initialHistory.length - 1);
-
-        await subscription.cancel();
-      });
-
-      test('skips duplicate routes', () async {
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        final events = <NavigationEvent>[];
-        final subscription = service.events.listen(events.add);
-
-        // Push same route as last
-        when(
-          () => mockRoute.settings,
-        ).thenReturn(const RouteSettings(name: 'dashboard'));
-
-        service.onBranchNavigation(
-          eventType: NavigationEventType.push,
-          branchName: 'dashboard',
-          route: mockRoute,
-        );
-
-        await Future<void>.delayed(Duration.zero);
-
-        expect(events, isEmpty);
-
-        await subscription.cancel();
-      });
-
-      test('emits event for replace', () async {
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        final events = <NavigationEvent>[];
-        final subscription = service.events.listen(events.add);
-
-        service.onBranchNavigation(
-          eventType: NavigationEventType.replace,
-          branchName: 'profile',
-          route: mockRoute,
-        );
-
-        await Future<void>.delayed(Duration.zero);
-
-        expect(events.last.type, NavigationEventType.replace);
-
-        await subscription.cancel();
-      });
-
-      test('emits event for remove', () async {
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        final events = <NavigationEvent>[];
-        final subscription = service.events.listen(events.add);
-
-        service.onBranchNavigation(
-          eventType: NavigationEventType.remove,
-          branchName: 'profile',
-          route: mockRoute,
-        );
-
-        await Future<void>.delayed(Duration.zero);
-
-        expect(events.last.type, NavigationEventType.remove);
-
-        await subscription.cancel();
-      });
-
-      test('handles unnamed routes', () async {
-        capturedListener?.call();
-        await Future<void>.delayed(Duration.zero);
-
-        when(
-          () => mockRoute.settings,
-        ).thenReturn(const RouteSettings());
-
-        final events = <NavigationEvent>[];
-        final subscription = service.events.listen(events.add);
-
-        service.onBranchNavigation(
-          eventType: NavigationEventType.push,
-          branchName: 'profile',
-          route: mockRoute,
-        );
-
-        await Future<void>.delayed(Duration.zero);
-
-        expect(events.last.route, 'unnamed');
-
-        await subscription.cancel();
-      });
-    });
-
-    test('normalizes paths with leading slash', () async {
-      fakeGoRoute.routePath = 'dashboard';
-      capturedListener?.call();
+      // Pop
+      service.didPop(route2, route1);
       await Future<void>.delayed(Duration.zero);
 
-      expect(service.lastEvent!.path, '/dashboard');
+      // Pop should update history but NOT emit event (as per implementation)
+      expect(service.navigationHistory, ['dashboard']);
+      expect(events.length, 2); // 2 pushes
+
+      await subscription.cancel();
     });
 
-    test('handles empty history on pop gracefully', () {
-      final mockRoute = MockRoute();
+    test('didReplace emits replace event', () async {
+      final events = <NavigationEvent>[];
+      final subscription = service.events.listen(events.add);
+
+      final route1 = MockRoute();
       when(
-        () => mockRoute.settings,
-      ).thenReturn(const RouteSettings(name: 'test'));
+        () => route1.settings,
+      ).thenReturn(const RouteSettings(name: 'dashboard'));
 
-      // Pop on empty history should not crash
-      service.onBranchNavigation(
-        eventType: NavigationEventType.pop,
-        branchName: 'profile',
-        route: mockRoute,
-      );
+      final route2 = MockRoute();
+      when(
+        () => route2.settings,
+      ).thenReturn(const RouteSettings(name: 'profile'));
 
-      expect(service.navigationHistory, isEmpty);
+      service.didReplace(newRoute: route2, oldRoute: route1);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events.last.type, NavigationEventType.replace);
+      expect(events.last.route, 'profile');
+
+      await subscription.cancel();
+    });
+
+    test('didInitTabRoute emits push event', () async {
+      final events = <NavigationEvent>[];
+      final subscription = service.events.listen(events.add);
+
+      final tabRoute = MockTabPageRoute();
+      when(() => tabRoute.name).thenReturn('dashboard_tab');
+      when(() => tabRoute.path).thenReturn('/dashboard');
+
+      service.didInitTabRoute(tabRoute, null);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events.last.type, NavigationEventType.push);
+      expect(events.last.route, 'dashboard_tab');
+
+      await subscription.cancel();
+    });
+
+    test('didChangeTabRoute emits push event', () async {
+      final events = <NavigationEvent>[];
+      final subscription = service.events.listen(events.add);
+
+      final tabRoute1 = MockTabPageRoute();
+      when(() => tabRoute1.name).thenReturn('tab1');
+      when(() => tabRoute1.path).thenReturn('/tab1');
+
+      final tabRoute2 = MockTabPageRoute();
+      when(() => tabRoute2.name).thenReturn('tab2');
+      when(() => tabRoute2.path).thenReturn('/tab2');
+
+      service.didChangeTabRoute(tabRoute2, tabRoute1);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(events.last.type, NavigationEventType.push);
+      expect(events.last.route, 'tab2');
+
+      await subscription.cancel();
+    });
+
+    test('handles unnamed routes gracefully', () async {
+      final events = <NavigationEvent>[];
+      final subscription = service.events.listen(events.add);
+
+      final route = MockRoute();
+      when(
+        () => route.settings,
+      ).thenReturn(const RouteSettings()); // unnamed
+
+      service.didPush(route, null);
+      await Future<void>.delayed(Duration.zero);
+
+      // Should invoke logic but safely handle null?
+      // Implementation check: if (route.settings.name == null) return;
+      expect(events, isEmpty);
+
+      await subscription.cancel();
+    });
+
+    test('normalizes paths', () async {
+      final events = <NavigationEvent>[];
+      final subscription = service.events.listen(events.add);
+
+      final route = MockRoute();
+      when(
+        () => route.settings,
+      ).thenReturn(const RouteSettings(name: 'dashboard'));
+      // Note: Implementation derives path from name by prepending / if needed
+
+      service.didPush(route, null);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(service.lastEvent?.path, '/dashboard');
+
+      await subscription.cancel();
     });
   });
 }

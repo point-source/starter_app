@@ -3,26 +3,34 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/navigation/app_router.dart';
+import 'package:starter_app/core/navigation/auth_guard.dart' show AuthGuard;
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_state.dart';
 
 /// A [ChangeNotifier] that listens to [AuthBloc] state changes.
 ///
-/// This class bridges the gap between BLoC and GoRouter's refreshListenable,
-/// allowing the router to re-evaluate its redirect logic whenever the
+/// This class bridges the gap between BLoC and AutoRoute's guard system,
+/// allowing the router to re-evaluate its logic whenever the
 /// authentication state changes.
 ///
 /// ## Usage
 ///
-/// Inject this into [AppRouter] and pass it to GoRouter.refreshListenable:
+/// Inject this into [AppRouter] and use it in [AuthGuard]:
 ///
 /// ```dart
-/// GoRouter(
-///   refreshListenable: authChangeNotifier,
-///   redirect: (context, state) {
-///     // This now runs on every auth state change
-///   },
-/// )
+/// class AuthGuard extends AutoRouteGuard {
+///   AuthGuard(this._authChangeNotifier);
+///   final AuthChangeNotifier _authChangeNotifier;
+///
+///   @override
+///   void onNavigation(NavigationResolver resolver, StackRouter router) {
+///     if (_authChangeNotifier.isAuthenticated) {
+///       resolver.next();
+///     } else {
+///       router.push(const AuthRoute());
+///     }
+///   }
+/// }
 /// ```
 ///
 /// ## Why This Is Needed
