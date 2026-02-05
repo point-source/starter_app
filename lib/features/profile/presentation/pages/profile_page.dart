@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
@@ -11,6 +12,7 @@ import 'package:starter_app/features/profile/presentation/widgets/login_button.d
 import 'package:starter_app/features/profile/presentation/widgets/profile_content.dart';
 
 /// Profile page with language and theme settings.
+@RoutePage()
 final class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 

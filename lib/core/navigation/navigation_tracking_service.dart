@@ -1,45 +1,18 @@
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_navigation_tracking_service.dart';
 import 'package:starter_app/core/navigation/navigation_event.dart';
 import 'package:starter_app/core/navigation/navigation_event_type.dart';
 
-/// Tracks ALL navigation changes across the application.
-///
-/// This is the **single source of truth** for navigation events:
-/// - **Branch switches** via GoRouterDelegate (Dashboard ↔ Profile ↔ Settings)
-/// - **In-branch pushes** via [onBranchNavigation] (Profile → Auth)
-///
-/// ## How it works
-///
-/// ```text
-/// GoRouterDelegate.addListener()     BranchNavigatorObserver
-///           ↓                                  ↓
-///      _onRouteChange()              onBranchNavigation()
-///           ↓                                  ↓
-///           └──────────→ _emitEvent() ←────────┘
-///                              ↓
-///                    Stream<NavigationEvent>
-///                              ↓
-///                    AppNavigationLoggingService
-/// ```
-///
-/// The delegate listener captures route configuration changes (branch
-/// switches), while branch observers forward in-branch navigation (pushes
-/// within a branch). Both flow through `_emitEvent` for consistency.
+/// Tracks ALL navigation changes across the application using AutoRouterObserver.
 @LazySingleton(as: INavigationTrackingService)
-class NavigationTrackingService implements INavigationTrackingService {
-  /// Creates the tracking service and starts listening to route changes.
-  NavigationTrackingService(this._router) {
-    _routerDelegate = _router.routerDelegate;
-    _routerDelegate.addListener(_onRouteChange);
-  }
-
-  final GoRouter _router;
-  late final GoRouterDelegate _routerDelegate;
+class NavigationTrackingService extends AutoRouterObserver
+    implements INavigationTrackingService {
+  /// Creates the tracking service.
+  NavigationTrackingService();
 
   final _eventController = StreamController<NavigationEvent>.broadcast();
   final List<String> _history = [];
@@ -68,59 +41,78 @@ class NavigationTrackingService implements INavigationTrackingService {
   List<String> get navigationHistory => List.unmodifiable(_history);
 
   @override
-  void onBranchNavigation({
-    required NavigationEventType eventType,
-    required String branchName,
-    required Route<dynamic> route,
-    Route<dynamic>? previousRoute,
-  }) {
-    final routeName = route.settings.name ?? 'unnamed';
-    final path = _normalizePath(routeName);
+  @disposeMethod
+  Future<void> dispose() async {
+    await _eventController.close();
+  }
 
-    // Handle POP: update history but don't emit (avoids duplicate events)
-    if (eventType == NavigationEventType.pop) {
-      _handlePop();
-      return;
-    }
+  // ─────────────────────────────────────────────────────────────────────────
+  // AutoRouterObserver Implementation
+  // ─────────────────────────────────────────────────────────────────────────
 
-    // Skip duplicates - this also handles branch roots since delegate
-    // already emitted for them (setting _lastRoute)
-    if (routeName == _lastRoute) return;
-
-    _emitEvent(
-      type: eventType,
-      route: routeName,
-      path: path,
-      stackDepth: _history.length + 1,
-    );
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _handleNavigation(NavigationEventType.push, route);
   }
 
   @override
-  @disposeMethod
-  Future<void> dispose() async {
-    _routerDelegate.removeListener(_onRouteChange);
-    await _eventController.close();
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _handlePop();
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    if (newRoute != null) {
+      _handleNavigation(NavigationEventType.replace, newRoute);
+    }
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    // Treat remove as a form of modification, generally ignored for history
+  }
+
+  @override
+  void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {
+    _handleTabNavigation(route);
+  }
+
+  @override
+  void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {
+    _handleTabNavigation(route);
   }
 
   // ─────────────────────────────────────────────────────────────────────────
   // Private: Event Handling
   // ─────────────────────────────────────────────────────────────────────────
 
-  /// Handles delegate route configuration changes.
-  void _onRouteChange() {
-    final config = _routerDelegate.currentConfiguration;
-    final routeName = config.last.route.name ?? 'unnamed';
+  void _handleNavigation(NavigationEventType type, Route<dynamic> route) {
+    final routeName = route.settings.name ?? 'unnamed';
+    // AutoRoute route names are typically just the class name (e.g., DashboardRoute)
+    // We can try to get the path if possible, but settings.name is reliable.
+    final path = _normalizePath(routeName);
 
-    // Skip duplicates (use route NAME, not path - path stays same for modals)
     if (routeName == _lastRoute) return;
 
-    final path = _normalizePath(config.last.route.path);
+    _emitEvent(
+      type: type,
+      route: routeName,
+      path: path,
+      stackDepth: _history.length + 1,
+    );
+  }
+
+  void _handleTabNavigation(TabPageRoute route) {
+    final routeName = route.name;
+    final path = _normalizePath(route.path);
+
+    if (routeName == _lastRoute) return;
 
     _emitEvent(
       type: NavigationEventType.push,
       route: routeName,
       path: path,
-      stackDepth: config.matches.length,
+      stackDepth: _history.length + 1,
     );
   }
 

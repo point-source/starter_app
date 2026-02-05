@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:starter_app/core/constants/constants.dart';
 import 'package:starter_app/core/presentation/responsive/responsive.dart';
@@ -12,6 +13,7 @@ import 'package:starter_app/features/settings/presentation/widgets/theme_selecto
 /// - Language selection (English/Spanish)
 /// - Theme selection (Light/Dark/System)
 /// - Logout button (only when authenticated)
+@RoutePage()
 final class SettingsPage extends StatelessWidget {
   /// Creates a settings page.
   const SettingsPage({super.key});
