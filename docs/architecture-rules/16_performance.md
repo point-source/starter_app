@@ -260,7 +260,7 @@ BlocConsumer<ProductBloc, ProductState>(
 - ✅ **DO**: Use `buildWhen` and `listenWhen`
 - ✅ **DO**: Use `BlocSelector` for specific fields
 - ✅ **DO**: Keep state classes immutable
-- ✅ **DO**: Use `Equatable` or `freezed` for proper equality
+- ✅ **DO**: Use `dart_mappable` for proper equality (auto-generates `==` and `hashCode`)
 - ❌ **DON'T**: Rebuild entire tree for small changes
 - ❌ **DON'T**: Access BLoC in build methods repeatedly
 - ❌ **DON'T**: Emit same state unnecessarily

@@ -63,37 +63,35 @@ class ProductModel with ProductModelMappable {
 
 ```dart
 // lib/features/auth/presentation/bloc/auth_state.dart
-import 'package:equatable/equatable.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 
-sealed class AuthState extends Equatable {
+part 'auth_state.mapper.dart';
+
+@MappableClass()
+sealed class AuthState with AuthStateMappable {
   const AuthState();
-
-  @override
-  List<Object?> get props => [];
 }
 
-final class AuthInitial extends AuthState {
+@MappableClass()
+final class AuthInitial extends AuthState with AuthInitialMappable {
   const AuthInitial();
 }
 
-final class AuthLoading extends AuthState {
+@MappableClass()
+final class AuthLoading extends AuthState with AuthLoadingMappable {
   const AuthLoading();
 }
 
-final class AuthAuthenticated extends AuthState {
+@MappableClass()
+final class AuthAuthenticated extends AuthState with AuthAuthenticatedMappable {
   const AuthAuthenticated(this.user);
   final User user;
-
-  @override
-  List<Object?> get props => [user];
 }
 
-final class AuthError extends AuthState {
+@MappableClass()
+final class AuthError extends AuthState with AuthErrorMappable {
   const AuthError(this.message);
   final String message;
-
-  @override
-  List<Object?> get props => [message];
 }
 
 // Usage with switch (exhaustive)
@@ -141,7 +139,7 @@ bool isRetryable(AuthFailure failure) => switch (failure) {
 
 - ✅ **DO**: Use `sealed class BaseName`
 - ✅ **DO**: Use `final class SubName extends BaseName`
-- ✅ **DO**: Extend `Equatable` for value comparison (if needed)
+- ✅ **DO**: Use `dart_mappable` for value comparison (auto-generates `==`, `hashCode`, and `copyWith`)
 - ✅ **DO**: Use Dart 3 `switch` expressions for pattern matching
 - ❌ **DON'T**: Use `freezed` for unions
 

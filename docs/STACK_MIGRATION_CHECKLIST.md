@@ -36,7 +36,7 @@
 - [x] Migrate DTOs (10 files in `infrastructure/models/`)
 - [x] Migrate Failures to Dart 3 sealed classes (8 files)
 - [x] Delete all `*.freezed.dart` files
-- [ ] Remove `freezed` and `freezed_annotation` dependencies
+- [x] Remove `freezed` and `freezed_annotation` dependencies
 - [x] Run build_runner and verify
 - [x] Run `flutter test test/features/auth/infrastructure/`
 - [x] Run `flutter test test/core/domain/`
