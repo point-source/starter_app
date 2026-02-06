@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
 
 /// Name validation failures.
@@ -12,12 +13,14 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 ///   NameTooLong(:final maxLength) => context.l10n.nameTooLong(maxLength),
 /// };
 /// ```
+@immutable
 sealed class NameFailure extends ValueFailure<String> {
   /// Creates a [NameFailure].
   const NameFailure();
 }
 
 /// Name is empty.
+@immutable
 final class NameEmpty extends NameFailure {
   /// Creates a [NameEmpty] failure.
   const NameEmpty();
@@ -33,6 +36,7 @@ final class NameEmpty extends NameFailure {
 }
 
 /// Name exceeds maximum length.
+@immutable
 final class NameTooLong extends NameFailure {
   /// Creates a [NameTooLong] failure.
   const NameTooLong({

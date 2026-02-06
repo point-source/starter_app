@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/technical_failure.dart';
 
 /// Infrastructure layer failures.
@@ -29,6 +30,7 @@ import 'package:starter_app/core/error/failures/technical_failure.dart';
 /// final messageService = context.read<FailureMessageService>();
 /// final message = messageService.getLocalizedMessage(context, failure);
 /// ```
+@immutable
 sealed class InfrastructureFailure extends TechnicalFailure {
   /// Creates an [InfrastructureFailure].
   const InfrastructureFailure();
@@ -39,6 +41,7 @@ sealed class InfrastructureFailure extends TechnicalFailure {
 
 /// Server error.
 /// Map from ServerException in repository.
+@immutable
 final class ServerFailure extends InfrastructureFailure {
   /// Creates a [ServerFailure].
   const ServerFailure({
@@ -88,6 +91,7 @@ final class ServerFailure extends InfrastructureFailure {
 
 /// Network error.
 /// Map from NetworkException in repository.
+@immutable
 final class NetworkFailure extends InfrastructureFailure {
   /// Creates a [NetworkFailure].
   const NetworkFailure({
@@ -128,6 +132,7 @@ final class NetworkFailure extends InfrastructureFailure {
 
 /// Cache error.
 /// Map from CacheException in repository.
+@immutable
 final class CacheFailure extends InfrastructureFailure {
   /// Creates a [CacheFailure].
   const CacheFailure({
@@ -168,6 +173,7 @@ final class CacheFailure extends InfrastructureFailure {
 
 /// Parse error.
 /// Map from ParseException in repository.
+@immutable
 final class ParseFailure extends InfrastructureFailure {
   /// Creates a [ParseFailure].
   const ParseFailure({
@@ -208,6 +214,7 @@ final class ParseFailure extends InfrastructureFailure {
 
 /// Circuit breaker open error.
 /// Map from CircuitBreakerException in repository.
+@immutable
 final class CircuitBreakerFailure extends InfrastructureFailure {
   /// Creates a [CircuitBreakerFailure].
   const CircuitBreakerFailure({
@@ -249,6 +256,7 @@ final class CircuitBreakerFailure extends InfrastructureFailure {
 
 /// Unexpected error.
 /// Fallback for unknown exceptions that don't match other categories.
+@immutable
 final class UnexpectedFailure extends InfrastructureFailure {
   /// Creates an [UnexpectedFailure].
   const UnexpectedFailure({

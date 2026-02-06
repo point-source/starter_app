@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
 
 /// Password validation failures.
@@ -17,12 +18,14 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 ///   PasswordMissingSpecialCharacter() => context.l10n.passwordMissingSpecialChar,
 /// };
 /// ```
+@immutable
 sealed class PasswordFailure extends ValueFailure<String> {
   /// Creates a [PasswordFailure].
   const PasswordFailure();
 }
 
 /// Password is empty.
+@immutable
 final class PasswordEmpty extends PasswordFailure {
   /// Creates a [PasswordEmpty] failure.
   const PasswordEmpty();
@@ -38,6 +41,7 @@ final class PasswordEmpty extends PasswordFailure {
 }
 
 /// Password is too short.
+@immutable
 final class PasswordTooShort extends PasswordFailure {
   /// Creates a [PasswordTooShort] failure.
   const PasswordTooShort({
@@ -78,6 +82,7 @@ final class PasswordTooShort extends PasswordFailure {
 }
 
 /// Password is too long.
+@immutable
 final class PasswordTooLong extends PasswordFailure {
   /// Creates a [PasswordTooLong] failure.
   const PasswordTooLong({
@@ -118,6 +123,7 @@ final class PasswordTooLong extends PasswordFailure {
 }
 
 /// Password is missing uppercase letter.
+@immutable
 final class PasswordMissingUppercase extends PasswordFailure {
   /// Creates a [PasswordMissingUppercase] failure.
   const PasswordMissingUppercase();
@@ -133,6 +139,7 @@ final class PasswordMissingUppercase extends PasswordFailure {
 }
 
 /// Password is missing lowercase letter.
+@immutable
 final class PasswordMissingLowercase extends PasswordFailure {
   /// Creates a [PasswordMissingLowercase] failure.
   const PasswordMissingLowercase();
@@ -148,6 +155,7 @@ final class PasswordMissingLowercase extends PasswordFailure {
 }
 
 /// Password is missing digit.
+@immutable
 final class PasswordMissingDigit extends PasswordFailure {
   /// Creates a [PasswordMissingDigit] failure.
   const PasswordMissingDigit();
@@ -163,6 +171,7 @@ final class PasswordMissingDigit extends PasswordFailure {
 }
 
 /// Password is missing special character.
+@immutable
 final class PasswordMissingSpecialCharacter extends PasswordFailure {
   /// Creates a [PasswordMissingSpecialCharacter] failure.
   const PasswordMissingSpecialCharacter();

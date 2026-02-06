@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
 
 /// Unique ID validation failures.
@@ -12,12 +13,14 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 ///   UniqueIdInvalidFormat() => context.l10n.uniqueIdInvalid,
 /// };
 /// ```
+@immutable
 sealed class UniqueIdFailure extends ValueFailure<String> {
   /// Creates a [UniqueIdFailure].
   const UniqueIdFailure();
 }
 
 /// Unique ID is empty.
+@immutable
 final class UniqueIdEmpty extends UniqueIdFailure {
   /// Creates a [UniqueIdEmpty] failure.
   const UniqueIdEmpty();
@@ -33,6 +36,7 @@ final class UniqueIdEmpty extends UniqueIdFailure {
 }
 
 /// Unique ID format is invalid.
+@immutable
 final class UniqueIdInvalidFormat extends UniqueIdFailure {
   /// Creates a [UniqueIdInvalidFormat] failure.
   const UniqueIdInvalidFormat();

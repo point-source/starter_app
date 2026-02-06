@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
 
 /// Email validation failures.
@@ -13,12 +14,14 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 ///   EmailInvalidFormat() => context.l10n.emailInvalid,
 /// };
 /// ```
+@immutable
 sealed class EmailFailure extends ValueFailure<String> {
   /// Creates an [EmailFailure].
   const EmailFailure();
 }
 
 /// Email is empty.
+@immutable
 final class EmailEmpty extends EmailFailure {
   /// Creates an [EmailEmpty] failure.
   const EmailEmpty();
@@ -34,6 +37,7 @@ final class EmailEmpty extends EmailFailure {
 }
 
 /// Email exceeds maximum length.
+@immutable
 final class EmailTooLong extends EmailFailure {
   /// Creates an [EmailTooLong] failure.
   const EmailTooLong({
@@ -74,6 +78,7 @@ final class EmailTooLong extends EmailFailure {
 }
 
 /// Email format is invalid.
+@immutable
 final class EmailInvalidFormat extends EmailFailure {
   /// Creates an [EmailInvalidFormat] failure.
   const EmailInvalidFormat({

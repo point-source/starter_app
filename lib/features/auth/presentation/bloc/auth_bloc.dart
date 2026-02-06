@@ -118,11 +118,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onEmailChanged(AuthEmailChanged event, Emitter<AuthState> emit) {
     switch (state) {
-      case AuthInitial s:
+      case final AuthInitial s:
         emit(
           s.copyWith(
             email: EmailAddress(event.email),
-            error: null,
             validation: s.validation.copyWith(emailTouched: false),
           ),
         );
@@ -147,19 +146,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _updatePasswordField(Password password, Emitter<AuthState> emit) {
     switch (state) {
-      case LoginRequired s:
+      case final LoginRequired s:
         emit(
           s.copyWith(
             password: password,
-            error: null,
             validation: s.validation.copyWith(passwordTouched: false),
           ),
         );
-      case RegistrationRequired s:
+      case final RegistrationRequired s:
         emit(
           s.copyWith(
             password: password,
-            error: null,
             validation: s.validation.copyWith(passwordTouched: false),
           ),
         );
@@ -174,7 +171,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         s.copyWith(
           name: Name(event.name),
-          error: null,
           validation: s.validation.copyWith(nameTouched: false),
         ),
       );
@@ -186,9 +182,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) {
     switch (state) {
-      case LoginRequired s:
+      case final LoginRequired s:
         emit(s.copyWith(passwordVisible: !s.passwordVisible));
-      case RegistrationRequired s:
+      case final RegistrationRequired s:
         emit(s.copyWith(passwordVisible: !s.passwordVisible));
       default:
         break;
@@ -217,7 +213,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     bool nameTouched = false,
   }) {
     switch (state) {
-      case AuthInitial s:
+      case final AuthInitial s:
         if (emailTouched) {
           emit(
             s.copyWith(
@@ -225,7 +221,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
         }
-      case LoginRequired s:
+      case final LoginRequired s:
         emit(
           s.copyWith(
             validation: s.validation.copyWith(
@@ -234,7 +230,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           ),
         );
-      case RegistrationRequired s:
+      case final RegistrationRequired s:
         emit(
           s.copyWith(
             validation: s.validation.copyWith(
@@ -262,7 +258,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
-      emit(s.copyWith(isSubmitting: true, error: null));
+      emit(s.copyWith(isSubmitting: true));
 
       final result = await _checkUserExists(s.email);
 
@@ -318,7 +314,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
-      emit(s.copyWith(isSubmitting: true, error: null));
+      emit(s.copyWith(isSubmitting: true));
 
       final result = await _login(credentials);
 
@@ -355,7 +351,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
-      emit(s.copyWith(isSubmitting: true, error: null));
+      emit(s.copyWith(isSubmitting: true));
 
       final result = await _register(credentials);
 

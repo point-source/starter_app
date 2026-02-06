@@ -1,9 +1,11 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/technical_failure.dart';
 
 /// Profile domain failures.
 ///
 /// Represents business logic errors specific to user profile operations.
 /// Extends [TechnicalFailure] which provides [isRetryable] and [stackTrace].
+@immutable
 sealed class ProfileFailure extends TechnicalFailure {
   /// Creates a [ProfileFailure].
   const ProfileFailure();
@@ -13,6 +15,7 @@ sealed class ProfileFailure extends TechnicalFailure {
 }
 
 /// Unexpected error in profile operations.
+@immutable
 final class ProfileUnexpectedFailure extends ProfileFailure {
   /// Creates a [ProfileUnexpectedFailure].
   const ProfileUnexpectedFailure({
@@ -52,6 +55,7 @@ final class ProfileUnexpectedFailure extends ProfileFailure {
 }
 
 /// Server error in profile operations.
+@immutable
 final class ProfileServerError extends ProfileFailure {
   /// Creates a [ProfileServerError].
   const ProfileServerError({
@@ -91,6 +95,7 @@ final class ProfileServerError extends ProfileFailure {
 }
 
 /// Profile not found.
+@immutable
 final class ProfileNotFoundFailure extends ProfileFailure {
   /// Creates a [ProfileNotFoundFailure].
   const ProfileNotFoundFailure({

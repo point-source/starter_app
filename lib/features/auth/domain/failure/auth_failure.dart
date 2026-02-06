@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/failures.dart'
     show InfrastructureFailure;
 import 'package:starter_app/core/error/failures/infrastructure_failures.dart'
@@ -25,6 +26,7 @@ import 'package:starter_app/core/error/failures/technical_failure.dart';
 ///   return Left(AuthNotFoundFailure(message: 'User not found'));
 /// }
 /// ```
+@immutable
 sealed class AuthFailure extends TechnicalFailure {
   /// Creates an [AuthFailure].
   const AuthFailure();
@@ -34,6 +36,7 @@ sealed class AuthFailure extends TechnicalFailure {
 }
 
 /// User or resource not found (HTTP 404).
+@immutable
 final class AuthNotFoundFailure extends AuthFailure {
   /// Creates an [AuthNotFoundFailure].
   const AuthNotFoundFailure({
@@ -73,6 +76,7 @@ final class AuthNotFoundFailure extends AuthFailure {
 }
 
 /// Invalid credentials or expired session (HTTP 401).
+@immutable
 final class UnauthorizedFailure extends AuthFailure {
   /// Creates an [UnauthorizedFailure].
   const UnauthorizedFailure({
@@ -112,6 +116,7 @@ final class UnauthorizedFailure extends AuthFailure {
 }
 
 /// Access denied or account suspended (HTTP 403).
+@immutable
 final class ForbiddenFailure extends AuthFailure {
   /// Creates a [ForbiddenFailure].
   const ForbiddenFailure({
@@ -151,6 +156,7 @@ final class ForbiddenFailure extends AuthFailure {
 }
 
 /// Email address is already registered (HTTP 409).
+@immutable
 final class EmailAlreadyInUseFailure extends AuthFailure {
   /// Creates an [EmailAlreadyInUseFailure].
   const EmailAlreadyInUseFailure({
@@ -190,6 +196,7 @@ final class EmailAlreadyInUseFailure extends AuthFailure {
 }
 
 /// Invalid input data (HTTP 400).
+@immutable
 final class InvalidInputFailure extends AuthFailure {
   /// Creates an [InvalidInputFailure].
   const InvalidInputFailure({

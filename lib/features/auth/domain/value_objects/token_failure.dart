@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
 
 /// Token validation failures.
@@ -14,12 +15,14 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 ///   TokenExpired() => context.l10n.tokenExpired,
 /// };
 /// ```
+@immutable
 sealed class TokenFailure extends ValueFailure<String> {
   /// Creates a [TokenFailure].
   const TokenFailure();
 }
 
 /// Token is empty.
+@immutable
 final class TokenEmpty extends TokenFailure {
   /// Creates a [TokenEmpty] failure.
   const TokenEmpty();
@@ -35,6 +38,7 @@ final class TokenEmpty extends TokenFailure {
 }
 
 /// Token is too short.
+@immutable
 final class TokenTooShort extends TokenFailure {
   /// Creates a [TokenTooShort] failure.
   const TokenTooShort({
@@ -75,6 +79,7 @@ final class TokenTooShort extends TokenFailure {
 }
 
 /// Token format is invalid.
+@immutable
 final class TokenInvalidFormat extends TokenFailure {
   /// Creates a [TokenInvalidFormat] failure.
   const TokenInvalidFormat({
@@ -107,6 +112,7 @@ final class TokenInvalidFormat extends TokenFailure {
 }
 
 /// Token has expired.
+@immutable
 final class TokenExpired extends TokenFailure {
   /// Creates a [TokenExpired] failure.
   const TokenExpired();
