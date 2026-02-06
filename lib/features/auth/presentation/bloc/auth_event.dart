@@ -1,32 +1,89 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:starter_app/features/auth/domain/entities/user.dart';
 
-part 'auth_event.freezed.dart';
+sealed class AuthEvent extends Equatable {
+  const AuthEvent();
 
-@freezed
-abstract class AuthEvent with _$AuthEvent {
-  const factory AuthEvent.emailChanged(String email) = AuthEmailChanged;
-  const factory AuthEvent.passwordChanged(String password) =
-      AuthPasswordChanged;
-  const factory AuthEvent.nameChanged(String name) = AuthNameChanged;
-  const factory AuthEvent.togglePasswordVisibility() =
-      AuthTogglePasswordVisibility;
-  const factory AuthEvent.emailUnfocused() = AuthEmailUnfocused;
-  const factory AuthEvent.passwordUnfocused() = AuthPasswordUnfocused;
-  const factory AuthEvent.nameUnfocused() = AuthNameUnfocused;
-  const factory AuthEvent.emailSubmitted() = AuthEmailSubmitted;
-  const factory AuthEvent.loginSubmitted() = AuthLoginSubmitted;
-  const factory AuthEvent.registerSubmitted() = AuthRegisterSubmitted;
-  const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
-  const factory AuthEvent.authUserChanged(User? user) = AuthUserChanged;
-  const factory AuthEvent.watchStarted() = AuthWatchStarted;
-  const factory AuthEvent.getCurrentUser() = AuthGetCurrentUser;
+  @override
+  List<Object?> get props => [];
+}
 
-  /// Starts watching for session expiration events.
-  /// Called at app initialization to monitor token refresh failures.
-  const factory AuthEvent.sessionWatchStarted() = AuthSessionWatchStarted;
+final class AuthEmailChanged extends AuthEvent {
+  const AuthEmailChanged(this.email);
+  final String email;
 
-  /// Fired when token refresh fails or session is forcibly expired.
-  /// This triggers navigation to the Dashboard/public area.
-  const factory AuthEvent.sessionExpired() = AuthSessionExpired;
+  @override
+  List<Object?> get props => [email];
+}
+
+final class AuthPasswordChanged extends AuthEvent {
+  const AuthPasswordChanged(this.password);
+  final String password;
+
+  @override
+  List<Object?> get props => [password];
+}
+
+final class AuthNameChanged extends AuthEvent {
+  const AuthNameChanged(this.name);
+  final String name;
+
+  @override
+  List<Object?> get props => [name];
+}
+
+final class AuthTogglePasswordVisibility extends AuthEvent {
+  const AuthTogglePasswordVisibility();
+}
+
+final class AuthEmailUnfocused extends AuthEvent {
+  const AuthEmailUnfocused();
+}
+
+final class AuthPasswordUnfocused extends AuthEvent {
+  const AuthPasswordUnfocused();
+}
+
+final class AuthNameUnfocused extends AuthEvent {
+  const AuthNameUnfocused();
+}
+
+final class AuthEmailSubmitted extends AuthEvent {
+  const AuthEmailSubmitted();
+}
+
+final class AuthLoginSubmitted extends AuthEvent {
+  const AuthLoginSubmitted();
+}
+
+final class AuthRegisterSubmitted extends AuthEvent {
+  const AuthRegisterSubmitted();
+}
+
+final class AuthLogoutRequested extends AuthEvent {
+  const AuthLogoutRequested();
+}
+
+final class AuthUserChanged extends AuthEvent {
+  const AuthUserChanged(this.user);
+  final User? user;
+
+  @override
+  List<Object?> get props => [user];
+}
+
+final class AuthWatchStarted extends AuthEvent {
+  const AuthWatchStarted();
+}
+
+final class AuthGetCurrentUser extends AuthEvent {
+  const AuthGetCurrentUser();
+}
+
+final class AuthSessionWatchStarted extends AuthEvent {
+  const AuthSessionWatchStarted();
+}
+
+final class AuthSessionExpired extends AuthEvent {
+  const AuthSessionExpired();
 }

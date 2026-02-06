@@ -1,9 +1,16 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 
-part 'profile_event.freezed.dart';
+sealed class ProfileEvent extends Equatable {
+  const ProfileEvent();
 
-@freezed
-class ProfileEvent with _$ProfileEvent {
-  const factory ProfileEvent.getMyProfile() = GetMyProfile;
-  const factory ProfileEvent.reset() = ProfileReset;
+  @override
+  List<Object?> get props => [];
+}
+
+final class GetMyProfile extends ProfileEvent {
+  const GetMyProfile();
+}
+
+final class ProfileReset extends ProfileEvent {
+  const ProfileReset();
 }

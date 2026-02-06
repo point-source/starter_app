@@ -215,7 +215,7 @@ void registerMockFallbackValues() {
   registerFallbackValue(AppLocale.en);
 
   // Auth state
-  registerFallbackValue(AuthState.empty());
+  registerFallbackValue(AuthInitial.empty());
 
   // Auth credentials and params
   registerFallbackValue(TestData.loginCredentials());

@@ -34,7 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._watchAuthChanges,
     this._watchSessionExpired,
     this._logger,
-  ) : super(AuthState.empty()) {
+  ) : super(AuthInitial.empty()) {
     on<AuthGetCurrentUser>(_onGetCurrentUser);
     on<AuthWatchStarted>(_onAuthWatchStarted, transformer: restartable());
     on<AuthSessionWatchStarted>(
@@ -74,10 +74,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       onData: (result) => result.fold(
         (failure) {
           _logger.error(failure.toString());
-          add(const AuthEvent.authUserChanged(null));
+          add(const AuthUserChanged(null));
         },
         (user) {
-          add(AuthEvent.authUserChanged(user));
+          add(AuthUserChanged(user));
         },
       ),
     );
@@ -89,7 +89,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     await emit.onEach<void>(
       _watchSessionExpired(),
-      onData: (_) => add(const AuthEvent.sessionExpired()),
+      onData: (_) => add(const AuthSessionExpired()),
     );
   }
 
@@ -97,42 +97,47 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthGetCurrentUser event,
     Emitter<AuthState> emit,
   ) async {
-    add(const AuthEvent.sessionWatchStarted());
+    add(const AuthSessionWatchStarted());
 
     final result = await _getCurrentUser.call();
     result.fold(
       (failure) {
         _logger.warning('Failed to get current user: $failure');
-        emit(AuthState.empty());
+        emit(AuthInitial.empty());
       },
       (user) {
         if (user != null) {
-          emit(AuthState.authenticated(user));
+          emit(Authenticated(user));
           add(const AuthWatchStarted());
         } else {
-          emit(AuthState.empty());
+          emit(AuthInitial.empty());
         }
       },
     );
   }
 
   void _onEmailChanged(AuthEmailChanged event, Emitter<AuthState> emit) {
-    state.mapOrNull(
-      initial: (s) => emit(
-        s.copyWith(
-          email: EmailAddress(event.email),
-          error: null,
-          validation: s.validation.copyWith(emailTouched: false),
-        ),
-      ),
-      loginRequired: (_) => _resetToInitialIfEmpty(event.email, emit),
-      registrationRequired: (_) => _resetToInitialIfEmpty(event.email, emit),
-    );
+    switch (state) {
+      case AuthInitial s:
+        emit(
+          s.copyWith(
+            email: EmailAddress(event.email),
+            error: null,
+            validation: s.validation.copyWith(emailTouched: false),
+          ),
+        );
+      case LoginRequired _:
+        _resetToInitialIfEmpty(event.email, emit);
+      case RegistrationRequired _:
+        _resetToInitialIfEmpty(event.email, emit);
+      default:
+        break;
+    }
   }
 
   void _resetToInitialIfEmpty(String email, Emitter<AuthState> emit) {
     if (email.isEmpty) {
-      emit(AuthState.empty());
+      emit(AuthInitial.empty());
     }
   }
 
@@ -141,48 +146,53 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _updatePasswordField(Password password, Emitter<AuthState> emit) {
-    state.mapOrNull(
-      loginRequired: (s) => emit(
-        s.copyWith(
-          password: password,
-          error: null,
-          validation: s.validation.copyWith(passwordTouched: false),
-        ),
-      ),
-      registrationRequired: (s) => emit(
-        s.copyWith(
-          password: password,
-          error: null,
-          validation: s.validation.copyWith(passwordTouched: false),
-        ),
-      ),
-    );
+    switch (state) {
+      case LoginRequired s:
+        emit(
+          s.copyWith(
+            password: password,
+            error: null,
+            validation: s.validation.copyWith(passwordTouched: false),
+          ),
+        );
+      case RegistrationRequired s:
+        emit(
+          s.copyWith(
+            password: password,
+            error: null,
+            validation: s.validation.copyWith(passwordTouched: false),
+          ),
+        );
+      default:
+        break;
+    }
   }
 
   void _onNameChanged(AuthNameChanged event, Emitter<AuthState> emit) {
-    state.mapOrNull(
-      registrationRequired: (s) => emit(
+    final s = state;
+    if (s is RegistrationRequired) {
+      emit(
         s.copyWith(
           name: Name(event.name),
           error: null,
           validation: s.validation.copyWith(nameTouched: false),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _onTogglePasswordVisibility(
     AuthTogglePasswordVisibility event,
     Emitter<AuthState> emit,
   ) {
-    state.mapOrNull(
-      loginRequired: (s) => emit(
-        s.copyWith(passwordVisible: !s.passwordVisible),
-      ),
-      registrationRequired: (s) => emit(
-        s.copyWith(passwordVisible: !s.passwordVisible),
-      ),
-    );
+    switch (state) {
+      case LoginRequired s:
+        emit(s.copyWith(passwordVisible: !s.passwordVisible));
+      case RegistrationRequired s:
+        emit(s.copyWith(passwordVisible: !s.passwordVisible));
+      default:
+        break;
+    }
   }
 
   void _onEmailUnfocused(AuthEmailUnfocused event, Emitter<AuthState> emit) {
@@ -206,8 +216,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     bool passwordTouched = false,
     bool nameTouched = false,
   }) {
-    state.mapOrNull(
-      initial: (s) {
+    switch (state) {
+      case AuthInitial s:
         if (emailTouched) {
           emit(
             s.copyWith(
@@ -215,157 +225,157 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
         }
-      },
-      loginRequired: (s) => emit(
-        s.copyWith(
-          validation: s.validation.copyWith(
-            emailTouched: emailTouched || s.validation.emailTouched,
-            passwordTouched: passwordTouched || s.validation.passwordTouched,
+      case LoginRequired s:
+        emit(
+          s.copyWith(
+            validation: s.validation.copyWith(
+              emailTouched: emailTouched || s.validation.emailTouched,
+              passwordTouched: passwordTouched || s.validation.passwordTouched,
+            ),
           ),
-        ),
-      ),
-      registrationRequired: (s) => emit(
-        s.copyWith(
-          validation: s.validation.copyWith(
-            emailTouched: emailTouched || s.validation.emailTouched,
-            passwordTouched: passwordTouched || s.validation.passwordTouched,
-            nameTouched: nameTouched || s.validation.nameTouched,
+        );
+      case RegistrationRequired s:
+        emit(
+          s.copyWith(
+            validation: s.validation.copyWith(
+              emailTouched: emailTouched || s.validation.emailTouched,
+              passwordTouched: passwordTouched || s.validation.passwordTouched,
+              nameTouched: nameTouched || s.validation.nameTouched,
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      default:
+        break;
+    }
   }
 
   Future<void> _onEmailSubmitted(
     AuthEmailSubmitted event,
     Emitter<AuthState> emit,
   ) async {
-    await state.mapOrNull(
-      initial: (s) async {
-        if (!s.email.isValid) {
-          emit(
-            s.copyWith(validation: s.validation.copyWith(emailTouched: true)),
-          );
-          return;
-        }
-
-        emit(s.copyWith(isSubmitting: true, error: null));
-
-        final result = await _checkUserExists(s.email);
-
-        result.fold(
-          (failure) => emit(
-            s.copyWith(
-              isSubmitting: false,
-              error: ErrorModel.fromFailure(failure),
-            ),
-          ),
-          (exists) {
-            if (exists) {
-              emit(
-                AuthState.loginRequired(
-                  email: s.email,
-                  password: Password(''),
-                  isSubmitting: false,
-                  validation: FieldValidationState.initial(),
-                ),
-              );
-            } else {
-              emit(
-                AuthState.registrationRequired(
-                  email: s.email,
-                  password: Password(''),
-                  name: Name(''),
-                  isSubmitting: false,
-                  validation: FieldValidationState.initial(),
-                ),
-              );
-            }
-          },
+    final s = state;
+    if (s is AuthInitial) {
+      if (!s.email.isValid) {
+        emit(
+          s.copyWith(validation: s.validation.copyWith(emailTouched: true)),
         );
-      },
-    );
+        return;
+      }
+
+      emit(s.copyWith(isSubmitting: true, error: null));
+
+      final result = await _checkUserExists(s.email);
+
+      result.fold(
+        (failure) => emit(
+          s.copyWith(
+            isSubmitting: false,
+            error: ErrorModel.fromFailure(failure),
+          ),
+        ),
+        (exists) {
+          if (exists) {
+            emit(
+              LoginRequired(
+                email: s.email,
+                password: Password(''),
+                isSubmitting: false,
+                validation: FieldValidationState.initial(),
+              ),
+            );
+          } else {
+            emit(
+              RegistrationRequired(
+                email: s.email,
+                password: Password(''),
+                name: Name(''),
+                isSubmitting: false,
+                validation: FieldValidationState.initial(),
+              ),
+            );
+          }
+        },
+      );
+    }
   }
 
   Future<void> _onLoginSubmitted(
     AuthLoginSubmitted event,
     Emitter<AuthState> emit,
   ) async {
-    await state.mapOrNull(
-      loginRequired: (s) async {
-        final credentials = AuthCredentials(
-          email: s.email,
-          password: s.password,
-        );
-        if (!credentials.isValidForLogin) {
-          emit(
-            s.copyWith(
-              validation: FieldValidationState.allTouched(),
-            ),
-          );
-          return;
-        }
-
-        emit(s.copyWith(isSubmitting: true, error: null));
-
-        final result = await _login(credentials);
-
-        result.fold(
-          (failure) => emit(
-            s.copyWith(
-              isSubmitting: false,
-              error: ErrorModel.fromFailure(failure),
-              validation: FieldValidationState.allTouched(),
-            ),
+    final s = state;
+    if (s is LoginRequired) {
+      final credentials = AuthCredentials(
+        email: s.email,
+        password: s.password,
+      );
+      if (!credentials.isValidForLogin) {
+        emit(
+          s.copyWith(
+            validation: FieldValidationState.allTouched(),
           ),
-          (user) => _handleAuthSuccess(user, emit),
         );
-      },
-    );
+        return;
+      }
+
+      emit(s.copyWith(isSubmitting: true, error: null));
+
+      final result = await _login(credentials);
+
+      result.fold(
+        (failure) => emit(
+          s.copyWith(
+            isSubmitting: false,
+            error: ErrorModel.fromFailure(failure),
+            validation: FieldValidationState.allTouched(),
+          ),
+        ),
+        (user) => _handleAuthSuccess(user, emit),
+      );
+    }
   }
 
   Future<void> _onRegisterSubmitted(
     AuthRegisterSubmitted event,
     Emitter<AuthState> emit,
   ) async {
-    await state.mapOrNull(
-      registrationRequired: (s) async {
-        final credentials = AuthCredentials(
-          email: s.email,
-          password: s.password,
-          name: s.name,
-        );
-        if (!credentials.isValidForRegistration) {
-          emit(
-            s.copyWith(
-              validation: FieldValidationState.allTouched(),
-            ),
-          );
-          return;
-        }
-
-        emit(s.copyWith(isSubmitting: true, error: null));
-
-        final result = await _register(credentials);
-
-        result.fold(
-          (failure) => emit(
-            s.copyWith(
-              isSubmitting: false,
-              error: ErrorModel.fromFailure(failure),
-              validation: FieldValidationState.allTouched(),
-            ),
+    final s = state;
+    if (s is RegistrationRequired) {
+      final credentials = AuthCredentials(
+        email: s.email,
+        password: s.password,
+        name: s.name,
+      );
+      if (!credentials.isValidForRegistration) {
+        emit(
+          s.copyWith(
+            validation: FieldValidationState.allTouched(),
           ),
-          (user) => _handleAuthSuccess(user, emit),
         );
-      },
-    );
+        return;
+      }
+
+      emit(s.copyWith(isSubmitting: true, error: null));
+
+      final result = await _register(credentials);
+
+      result.fold(
+        (failure) => emit(
+          s.copyWith(
+            isSubmitting: false,
+            error: ErrorModel.fromFailure(failure),
+            validation: FieldValidationState.allTouched(),
+          ),
+        ),
+        (user) => _handleAuthSuccess(user, emit),
+      );
+    }
   }
 
   void _handleAuthSuccess(User user, Emitter<AuthState> emit) {
-    emit(AuthState.authenticated(user));
+    emit(Authenticated(user));
     add(const AuthWatchStarted());
-    add(const AuthEvent.sessionWatchStarted());
+    add(const AuthSessionWatchStarted());
   }
 
   Future<void> _onLogoutRequested(
@@ -379,7 +389,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (_) => _logger.debug('Logout successful'),
     );
 
-    emit(AuthState.empty());
+    emit(AuthInitial.empty());
   }
 
   Future<void> _onAuthUserChanged(
@@ -387,21 +397,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     if (event.user != null) {
-      emit(AuthState.authenticated(event.user!));
+      emit(Authenticated(event.user!));
     } else {
-      await state.mapOrNull(
-        authenticated: (_) async {
-          _logger.debug(
-            'Session expired from server, logging out and clearing tokens',
-          );
-          // Clear tokens and dispose WebSocket connection
-          await _logout();
-          // Emit unauthenticated first (triggers route redirect)
-          emit(const AuthState.unauthenticated());
-          // Then emit initial state (shows email form on auth page)
-          emit(AuthState.empty());
-        },
-      );
+      if (state is Authenticated) {
+        _logger.debug(
+          'Session expired from server, logging out and clearing tokens',
+        );
+        // Clear tokens and dispose WebSocket connection
+        await _logout();
+        // Emit unauthenticated first (triggers route redirect)
+        emit(const Unauthenticated());
+        // Then emit initial state (shows email form on auth page)
+        emit(AuthInitial.empty());
+      }
     }
   }
 
@@ -411,6 +419,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     _logger.warning('Session expired - token refresh failed');
     await _logout();
-    emit(const AuthState.unauthenticated());
+    emit(const Unauthenticated());
   }
 }

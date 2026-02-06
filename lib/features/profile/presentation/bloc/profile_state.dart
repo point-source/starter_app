@@ -1,13 +1,34 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/features/profile/domain/entities/user_profile.dart';
 
-part 'profile_state.freezed.dart';
+sealed class ProfileState extends Equatable {
+  const ProfileState();
 
-@freezed
-class ProfileState with _$ProfileState {
-  const factory ProfileState.initial() = _Initial;
-  const factory ProfileState.loading() = _Loading;
-  const factory ProfileState.loaded(UserProfile profile) = _Loaded;
-  const factory ProfileState.error(ErrorModel error) = _Error;
+  @override
+  List<Object?> get props => [];
+}
+
+final class ProfileInitial extends ProfileState {
+  const ProfileInitial();
+}
+
+final class ProfileLoading extends ProfileState {
+  const ProfileLoading();
+}
+
+final class ProfileLoaded extends ProfileState {
+  const ProfileLoaded(this.profile);
+  final UserProfile profile;
+
+  @override
+  List<Object?> get props => [profile];
+}
+
+final class ProfileError extends ProfileState {
+  const ProfileError(this.error);
+  final ErrorModel error;
+
+  @override
+  List<Object?> get props => [error];
 }

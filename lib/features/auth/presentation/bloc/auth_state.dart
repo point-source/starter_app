@@ -1,4 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/domain/value_objects/name.dart';
 import 'package:starter_app/core/domain/value_objects/password.dart';
@@ -6,45 +6,155 @@ import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/features/auth/domain/entities/user.dart';
 import 'package:starter_app/features/auth/presentation/bloc/field_validation_state.dart';
 
-part 'auth_state.freezed.dart';
+sealed class AuthState extends Equatable {
+  const AuthState();
 
-@freezed
-abstract class AuthState with _$AuthState {
-  const factory AuthState.initial({
-    required EmailAddress email,
-    required bool isSubmitting,
-    required FieldValidationState validation,
-    ErrorModel? error,
-  }) = Initial;
+  @override
+  List<Object?> get props => [];
+}
 
-  const factory AuthState.unauthenticated() = Unauthenticated;
+final class AuthInitial extends AuthState {
+  const AuthInitial({
+    required this.email,
+    required this.isSubmitting,
+    required this.validation,
+    this.error,
+  });
 
-  const factory AuthState.registrationRequired({
-    required EmailAddress email,
-    required Password password,
-    required Name name,
-    required bool isSubmitting,
-    required FieldValidationState validation,
-    @Default(false) bool passwordVisible,
-    ErrorModel? error,
-  }) = RegistrationRequired;
-
-  const factory AuthState.loginRequired({
-    required EmailAddress email,
-    required Password password,
-    required bool isSubmitting,
-    required FieldValidationState validation,
-    @Default(false) bool passwordVisible,
-    ErrorModel? error,
-  }) = LoginRequired;
-
-  const factory AuthState.authenticated(User user) = Authenticated;
-
-  /// Creates an empty initial state ready for authentication.
-  /// Used for BLoC initialization and reset after logout/email change.
-  factory AuthState.empty() => AuthState.initial(
+  factory AuthInitial.empty() => AuthInitial(
     email: EmailAddress(''),
     isSubmitting: false,
     validation: FieldValidationState.initial(),
   );
+
+  final EmailAddress email;
+  final bool isSubmitting;
+  final FieldValidationState validation;
+  final ErrorModel? error;
+
+  @override
+  List<Object?> get props => [email, isSubmitting, validation, error];
+
+  AuthInitial copyWith({
+    EmailAddress? email,
+    bool? isSubmitting,
+    FieldValidationState? validation,
+    ErrorModel? error,
+  }) {
+    return AuthInitial(
+      email: email ?? this.email,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      validation: validation ?? this.validation,
+      error: error ?? this.error,
+    );
+  }
+}
+
+final class Unauthenticated extends AuthState {
+  const Unauthenticated();
+}
+
+final class RegistrationRequired extends AuthState {
+  const RegistrationRequired({
+    required this.email,
+    required this.password,
+    required this.name,
+    required this.isSubmitting,
+    required this.validation,
+    this.passwordVisible = false,
+    this.error,
+  });
+
+  final EmailAddress email;
+  final Password password;
+  final Name name;
+  final bool isSubmitting;
+  final FieldValidationState validation;
+  final bool passwordVisible;
+  final ErrorModel? error;
+
+  @override
+  List<Object?> get props => [
+    email,
+    password,
+    name,
+    isSubmitting,
+    validation,
+    passwordVisible,
+    error,
+  ];
+
+  RegistrationRequired copyWith({
+    EmailAddress? email,
+    Password? password,
+    Name? name,
+    bool? isSubmitting,
+    FieldValidationState? validation,
+    bool? passwordVisible,
+    ErrorModel? error,
+  }) {
+    return RegistrationRequired(
+      email: email ?? this.email,
+      password: password ?? this.password,
+      name: name ?? this.name,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      validation: validation ?? this.validation,
+      passwordVisible: passwordVisible ?? this.passwordVisible,
+      error: error ?? this.error,
+    );
+  }
+}
+
+final class LoginRequired extends AuthState {
+  const LoginRequired({
+    required this.email,
+    required this.password,
+    required this.isSubmitting,
+    required this.validation,
+    this.passwordVisible = false,
+    this.error,
+  });
+
+  final EmailAddress email;
+  final Password password;
+  final bool isSubmitting;
+  final FieldValidationState validation;
+  final bool passwordVisible;
+  final ErrorModel? error;
+
+  @override
+  List<Object?> get props => [
+    email,
+    password,
+    isSubmitting,
+    validation,
+    passwordVisible,
+    error,
+  ];
+
+  LoginRequired copyWith({
+    EmailAddress? email,
+    Password? password,
+    bool? isSubmitting,
+    FieldValidationState? validation,
+    bool? passwordVisible,
+    ErrorModel? error,
+  }) {
+    return LoginRequired(
+      email: email ?? this.email,
+      password: password ?? this.password,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      validation: validation ?? this.validation,
+      passwordVisible: passwordVisible ?? this.passwordVisible,
+      error: error ?? this.error,
+    );
+  }
+}
+
+final class Authenticated extends AuthState {
+  const Authenticated(this.user);
+  final User user;
+
+  @override
+  List<Object?> get props => [user];
 }

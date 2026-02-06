@@ -36,6 +36,6 @@ final class LogoutButton extends StatelessWidget {
   }
 
   void _onLogoutPressed(BuildContext context) {
-    context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
+    context.read<AuthBloc>().add(const AuthLogoutRequested());
   }
 }

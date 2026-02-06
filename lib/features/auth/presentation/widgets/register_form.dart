@@ -17,9 +17,9 @@ final class _RegisterForm extends StatelessWidget {
             AppTextField(
               label: context.authL10n.nameLabel,
               onChanged: (name) =>
-                  context.read<AuthBloc>().add(AuthEvent.nameChanged(name)),
+                  context.read<AuthBloc>().add(AuthNameChanged(name)),
               onEditingComplete: () => context.read<AuthBloc>().add(
-                const AuthEvent.nameUnfocused(),
+                const AuthNameUnfocused(),
               ),
               errorText: _getNameError(context),
             ),
@@ -29,27 +29,27 @@ final class _RegisterForm extends StatelessWidget {
               showError: state.validation.passwordTouched,
               obscureText: !state.passwordVisible,
               onToggleVisibility: () => context.read<AuthBloc>().add(
-                const AuthEvent.togglePasswordVisibility(),
+                const AuthTogglePasswordVisibility(),
               ),
               label: context.authL10n.passwordLabel,
               onChanged: (password) => context.read<AuthBloc>().add(
-                AuthEvent.passwordChanged(password),
+                AuthPasswordChanged(password),
               ),
               onEditingComplete: () => context.read<AuthBloc>().add(
-                const AuthEvent.passwordUnfocused(),
+                const AuthPasswordUnfocused(),
               ),
             ),
             const ResponsiveVerticalGap(),
             ElevatedButton(
               onPressed: () => context.read<AuthBloc>().add(
-                const AuthEvent.registerSubmitted(),
+                const AuthRegisterSubmitted(),
               ),
               child: Text(context.authL10n.register),
             ),
             const ResponsiveVerticalGap(),
             TextButton(
               onPressed: () => context.read<AuthBloc>().add(
-                const AuthEvent.emailChanged(''),
+                const AuthEmailChanged(''),
               ),
               child: Text(context.authL10n.differentEmail),
             ),

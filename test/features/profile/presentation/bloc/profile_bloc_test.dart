@@ -50,7 +50,7 @@ void main() {
 
   group('ProfileBloc', () {
     test('initial state is ProfileState.initial', () {
-      expect(bloc.state, equals(const ProfileState.initial()));
+      expect(bloc.state, equals(const ProfileInitial()));
     });
 
     group('getMyProfile event', () {
@@ -62,10 +62,10 @@ void main() {
           ).thenAnswer((_) async => Right(TestData.userProfile()));
           return ProfileBloc(getProfile, eventDispatcher);
         },
-        act: (bloc) => bloc.add(const ProfileEvent.getMyProfile()),
+        act: (bloc) => bloc.add(const GetMyProfile()),
         expect: () => [
-          const ProfileState.loading(),
-          ProfileState.loaded(TestData.userProfile()),
+          const ProfileLoading(),
+          ProfileLoaded(TestData.userProfile()),
         ],
       );
 
@@ -78,15 +78,12 @@ void main() {
           );
           return ProfileBloc(getProfile, eventDispatcher);
         },
-        act: (bloc) => bloc.add(const ProfileEvent.getMyProfile()),
+        act: (bloc) => bloc.add(const GetMyProfile()),
         expect: () => [
-          const ProfileState.loading(),
-          isA<ProfileState>().having(
-            (state) => state.maybeWhen(
-              error: (error) => error,
-              orElse: () => null,
-            ),
-            'error state',
+          const ProfileLoading(),
+          isA<ProfileError>().having(
+            (state) => state.error,
+            'error',
             isA<ErrorModel>(),
           ),
         ],
@@ -97,9 +94,9 @@ void main() {
       blocTest<ProfileBloc, ProfileState>(
         'emits [initial] when reset is called',
         build: () => ProfileBloc(getProfile, eventDispatcher),
-        seed: () => ProfileState.loaded(TestData.userProfile()),
-        act: (bloc) => bloc.add(const ProfileEvent.reset()),
-        expect: () => [const ProfileState.initial()],
+        seed: () => ProfileLoaded(TestData.userProfile()),
+        act: (bloc) => bloc.add(const ProfileReset()),
+        expect: () => [const ProfileInitial()],
       );
     });
 
@@ -114,8 +111,8 @@ void main() {
         },
         act: (bloc) => eventController.add(UserRegistered(TestData.user())),
         expect: () => [
-          const ProfileState.loading(),
-          ProfileState.loaded(TestData.userProfile()),
+          const ProfileLoading(),
+          ProfileLoaded(TestData.userProfile()),
         ],
       );
 
@@ -129,8 +126,8 @@ void main() {
         },
         act: (bloc) => eventController.add(UserLoggedIn(TestData.user())),
         expect: () => [
-          const ProfileState.loading(),
-          ProfileState.loaded(TestData.userProfile()),
+          const ProfileLoading(),
+          ProfileLoaded(TestData.userProfile()),
         ],
       );
 
@@ -145,17 +142,17 @@ void main() {
         act: (bloc) =>
             eventController.add(UserSessionRestored(TestData.user())),
         expect: () => [
-          const ProfileState.loading(),
-          ProfileState.loaded(TestData.userProfile()),
+          const ProfileLoading(),
+          ProfileLoaded(TestData.userProfile()),
         ],
       );
 
       blocTest<ProfileBloc, ProfileState>(
         'triggers reset when UserLoggedOut event is dispatched',
         build: () => ProfileBloc(getProfile, eventDispatcher),
-        seed: () => ProfileState.loaded(TestData.userProfile()),
+        seed: () => ProfileLoaded(TestData.userProfile()),
         act: (bloc) => eventController.add(UserLoggedOut(TestData.user().id)),
-        expect: () => [const ProfileState.initial()],
+        expect: () => [const ProfileInitial()],
       );
 
       test('ignores non-AuthDomainEvent events', () async {
@@ -173,7 +170,7 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
         // State should remain initial (no profile fetch triggered)
-        expect(bloc.state, const ProfileState.initial());
+        expect(bloc.state, const ProfileInitial());
         verifyNever(() => mockRepository.getCurrentProfile());
       });
     });

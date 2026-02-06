@@ -4,6 +4,7 @@
 
 - All data classes MUST be immutable
 - Use `dart_mappable` for **DTOs/Models** (JSON serialization)
+- Use **`fast_immutable_collections`** (`IList`, `ISet`, `IMap`) for all collection fields to ensure immutability and deep equality.
 - Use **Dart 3 Sealed Classes** for:
   - ✅ **Failures** - Exhaustive matching for error handling
   - ✅ **BLoC Events** - Discriminated unions for event handling
@@ -19,6 +20,7 @@
 
 ```dart
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 part 'product_model.mapper.dart';
 
@@ -36,7 +38,7 @@ class ProductModel with ProductModelMappable {
   final String name;
   final double price;
   final String description;
-  final List<String> tags;
+  final IList<String> tags;
 
   // JSON serialization
   factory ProductModel.fromJson(Map<String, dynamic> json) =>

@@ -18,7 +18,7 @@ void main() {
   late MockLocaleCubit mockLocaleCubit;
 
   setUpAll(() {
-    registerFallbackValue(const AuthEvent.logoutRequested());
+    registerFallbackValue(const AuthLogoutRequested());
   });
 
   setUp(() {
@@ -43,7 +43,7 @@ void main() {
 
   group('SettingsPage', () {
     testWidgets('renders without errors', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpApp(buildSettingsPage());
 
@@ -51,7 +51,7 @@ void main() {
     });
 
     testWidgets('displays app bar with title', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpApp(buildSettingsPage());
 
@@ -59,7 +59,7 @@ void main() {
     });
 
     testWidgets('shows language buttons', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpApp(buildSettingsPage());
 
@@ -68,7 +68,7 @@ void main() {
     });
 
     testWidgets('shows theme buttons', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpApp(buildSettingsPage());
 
@@ -77,7 +77,7 @@ void main() {
     });
 
     testWidgets('hides logout button when unauthenticated', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpApp(buildSettingsPage());
 
@@ -87,7 +87,7 @@ void main() {
 
     testWidgets('shows logout button when authenticated', (tester) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
 
       await tester.pumpApp(buildSettingsPage());
 
@@ -97,7 +97,7 @@ void main() {
     });
 
     testWidgets('tapping English button calls setEnglish', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(() => mockLocaleCubit.setEnglish()).thenReturn(null);
 
       await tester.pumpApp(buildSettingsPage());
@@ -111,7 +111,7 @@ void main() {
     });
 
     testWidgets('tapping Spanish button calls setSpanish', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(() => mockLocaleCubit.setSpanish()).thenReturn(null);
 
       await tester.pumpApp(buildSettingsPage());
@@ -127,7 +127,7 @@ void main() {
     testWidgets('tapping light theme button calls setLightTheme', (
       tester,
     ) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(() => mockThemeCubit.setLightTheme()).thenReturn(null);
 
       await tester.pumpApp(buildSettingsPage());
@@ -143,7 +143,7 @@ void main() {
     testWidgets('tapping dark theme button calls setDarkTheme', (
       tester,
     ) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(() => mockThemeCubit.setDarkTheme()).thenReturn(null);
 
       await tester.pumpApp(buildSettingsPage());
@@ -159,7 +159,7 @@ void main() {
     testWidgets('tapping system theme button calls setSystemTheme', (
       tester,
     ) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(() => mockThemeCubit.setSystemTheme()).thenReturn(null);
 
       await tester.pumpApp(buildSettingsPage());
@@ -176,7 +176,7 @@ void main() {
       tester,
     ) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
 
       await tester.pumpApp(buildSettingsPage());
       await tester.pumpAndSettle();

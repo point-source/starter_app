@@ -2,7 +2,7 @@
 
 ## Status
 
-**Superseded** — Originally adopted `freezed`, now migrated to Dart 3 sealed classes + `dart_mappable`.
+**Superseded** — Superseded by [ADR-019](0019-dart-mappable-and-sealed-classes.md). Originally adopted `freezed`, now migrated to Dart 3 sealed classes + `dart_mappable`.
 
 ## Context
 

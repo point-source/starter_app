@@ -26,11 +26,12 @@ final class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) async {
-        final error = state.mapOrNull(
-          initial: (s) => s.error,
-          loginRequired: (s) => s.error,
-          registrationRequired: (s) => s.error,
-        );
+        final error = switch (state) {
+          AuthInitial() => state.error,
+          LoginRequired() => state.error,
+          RegistrationRequired() => state.error,
+          _ => null,
+        };
 
         if (error != null) {
           final messageService = context.read<FailureMessageService>();
@@ -48,25 +49,21 @@ final class AuthPage extends StatelessWidget {
           return;
         }
 
-        await state.maybeWhen(
-          authenticated: (user) async {
-            if (context.router.canPop()) {
-              context.router.pop(true);
-            } else {
-              await context.router.replace(const DashboardRoute());
-            }
-          },
-          orElse: () => null,
-        );
+        if (state case Authenticated()) {
+          if (context.router.canPop()) {
+            context.router.pop(true);
+          } else {
+            await context.router.replace(const DashboardRoute());
+          }
+        }
       },
       builder: (context, state) {
-        final isSubmitting =
-            state.mapOrNull(
-              initial: (s) => s.isSubmitting,
-              loginRequired: (s) => s.isSubmitting,
-              registrationRequired: (s) => s.isSubmitting,
-            ) ??
-            false;
+        final isSubmitting = switch (state) {
+          AuthInitial() => state.isSubmitting,
+          LoginRequired() => state.isSubmitting,
+          RegistrationRequired() => state.isSubmitting,
+          _ => false,
+        };
 
         const emailValueKey = ValueKey('email');
         const loginValueKey = ValueKey('login');
@@ -106,34 +103,34 @@ final class AuthPage extends StatelessWidget {
                   ),
                 );
               },
-              child: state.maybeMap(
-                initial: (s) => EmailForm(
+              child: switch (state) {
+                AuthInitial() => EmailForm(
                   key: emailValueKey,
-                  email: s.email,
-                  showError: s.validation.emailTouched,
+                  email: state.email,
+                  showError: state.validation.emailTouched,
                   onEmailChanged: (email) => context.read<AuthBloc>().add(
-                    AuthEvent.emailChanged(email),
+                    AuthEmailChanged(email),
                   ),
                   onEmailUnfocused: () => context.read<AuthBloc>().add(
-                    const AuthEvent.emailUnfocused(),
+                    const AuthEmailUnfocused(),
                   ),
                   onSubmitted: () => context.read<AuthBloc>().add(
-                    const AuthEvent.emailSubmitted(),
+                    const AuthEmailSubmitted(),
                   ),
                 ),
-                loginRequired: (s) => _LoginForm(
+                LoginRequired() => _LoginForm(
                   key: loginValueKey,
-                  state: s,
+                  state: state,
                 ),
-                registrationRequired: (s) => _RegisterForm(
+                RegistrationRequired() => _RegisterForm(
                   key: registerValueKey,
-                  state: s,
+                  state: state,
                 ),
-                orElse: () => const Center(
+                _ => const Center(
                   key: loadingValueKey,
                   child: CircularProgressIndicator(),
                 ),
-              ),
+              },
             ),
           ),
         );
@@ -143,13 +140,17 @@ final class AuthPage extends StatelessWidget {
 
   /// Retries the last action based on current auth state.
   void _retryLastAction(BuildContext context) {
-    context.read<AuthBloc>().state.mapOrNull(
-      initial: (_) =>
-          context.read<AuthBloc>().add(const AuthEvent.emailSubmitted()),
-      loginRequired: (_) =>
-          context.read<AuthBloc>().add(const AuthEvent.loginSubmitted()),
-      registrationRequired: (_) =>
-          context.read<AuthBloc>().add(const AuthEvent.registerSubmitted()),
-    );
+    final state = context.read<AuthBloc>().state;
+    switch (state) {
+      case AuthInitial():
+        context.read<AuthBloc>().add(const AuthEmailSubmitted());
+      case LoginRequired():
+        context.read<AuthBloc>().add(const AuthLoginSubmitted());
+      case RegistrationRequired():
+        context.read<AuthBloc>().add(const AuthRegisterSubmitted());
+      case Authenticated():
+      case Unauthenticated():
+        break;
+    }
   }
 }

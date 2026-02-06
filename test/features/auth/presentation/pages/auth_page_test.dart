@@ -69,7 +69,7 @@ void main() {
     group('Initial State (Email Form)', () {
       testWidgets('renders email form when in initial state', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.initial(
+          AuthInitial(
             email: EmailAddress(''),
             isSubmitting: false,
             validation: FieldValidationState.initial(),
@@ -89,7 +89,7 @@ void main() {
       });
 
       testWidgets('shows email text field in initial state', (tester) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -104,7 +104,7 @@ void main() {
       });
 
       testWidgets('shows continue button in initial state', (tester) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -118,7 +118,7 @@ void main() {
       });
 
       testWidgets('shows return Dashboard button', (tester) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -137,7 +137,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -160,7 +160,7 @@ void main() {
 
       testWidgets('shows welcome back text with email', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -181,7 +181,7 @@ void main() {
 
       testWidgets('shows different email button', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -207,7 +207,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -231,7 +231,7 @@ void main() {
 
       testWidgets('shows create account text with email', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -255,7 +255,7 @@ void main() {
     group('Loading State', () {
       testWidgets('shows loading indicator when submitting', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.initial(
+          AuthInitial(
             email: EmailAddress(TestData.email),
             isSubmitting: true,
             validation: FieldValidationState.initial(),
@@ -295,14 +295,14 @@ void main() {
         whenListen(
           mockAuthBloc,
           Stream.fromIterable([
-            AuthState.initial(
+            AuthInitial(
               email: EmailAddress(''),
               isSubmitting: false,
               validation: FieldValidationState.initial(),
               error: ErrorModel.fromFailure(failure),
             ),
           ]),
-          initialState: AuthState.empty(),
+          initialState: AuthInitial.empty(),
         );
 
         await tester.pumpAppWithBloc(
@@ -330,14 +330,14 @@ void main() {
         whenListen(
           mockAuthBloc,
           Stream.fromIterable([
-            AuthState.initial(
+            AuthInitial(
               email: EmailAddress(''),
               isSubmitting: false,
               validation: FieldValidationState.initial(),
               error: ErrorModel.fromFailure(failure),
             ),
           ]),
-          initialState: AuthState.empty(),
+          initialState: AuthInitial.empty(),
         );
 
         await tester.pumpAppWithBloc(
@@ -350,7 +350,7 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('Retry'), warnIfMissed: false);
         verify(
-          () => mockAuthBloc.add(const AuthEvent.emailSubmitted()),
+          () => mockAuthBloc.add(const AuthEmailSubmitted()),
         ).called(1);
       });
 
@@ -366,7 +366,7 @@ void main() {
         whenListen(
           mockAuthBloc,
           Stream.fromIterable([
-            AuthState.loginRequired(
+            LoginRequired(
               email: EmailAddress(TestData.email),
               password: Password(''),
               isSubmitting: false,
@@ -374,7 +374,7 @@ void main() {
               error: ErrorModel.fromFailure(failure),
             ),
           ]),
-          initialState: AuthState.loginRequired(
+          initialState: LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -392,7 +392,7 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('Retry'), warnIfMissed: false);
         verify(
-          () => mockAuthBloc.add(const AuthEvent.loginSubmitted()),
+          () => mockAuthBloc.add(const AuthLoginSubmitted()),
         ).called(1);
       });
 
@@ -408,7 +408,7 @@ void main() {
           whenListen(
             mockAuthBloc,
             Stream.fromIterable([
-              AuthState.registrationRequired(
+              RegistrationRequired(
                 email: EmailAddress(TestData.email),
                 password: Password(''),
                 name: Name(''),
@@ -417,7 +417,7 @@ void main() {
                 error: ErrorModel.fromFailure(failure),
               ),
             ]),
-            initialState: AuthState.registrationRequired(
+            initialState: RegistrationRequired(
               email: EmailAddress(TestData.email),
               password: Password(''),
               name: Name(''),
@@ -437,7 +437,7 @@ void main() {
 
           await tester.tap(find.text('Retry'), warnIfMissed: false);
           verify(
-            () => mockAuthBloc.add(const AuthEvent.registerSubmitted()),
+            () => mockAuthBloc.add(const AuthRegisterSubmitted()),
           ).called(1);
         },
       );
@@ -445,7 +445,7 @@ void main() {
 
     group('Interactions', () {
       testWidgets('dispatches emailChanged when typing email', (tester) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -459,7 +459,7 @@ void main() {
 
         verify(
           () => mockAuthBloc.add(
-            const AuthEvent.emailChanged('test@example.com'),
+            const AuthEmailChanged('test@example.com'),
           ),
         ).called(1);
       });
@@ -467,7 +467,7 @@ void main() {
       testWidgets('dispatches emailSubmitted when tapping continue', (
         tester,
       ) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -481,14 +481,14 @@ void main() {
         await tester.pump();
 
         verify(
-          () => mockAuthBloc.add(const AuthEvent.emailSubmitted()),
+          () => mockAuthBloc.add(const AuthEmailSubmitted()),
         ).called(1);
       });
 
       testWidgets('dispatches emailUnfocused on editing complete', (
         tester,
       ) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -528,7 +528,7 @@ void main() {
       // Login Form Interactions
       testWidgets('Login: dispatches passwordChanged', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -546,7 +546,7 @@ void main() {
 
         await tester.enterText(find.byType(TextFormField), 'password');
         verify(
-          () => mockAuthBloc.add(const AuthEvent.passwordChanged('password')),
+          () => mockAuthBloc.add(const AuthPasswordChanged('password')),
         ).called(1);
       });
 
@@ -554,7 +554,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -572,7 +572,7 @@ void main() {
 
         await tester.tap(find.text('Login'));
         verify(
-          () => mockAuthBloc.add(const AuthEvent.loginSubmitted()),
+          () => mockAuthBloc.add(const AuthLoginSubmitted()),
         ).called(1);
       });
 
@@ -580,7 +580,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -598,14 +598,14 @@ void main() {
 
         await tester.tap(find.text('Use a different email'));
         verify(
-          () => mockAuthBloc.add(const AuthEvent.emailChanged('')),
+          () => mockAuthBloc.add(const AuthEmailChanged('')),
         ).called(1);
       });
 
       // Register Form Interactions
       testWidgets('Register: dispatches nameChanged', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -626,7 +626,7 @@ void main() {
         // Assuming Name is first.
         await tester.enterText(find.byType(TextFormField).first, 'John Doe');
         verify(
-          () => mockAuthBloc.add(const AuthEvent.nameChanged('John Doe')),
+          () => mockAuthBloc.add(const AuthNameChanged('John Doe')),
         ).called(1);
       });
 
@@ -634,7 +634,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -653,13 +653,13 @@ void main() {
 
         await tester.tap(find.text('Register'));
         verify(
-          () => mockAuthBloc.add(const AuthEvent.registerSubmitted()),
+          () => mockAuthBloc.add(const AuthRegisterSubmitted()),
         ).called(1);
       });
 
       testWidgets('Register: shows name error', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''), // Empty name
@@ -693,7 +693,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -712,7 +712,7 @@ void main() {
 
         await tester.tap(find.text('Use a different email'));
         verify(
-          () => mockAuthBloc.add(const AuthEvent.emailChanged('')),
+          () => mockAuthBloc.add(const AuthEmailChanged('')),
         ).called(1);
       });
 
@@ -720,7 +720,7 @@ void main() {
       testWidgets('Email: dispatches emailUnfocused on editing complete', (
         tester,
       ) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -740,14 +740,14 @@ void main() {
         await tester.pump();
 
         verify(
-          () => mockAuthBloc.add(const AuthEvent.emailUnfocused()),
+          () => mockAuthBloc.add(const AuthEmailUnfocused()),
         ).called(1);
       });
 
       testWidgets('Email: dispatches emailSubmitted on field submitted', (
         tester,
       ) async {
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
           RepositoryProvider<FailureMessageService>.value(
@@ -763,7 +763,7 @@ void main() {
         await tester.pump();
 
         verify(
-          () => mockAuthBloc.add(const AuthEvent.emailSubmitted()),
+          () => mockAuthBloc.add(const AuthEmailSubmitted()),
         ).called(1);
       });
 
@@ -772,7 +772,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -795,7 +795,7 @@ void main() {
         await tester.pump();
 
         verify(
-          () => mockAuthBloc.add(const AuthEvent.passwordUnfocused()),
+          () => mockAuthBloc.add(const AuthPasswordUnfocused()),
         ).called(1);
       });
 
@@ -803,7 +803,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -824,13 +824,13 @@ void main() {
         await tester.pump();
 
         verify(
-          () => mockAuthBloc.add(const AuthEvent.loginSubmitted()),
+          () => mockAuthBloc.add(const AuthLoginSubmitted()),
         ).called(1);
       });
 
       testWidgets('Login: dispatches togglePasswordVisibility', (tester) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.loginRequired(
+          LoginRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             isSubmitting: false,
@@ -849,7 +849,7 @@ void main() {
         // PasswordTextField uses visibility_outlined when obscured (default)
         await tester.tap(find.byIcon(Icons.visibility_outlined));
         verify(
-          () => mockAuthBloc.add(const AuthEvent.togglePasswordVisibility()),
+          () => mockAuthBloc.add(const AuthTogglePasswordVisibility()),
         ).called(1);
       });
 
@@ -858,7 +858,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -882,7 +882,7 @@ void main() {
         await tester.pump();
 
         verify(
-          () => mockAuthBloc.add(const AuthEvent.nameUnfocused()),
+          () => mockAuthBloc.add(const AuthNameUnfocused()),
         ).called(1);
       });
 
@@ -890,7 +890,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(TestData.name), // Valid name
@@ -917,7 +917,7 @@ void main() {
         tester,
       ) async {
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.registrationRequired(
+          RegistrationRequired(
             email: EmailAddress(TestData.email),
             password: Password(''),
             name: Name(''),
@@ -938,8 +938,7 @@ void main() {
         await tester.enterText(find.byType(TextFormField).last, 'Password123!');
 
         verify(
-          () =>
-              mockAuthBloc.add(const AuthEvent.passwordChanged('Password123!')),
+          () => mockAuthBloc.add(const AuthPasswordChanged('Password123!')),
         ).called(1);
       });
 
@@ -947,7 +946,7 @@ void main() {
         'Register: dispatches passwordUnfocused on editing complete',
         (tester) async {
           when(() => mockAuthBloc.state).thenReturn(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: EmailAddress(TestData.email),
               password: Password(''),
               name: Name(''),
@@ -971,7 +970,7 @@ void main() {
           await tester.pump();
 
           verify(
-            () => mockAuthBloc.add(const AuthEvent.passwordUnfocused()),
+            () => mockAuthBloc.add(const AuthPasswordUnfocused()),
           ).called(1);
         },
       );
@@ -980,7 +979,7 @@ void main() {
         'Register: dispatches togglePasswordVisibility',
         (tester) async {
           when(() => mockAuthBloc.state).thenReturn(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: EmailAddress(TestData.email),
               password: Password(''),
               name: Name(''),
@@ -999,7 +998,7 @@ void main() {
 
           await tester.tap(find.byIcon(Icons.visibility_outlined));
           verify(
-            () => mockAuthBloc.add(const AuthEvent.togglePasswordVisibility()),
+            () => mockAuthBloc.add(const AuthTogglePasswordVisibility()),
           ).called(1);
         },
       );
@@ -1019,9 +1018,9 @@ void main() {
         whenListen(
           mockAuthBloc,
           Stream.fromIterable([
-            AuthState.authenticated(TestData.user()),
+            Authenticated(TestData.user()),
           ]),
-          initialState: AuthState.empty(),
+          initialState: AuthInitial.empty(),
         );
 
         await tester.pumpWidget(
@@ -1066,7 +1065,7 @@ void main() {
         final mockRouter = MockStackRouter();
         // Stub router methods BEFORE pumpWidget
         when(() => mockRouter.navigate(any())).thenAnswer((_) async => null);
-        when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+        when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpWidget(
           MaterialApp(
@@ -1115,7 +1114,7 @@ void main() {
       ) async {
         // Use authenticated state which falls into orElse in the builder
         when(() => mockAuthBloc.state).thenReturn(
-          AuthState.authenticated(TestData.user()),
+          Authenticated(TestData.user()),
         );
 
         await tester.pumpAppWithBloc(
@@ -1144,14 +1143,14 @@ void main() {
           whenListen(
             mockAuthBloc,
             Stream.fromIterable([
-              AuthState.loginRequired(
+              LoginRequired(
                 email: EmailAddress(TestData.email),
                 password: Password(''),
                 isSubmitting: false,
                 validation: FieldValidationState.initial(),
               ),
             ]),
-            initialState: AuthState.empty(),
+            initialState: AuthInitial.empty(),
           );
 
           await tester.pumpAppWithBloc(
