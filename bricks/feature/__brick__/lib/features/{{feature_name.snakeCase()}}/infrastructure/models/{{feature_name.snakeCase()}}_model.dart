@@ -1,25 +1,25 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/types/types.dart';
 import 'package:starter_app/features/{{feature_name.snakeCase()}}/domain/entities/{{feature_name.snakeCase()}}.dart';
 import 'package:starter_app/features/{{feature_name.snakeCase()}}/domain/entities/{{feature_name.snakeCase()}}_id.dart';
 
-part '{{feature_name.snakeCase()}}_model.freezed.dart';
-part '{{feature_name.snakeCase()}}_model.g.dart';
+part '{{feature_name.snakeCase()}}_model.mapper.dart';
 
 /// Data transfer object for [{{feature_name.pascalCase()}}].
 ///
-/// Uses freezed for JSON serialization (ADR-008).
+/// Uses dart_mappable for JSON serialization.
 /// Models are in infrastructure layer - they handle serialization.
-@freezed
-abstract class {{feature_name.pascalCase()}}Model with _${{feature_name.pascalCase()}}Model {
-  const factory {{feature_name.pascalCase()}}Model({
-    required String id,
+@MappableClass()
+class {{feature_name.pascalCase()}}Model with {{feature_name.pascalCase()}}ModelMappable {
+  const {{feature_name.pascalCase()}}Model({
+    required this.id,
     // TODO: Add model properties matching API response
-  }) = _{{feature_name.pascalCase()}}Model;
-  const {{feature_name.pascalCase()}}Model._();
+  });
 
-  factory {{feature_name.pascalCase()}}Model.fromJson(Json json) =>
-      _${{feature_name.pascalCase()}}ModelFromJson(json);
+  final String id;
+
+  factory {{feature_name.pascalCase()}}Model.fromJson(Map<String, dynamic> json) =>
+      {{feature_name.pascalCase()}}ModelMapper.fromMap(json);
 
   factory {{feature_name.pascalCase()}}Model.fromDomain({{feature_name.pascalCase()}} entity) {
     return {{feature_name.pascalCase()}}Model(
