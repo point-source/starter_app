@@ -222,9 +222,10 @@ lib/
 
 ## 🛡 Security & Best Practices
 
--   **Type Safety:** `strict-mode` enabled. Dart 3 sealed classes for unions. `dart_mappable` for DTOs. `ValueObjects` for validation.
+-   **Type Safety:** `strict-mode` enabled. Dart 3 sealed classes for failures and unions. `dart_mappable` for DTOs with JSON serialization. `fast_immutable_collections` for immutable collection types. `ValueObjects` for validation.
 -   **State Management:** `flutter_bloc` for predictable state transitions.
 -   **Dependency Injection:** `injectable` + `get_it` for decoupling.
+-   **Navigation:** `auto_route` for type-safe, declarative routing with guards and nested navigation.
 -   **Testing:**
     -   **Unit:** Domain & Application logic (100% coverage goal)
     -   **Widget:** UI components (Golden tests)
@@ -261,11 +262,11 @@ Key decisions are documented in [docs/adr/](./docs/adr/):
 | [ADR-001](./docs/adr/0001-clean-architecture-ddd.md) | Clean Architecture + DDD |
 | [ADR-002](./docs/adr/0002-flutter-bloc-state-management.md) | flutter_bloc for state management |
 | [ADR-003](./docs/adr/0003-fpdart-error-handling.md) | fpdart for error handling |
-| [ADR-004](./docs/adr/0004-go-router-navigation.md) | go_router for navigation |
+| [ADR-004](./docs/adr/0004-go-router-navigation.md) | ~~go_router for navigation~~ *(superseded by ADR-018)* |
 | [ADR-005](./docs/adr/0005-injectable-dependency-injection.md) | injectable + get_it for DI |
 | [ADR-006](./docs/adr/0006-domain-events-event-dispatcher.md) | Domain Events & Event Dispatcher |
 | [ADR-007](./docs/adr/0007-specification-pattern.md) | Specification Pattern |
-| [ADR-008](./docs/adr/0008-freezed-immutable-classes.md) | freezed for failures, states, DTOs |
+| [ADR-008](./docs/adr/0008-freezed-immutable-classes.md) | ~~freezed for failures, states, DTOs~~ *(superseded by ADR-019)* |
 | [ADR-009](./docs/adr/0009-secure-token-storage.md) | Secure Token Storage |
 | [ADR-010](./docs/adr/0010-cqrs-command-query.md) | CQRS with Command/Query |
 | [ADR-011](./docs/adr/0011-context-aware-failure-mapping.md) | Context-Aware Failure Mapping |
@@ -275,3 +276,5 @@ Key decisions are documented in [docs/adr/](./docs/adr/):
 | [ADR-015](./docs/adr/0015-theme-responsive-design.md) | Theme & Responsive Design |
 | [ADR-016](./docs/adr/0016-design-token-constants.md) | Design Token Constants |
 | [ADR-017](./docs/adr/0017-mason-bricks-code-generation.md) | Mason Bricks Code Generation |
+| [ADR-018](./docs/adr/0018-auto-route-navigation.md) | auto_route for navigation |
+| [ADR-019](./docs/adr/0019-dart-mappable-and-sealed-classes.md) | dart_mappable + Dart 3 sealed classes |

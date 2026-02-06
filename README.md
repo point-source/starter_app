@@ -27,7 +27,7 @@ An **AI-ready**, enterprise-grade Flutter starter app built with **Clean Archite
 | 🤖 **AI-Ready Architecture** | 23 architecture rules for AI-assisted development |
 | 🧪 **100% Test Coverage** | Comprehensive tests across all layers |
 | 🏗️ **CQRS Pattern** | Separate Commands (write) and Queries (read) |
-| 🔐 **Type-Safe Routing** | go_router_builder with compile-time route safety |
+| 🔐 **Type-Safe Routing** | auto_route with compile-time route safety and guards |
 | ⚙️ **Environment Config** | `--dart-define-from-file` for secure configuration |
 | 🧱 **Mason Bricks** | Code generators for consistent feature scaffolding |
 | 📱 **Adaptive UI** | Material 3 canonical layouts with 5-class breakpoint system |
@@ -78,7 +78,8 @@ This project follows **Hexagonal Architecture** (Ports & Adapters) with **DDD ta
 | **CQRS** | Commands for writes, Queries for reads |
 | **Railway-Oriented** | `Either<Failure, T>` with fpdart |
 | **Hexagonal** | Ports (interfaces) & Adapters (implementations) |
-| **Type-Safe Routing** | `@TypedGoRoute` with go_router_builder |
+| **Type-Safe Routing** | `@AutoRouterConfig` with auto_route and guards |
+| **Immutable Data** | `dart_mappable` for DTOs, Dart 3 sealed classes for failures |
 | **Interceptor Chain** | Auth → Refresh → Logging → Error (Chopper) |
 | **Adaptive Navigation** | Bottom nav, Rail, or Drawer based on screen size |
 
@@ -179,33 +180,33 @@ Pre-configured in `.vscode/launch.json` for one-click debugging.
 
 ## 🗺️ Type-Safe Navigation
 
-Routes are **fully type-safe** using `go_router_builder`:
+Routes are **fully type-safe** using `auto_route`:
 
 ```dart
 // Navigate with compile-time safety
-const AuthRoute().go(context);
-const DashboardRoute().go(context);
+context.router.push(const AuthRoute());
+context.router.replace(const DashboardRoute());
 
-// Route definition (features/auth/presentation/routes/auth_routes.dart)
-@TypedGoRoute<AuthRoute>(
-  path: RouteDefinitions.authPath,
-  name: RouteDefinitions.authName,
-)
-class AuthRoute extends BaseRoute with $AuthRoute {
-  const AuthRoute();
-
+// Route definition (core/navigation/app_router.dart)
+@AutoRouterConfig(replaceInRouteName: 'Page,Route')
+class AppRouter extends RootStackRouter {
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const AuthPage();
-  }
+  List<AutoRoute> get routes => [
+    AutoRoute(page: DashboardShellRoute.page, path: '/', children: [
+      AutoRoute(page: HomeRoute.page, path: 'home'),
+      AutoRoute(page: OrdersRoute.page, path: 'orders', guards: [AuthGuard()]),
+      AutoRoute(page: SettingsRoute.page, path: 'settings'),
+    ]),
+    AutoRoute(page: AuthRoute.page, path: '/auth'),
+  ];
 }
 ```
 
 ### Route Architecture
 
-- **Centralized definitions**: `core/navigation/route_definitions.dart`
-- **Feature-owned routes**: Each feature declares its routes via `part of`
-- **Custom transitions**: Shared page transitions in `base_route.dart`
+- **Centralized router**: `core/navigation/app_router.dart`
+- **Route guards**: `AuthGuard` for protected routes with reactive auth state
+- **Shell navigation**: `AutoTabsRouter` for dashboard with state preservation
 - **Adaptive navigation**: Bottom nav, rail, or drawer based on screen size
 
 ---
@@ -312,10 +313,11 @@ See [MASON_GUIDE.md](./MASON_GUIDE.md) for detailed templates.
 | Package | Purpose |
 |---------|---------|
 | `flutter_bloc` | State management |
-| `go_router` + `go_router_builder` | Type-safe navigation |
+| `auto_route` | Type-safe navigation with guards |
 | `get_it` + `injectable` | Dependency injection |
 | `fpdart` | Functional error handling |
-| `freezed` | Immutable data classes |
+| `dart_mappable` | Immutable DTOs with JSON serialization |
+| `fast_immutable_collections` | Immutable collection types (IList, ISet, IMap) |
 
 ### Infrastructure
 | Package | Purpose |
