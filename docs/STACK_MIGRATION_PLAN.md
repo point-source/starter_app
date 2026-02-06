@@ -44,11 +44,8 @@ git push origin migration/phase-N-description
 |-------|-------------|----------|
 | 1 | `migration/phase-1-auto-route` | `feat: Phase 1 - Migrate navigation to auto_route` |
 | 2 | `migration/phase-2-dart-mappable` | `feat: Phase 2 - Migrate data classes to dart_mappable` |
-| 3 | `migration/phase-3-drift` | `feat: Phase 3 - Migrate persistence to Drift` |
-| 4 | `migration/phase-4-riverpod` | `feat: Phase 4 - Migrate state management to Riverpod` |
-| 5 | `migration/phase-5-tests` | `feat: Phase 5 - Update tests for Riverpod` |
-| 6 | `migration/phase-6-mason-bricks` | `feat: Phase 6 - Update Mason brick templates` |
-| 7 | `migration/phase-7-docs` | `docs: Phase 7 - Update documentation` |
+| 3 | `migration/phase-3-riverpod-di` | `feat: Phase 3 - Migrate DI to Riverpod providers` |
+| 4 | `migration/phase-4-riverpod-state` | `feat: Phase 4 - Migrate state management to Riverpod` |
 
 ---
 
@@ -65,6 +62,21 @@ flutter test --coverage
 # 3. Ensure all tests pass
 flutter test  # All tests must pass before starting
 ```
+
+---
+
+## Phase Completion Requirements
+
+> [!IMPORTANT]
+> **Each phase must be self-contained.** When a part of the stack is migrated, the following must also be completed as part of that phase:
+>
+> - **Tests**: Update or create tests for the migrated functionality
+> - **Documentation**: Update relevant docs (README, ARCHITECTURE.md, feature READMEs)
+> - **ADRs**: Add Architecture Decision Records for migration decisions
+> - **Mason Bricks**: Update any brick templates affected by the migration
+> - **Analyzer/Lints**: Resolve all analyzer warnings and lint errors introduced by the changes
+>
+> The goal is to completely remove the previous packages that were migrated away from, leaving only historical references (e.g., ADRs explaining why a migration happened).
 
 ---
 
@@ -112,12 +124,22 @@ The following behaviors are tested and must continue to work:
 - `auto_route`
 - `auto_route_generator` (dev dependency)
 
+### Phase 1 Deliverables
+
+In addition to the migration itself, this phase must include:
+
+- [ ] Update navigation-related tests for auto_route patterns
+- [ ] Update `lib/core/navigation/README.md` and `lib/core/navigation/ARCHITECTURE.md`
+- [ ] Add ADR: Migration from go_router to auto_route
+- [ ] Update any Mason bricks that generate routes
+- [ ] Resolve all analyzer warnings related to navigation changes
+
 ### Verification
 
 ```bash
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-flutter analyze
+flutter analyze  # No warnings or errors
 flutter test test/core/navigation/
 flutter test --coverage
 # Compare coverage to baseline
@@ -182,6 +204,16 @@ All `*.freezed.dart` files (23 files total) — these will not be regenerated.
 - `dart_mappable_builder` (dev dependency)
 - `fast_immutable_collections`
 
+### Phase 2 Deliverables
+
+In addition to the migration itself, this phase must include:
+
+- [ ] Update model/failure tests for new patterns
+- [ ] Update documentation for data class patterns
+- [ ] Add ADR: Migration from freezed to dart_mappable + sealed classes
+- [ ] Update Mason bricks that generate models, entities, or value objects
+- [ ] Resolve all analyzer warnings related to data class changes
+
 ### Verification
 
 ```bash
@@ -190,7 +222,7 @@ find lib -name "*.freezed.dart" -delete
 
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-flutter analyze
+flutter analyze  # No warnings or errors
 flutter test test/features/auth/infrastructure/
 flutter test test/core/domain/
 flutter test test/core/error/
@@ -199,64 +231,99 @@ flutter test --coverage
 
 ---
 
-## Phase 3: Persistence Migration (Drift)
+## Phase 3: Dependency Injection Migration (Riverpod Providers)
 
 **Risk Level**: Medium  
-**Dependencies to replace**: `hydrated_bloc` (persistence portion) → `drift`, `sqlite3_flutter_libs`
+**Dependencies to replace**: `get_it`, `injectable` → `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`
 
-### Current Persistence Functionality (Requirements)
+> [!NOTE]
+> This phase focuses **only** on replacing the DI layer. BLoCs will continue to work during this phase — they will be provided via Riverpod instead of get_it. The actual BLoC → Notifier migration happens in Phase 4.
 
-| Requirement | Current Implementation |
-|-------------|------------------------|
-| **Theme Persistence**: User's selected theme mode persists across app restarts | `HydratedCubit` in `theme_cubit.dart` |
-| **Locale Persistence**: User's selected locale persists across app restarts | `HydratedCubit` in `locale_cubit.dart` |
-| **Token Storage**: Auth tokens are stored securely | `flutter_secure_storage` (KEEP — not being replaced) |
-| **Platform Support**: Must work on iOS, Android, Web, macOS, Windows, Linux | Current `HydratedStorage` supports all |
+### Current DI Functionality (Requirements)
 
-### New Drift Database Requirements
+**Dependency Injection** (90 lines of tests in `injection_test.dart`):
 
-1. **Create a SQLite database** using Drift for settings persistence
-2. **Provide a key-value style API** for storing theme mode and locale
-3. **Initialize during app bootstrap** before any UI renders
-4. **Handle migrations** (schemaVersion management for future changes)
-5. **Support all platforms** via `sqlite3_flutter_libs`
+| Requirement | Test Coverage |
+|-------------|---------------|
+| Configures successfully for development environment | Tested |
+| Configures successfully for staging environment | Tested |
+| Configures successfully for production environment | Tested |
+| Environment-specific implementations are used (dev vs prod error reporting) | `error_module.dart` uses `@LazySingleton(env: [...])` |
 
-### Files to Create
+### DI Modules to Replace with Providers
 
-- `lib/core/infrastructure/database/app_database.dart` — Main Drift database
-- `lib/core/infrastructure/database/daos/settings_dao.dart` — Data access object for settings (optional, can be methods on database)
+All files in `lib/core/di/modules/`:
+- `bloc_module.dart` — Convert to providers that expose existing BLoCs
+- `error_module.dart` (must preserve environment-specific behavior)
+- `logging_module.dart`
+- `navigation_module.dart`
+- `network_module.dart`
+- `storage_module.dart`
+- `websocket_module.dart`
 
-### Files to Modify
+### Environment-Specific Behavior (CRITICAL)
 
-- `lib/core/application/bootstrap_service.dart` — Remove HydratedStorage initialization
-- `lib/core/di/modules/storage_module.dart` — Wire up Drift database
+The current DI uses injectable's `env` parameter to provide different implementations per environment:
+
+```dart
+@LazySingleton(env: [AppEnvironment.devEnv])
+IErrorReporter get devErrorReporter => ...
+
+@LazySingleton(env: [AppEnvironment.stagingEnv, AppEnvironment.prodEnv])
+IErrorReporter get prodErrorReporter => ...
+```
+
+**This behavior MUST be preserved** using Riverpod's family providers or conditional logic based on current environment.
+
+### Files to Modify/Delete
+
+- `lib/core/di/injection.dart` — Replace with Riverpod provider setup
+- `lib/core/di/injection.config.dart` — Delete (generated by injectable)
+- All module files — Convert to provider files or delete if inlined
 
 ### Dependencies to Change
 
-**Remove** (in Phase 4, when HydratedCubit is removed):
-- `hydrated_bloc`
+**Remove**:
+- `get_it`
+- `injectable`
+- `injectable_generator` (dev)
 
 **Add** (latest versions):
-- `drift`
-- `drift_dev` (dev dependency)
-- `sqlite3_flutter_libs`
-- `path` (if not already present)
+- `flutter_riverpod`
+- `riverpod_annotation`
+- `riverpod_generator` (dev)
+- `riverpod_lint` (dev)
+
+### Phase 3 Deliverables
+
+In addition to the migration itself, this phase must include:
+
+- [ ] Update DI-related tests for Riverpod patterns
+- [ ] Wrap app with `ProviderScope`
+- [ ] BLoCs are now provided via Riverpod (but still use BlocProvider for widgets)
+- [ ] Update `ARCHITECTURE.md` with new DI patterns
+- [ ] Update `lib/core/di/README.md` for Riverpod providers
+- [ ] Add ADR: Migration from get_it/injectable to Riverpod providers
+- [ ] Resolve all analyzer warnings related to DI changes
 
 ### Verification
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-flutter analyze
-flutter test test/core/presentation/  # Theme/locale tests
+flutter analyze  # No warnings or errors
+flutter test test/core/di/  # DI tests must pass
 flutter test --coverage
 ```
 
 ---
 
-## Phase 4: State Management Migration (Riverpod)
+## Phase 4: State Management Migration (Riverpod Notifiers)
 
 **Risk Level**: High  
-**Dependencies to replace**: `flutter_bloc`, `bloc_concurrency`, `get_it`, `injectable` → `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`
+**Dependencies to replace**: `flutter_bloc`, `bloc_concurrency`, `hydrated_bloc` → Riverpod notifiers
+
+> [!NOTE]
+> This phase converts BLoCs/Cubits to Riverpod Notifiers. The DI layer should already be using Riverpod from Phase 3.
 
 ### Current State Management Functionality (Requirements)
 
@@ -297,14 +364,6 @@ flutter test --coverage
 | Switch between supported locales | Tested |
 | State persists across app restart | Via HydratedBloc |
 
-**Dependency Injection** (90 lines of tests in `injection_test.dart`):
-| Requirement | Test Coverage |
-|-------------|---------------|
-| Configures successfully for development environment | Tested |
-| Configures successfully for staging environment | Tested |
-| Configures successfully for production environment | Tested |
-| Environment-specific implementations are used (dev vs prod error reporting) | `error_module.dart` uses `@LazySingleton(env: [...])` |
-
 ### State Classes to Migrate to Dart 3 Sealed Classes
 
 - `lib/features/auth/presentation/bloc/auth_state.dart`
@@ -317,39 +376,11 @@ flutter test --coverage
 
 - `AuthBloc` → `AuthNotifier` (using `@riverpod` annotation)
 - `ProfileBloc` → `ProfileNotifier`
-- `ThemeCubit` → `ThemeNotifier` (integrate with Drift for persistence)
-- `LocaleCubit` → `LocaleNotifier` (integrate with Drift for persistence)
-
-### DI Modules to Replace with Providers
-
-All files in `lib/core/di/modules/`:
-- `bloc_module.dart`
-- `error_module.dart` (must preserve environment-specific behavior)
-- `logging_module.dart`
-- `navigation_module.dart`
-- `network_module.dart`
-- `storage_module.dart`
-- `websocket_module.dart`
-
-### Environment-Specific Behavior (CRITICAL)
-
-The current DI uses injectable's `env` parameter to provide different implementations per environment:
-
-```dart
-@LazySingleton(env: [AppEnvironment.devEnv])
-IErrorReporter get devErrorReporter => ...
-
-@LazySingleton(env: [AppEnvironment.stagingEnv, AppEnvironment.prodEnv])
-IErrorReporter get prodErrorReporter => ...
-```
-
-**This behavior MUST be preserved** using Riverpod's family providers or conditional logic based on current environment.
+- `ThemeCubit` → `ThemeNotifier` (use SharedPreferences or similar for persistence)
+- `LocaleCubit` → `LocaleNotifier` (use SharedPreferences or similar for persistence)
 
 ### Files to Delete
 
-- Entire `lib/core/di/` directory (but document this in updated ARCHITECTURE.md)
-- `lib/core/di/injection.dart`
-- `lib/core/di/injection.config.dart`
 - All `*_event.dart` files (events become methods on notifiers)
 
 ### Dependencies to Change
@@ -357,108 +388,36 @@ IErrorReporter get prodErrorReporter => ...
 **Remove**:
 - `flutter_bloc`
 - `bloc_concurrency`
-- `get_it`
-- `injectable`
 - `hydrated_bloc`
-- `injectable_generator` (dev)
 - `bloc_test` (dev)
 - `bloc_lint` (dev)
 
-**Add** (latest versions):
-- `flutter_riverpod`
-- `riverpod_annotation`
-- `riverpod_generator` (dev)
-- `riverpod_lint` (dev)
+### Phase 4 Deliverables
+
+In addition to the migration itself, this phase must include:
+
+- [ ] Update `test/helpers/pump_app.dart` for Riverpod (`ProviderScope`)
+- [ ] Update `test/helpers/mock_helpers.dart` with mock providers
+- [ ] Delete `test/helpers/test_bloc.dart` (BLoC-specific helper)
+- [ ] Update integration test helpers (convert fake BLoCs to fake notifiers)
+- [ ] Update all UI widgets to use `ConsumerWidget` / `ref.watch`
+- [ ] Update `ARCHITECTURE.md` with new state management patterns
+- [ ] Update `README.md` tech stack table and commands
+- [ ] Update `test/README.md` with Riverpod test patterns
+- [ ] Add ADR: Migration from BLoC to Riverpod
+- [ ] Update Mason bricks (`bricks/bloc/` → `notifier/`, `bricks/feature/` for Riverpod)
+- [ ] Test brick generation in `/tmp` and verify generated code
+- [ ] Resolve all analyzer warnings related to state management changes
 
 ### Verification
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-flutter analyze
+flutter analyze  # No warnings or errors
 
 # This is the critical test — all widget and BLoC tests must pass
 flutter test --coverage
 ```
-
----
-
-## Phase 5: Test Migration
-
-**Risk Level**: Medium
-
-### Test Helper Modifications
-
-| File | Modification |
-|------|--------------|
-| `test/helpers/pump_app.dart` | Update `pumpApp` and `pumpAppWithBloc` to use `ProviderScope` |
-| `test/helpers/mock_helpers.dart` | Add mock providers for Riverpod |
-| `test/helpers/test_bloc.dart` | Delete (no longer needed) |
-| `integration_test/helpers/fake_auth_bloc.dart` | Convert to fake notifier |
-
-### Test Pattern Changes
-
-| Current Pattern | New Pattern |
-|-----------------|-------------|
-| `BlocProvider` in tests | `ProviderScope` with overrides |
-| `blocTest<B, S>()` | Standard `test()` with `ProviderContainer` |
-| `context.read<Bloc>()` | `ref.read(provider)` |
-| `BlocBuilder` in widget tests | `Consumer` / `ConsumerWidget` |
-
-### Verification
-
-```bash
-flutter test --coverage
-# Coverage MUST be >= baseline coverage from before Phase 1
-# All tests MUST pass
-```
-
----
-
-## Phase 6: Mason Bricks Update
-
-Update templates in `bricks/` directory to generate code using the new stack.
-
-### Bricks to Update
-
-| Brick | Changes |
-|-------|---------|
-| `bricks/bloc/` | Rename to `notifier/`, generate Riverpod notifiers |
-| `bricks/feature/` | Update to generate providers instead of BLoCs, use sealed classes |
-| `bricks/entity/` | Review — may need updates for dart_mappable |
-| `bricks/repository/` | Review — update DI annotations |
-| `bricks/use_case/` | Review — update provider patterns |
-| `bricks/value_object/` | Review — update for sealed class failures |
-
-### Verification
-
-```bash
-# Test brick generation
-mason make feature --name test_feature --output-dir /tmp
-# Verify generated code follows new patterns
-```
-
----
-
-## Phase 7: Documentation Update
-
-### Files to Update (NOT delete)
-
-| File | Updates |
-|------|---------|
-| `ARCHITECTURE.md` | Update state management, DI, navigation sections |
-| `README.md` | Update tech stack table, commands, dependencies |
-| `lib/core/di/README.md` | Rewrite for Riverpod providers (or move to new location) |
-| `lib/core/navigation/README.md` | Update for auto_route |
-| `lib/core/navigation/ARCHITECTURE.md` | Update for auto_route |
-| `test/README.md` | Update test patterns for Riverpod |
-| ADR documents in `docs/architecture/decisions/` | Add new ADRs for migration decisions |
-
-### New Documentation to Create
-
-- ADR: Migration from BLoC to Riverpod
-- ADR: Migration from go_router to auto_route
-- ADR: Migration from freezed to dart_mappable + sealed classes
-- ADR: Migration from HydratedBloc to Drift
 
 ---
 
@@ -493,3 +452,5 @@ open coverage/html/index.html
 - [ ] All docstrings updated for modified code
 - [ ] All documentation updated (not deleted)
 - [ ] No tests were deleted unless functionality was intentionally removed
+- [ ] All Mason bricks generate code using the new stack
+- [ ] ADRs exist for all major migration decisions
