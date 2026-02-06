@@ -63,12 +63,12 @@ class AuthToken extends ValueObject<String> {
     String? input,
   ) {
     if (input == null || input.isEmpty) {
-      return left([const TokenFailure.empty()]);
+      return left([const TokenEmpty()]);
     }
 
     if (!_jwtRegex.hasMatch(input)) {
       return left([
-        const TokenFailure.invalidFormat(
+        const TokenInvalidFormat(
           expectedFormat: 'Valid JWT token (header.payload.signature)',
         ),
       ]);

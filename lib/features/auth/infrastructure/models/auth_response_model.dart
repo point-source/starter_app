@@ -1,11 +1,10 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/types/types.dart';
 
 import 'package:starter_app/features/auth/infrastructure/models/auth_tokens_model.dart';
 import 'package:starter_app/features/auth/infrastructure/models/user_model.dart';
 
-part 'auth_response_model.freezed.dart';
-part 'auth_response_model.g.dart';
+part 'auth_response_model.mapper.dart';
 
 /// Data transfer object for authentication responses.
 ///
@@ -20,15 +19,21 @@ part 'auth_response_model.g.dart';
 /// final accessToken = model.tokens.toAccessToken();
 /// final refreshToken = model.tokens.toRefreshToken();
 /// ```
-@freezed
-abstract class AuthResponseModel with _$AuthResponseModel {
-  const factory AuthResponseModel({
-    required UserModel user,
-    required AuthTokensModel tokens,
-  }) = _AuthResponseModel;
-  const AuthResponseModel._();
+@MappableClass()
+class AuthResponseModel with AuthResponseModelMappable {
+  /// The authenticated user.
+  final UserModel user;
 
-  /// Creates model from JSON.
-  factory AuthResponseModel.fromJson(Json json) =>
-      _$AuthResponseModelFromJson(json);
+  /// Authentication tokens.
+  final AuthTokensModel tokens;
+
+  /// Creates an [AuthResponseModel].
+  const AuthResponseModel({
+    required this.user,
+    required this.tokens,
+  });
+
+  /// Creates model from JSON map.
+  static AuthResponseModel fromJson(Json json) =>
+      AuthResponseModelMapper.fromMap(json);
 }

@@ -23,7 +23,7 @@ void main() {
     group('canHandle', () {
       test('returns true for NameFailure', () {
         // Arrange
-        const failure = NameFailure.empty();
+        const failure = NameEmpty();
 
         // Act & Assert
         expect(mapper.canHandle(failure), isTrue);
@@ -31,8 +31,9 @@ void main() {
 
       test('returns true for all NameFailure variants', () {
         // Arrange
-        const failures = [
-          NameFailure.empty(),
+        const failures = <NameFailure>[
+          NameEmpty(),
+          NameTooLong(maxLength: 50, actualLength: 75),
         ];
 
         // Act & Assert
@@ -43,7 +44,7 @@ void main() {
 
       test('returns false for non-NameFailure', () {
         // Arrange
-        const failure = InfrastructureFailure.network(message: 'test');
+        const failure = NetworkFailure(message: 'test');
 
         // Act & Assert
         expect(mapper.canHandle(failure), isFalse);
@@ -56,7 +57,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = NameFailure.empty();
+              const failure = NameEmpty();
 
               // Act
               final message = mapper.map(context, failure);
@@ -75,7 +76,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = NameFailure.tooLong(
+              const failure = NameTooLong(
                 maxLength: 50,
                 actualLength: 75,
               );

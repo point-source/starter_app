@@ -24,7 +24,7 @@ void main() {
 
     test('canHandle returns true for ProfileFailure', () {
       expect(
-        mapper.canHandle(const ProfileFailure.unexpected(message: 'Error')),
+        mapper.canHandle(const ProfileUnexpectedFailure(message: 'Error')),
         isTrue,
       );
     });
@@ -51,7 +51,7 @@ void main() {
               expect(
                 mapper.map(
                   context,
-                  const ProfileFailure.unexpected(message: 'Unexpected'),
+                  const ProfileUnexpectedFailure(message: 'Unexpected'),
                 ),
                 'An unexpected error occurred.',
               );
@@ -59,7 +59,7 @@ void main() {
               expect(
                 mapper.map(
                   context,
-                  const ProfileFailure.serverError(message: 'Server error'),
+                  const ProfileServerError(message: 'Server error'),
                 ),
                 'A server error occurred. Please try again later.',
               );
@@ -67,7 +67,7 @@ void main() {
               expect(
                 mapper.map(
                   context,
-                  const ProfileFailure.notFound(message: 'Not found'),
+                  const ProfileNotFoundFailure(message: 'Not found'),
                 ),
                 'Profile not found.',
               );

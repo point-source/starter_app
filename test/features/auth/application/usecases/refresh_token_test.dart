@@ -60,7 +60,7 @@ void main() {
 
     test('should return Left(Failure) when refresh fails', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(
+      const tFailure = UnauthorizedFailure(
         message: 'Invalid refresh token',
       );
       when(
@@ -83,7 +83,7 @@ void main() {
 
     test('should pass through repository failures unchanged', () async {
       // Given
-      const tFailure = AuthFailure.forbidden(message: 'Token revoked');
+      const tFailure = ForbiddenFailure(message: 'Token revoked');
       when(
         () => mockRepository.refreshToken(any()),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -130,7 +130,7 @@ void main() {
 
       test('refresh token expired requires re-login', () async {
         // Given - refresh token has expired
-        const failure = AuthFailure.unauthorized(
+        const failure = UnauthorizedFailure(
           message: 'Refresh token expired, please login again',
         );
         when(
@@ -150,7 +150,7 @@ void main() {
 
       test('refresh token revoked by user', () async {
         // Given - user has revoked all sessions
-        const failure = AuthFailure.forbidden(
+        const failure = ForbiddenFailure(
           message: 'Token has been revoked',
         );
         when(

@@ -1,11 +1,10 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/types/types.dart';
 import 'package:starter_app/features/auth/domain/entities/user.dart';
 import 'package:starter_app/features/auth/domain/entities/user_id.dart';
 
-part 'user_model.freezed.dart';
-part 'user_model.g.dart';
+part 'user_model.mapper.dart';
 
 /// Data transfer object for [User] entity.
 ///
@@ -21,16 +20,22 @@ part 'user_model.g.dart';
 /// // To API request (rarely needed for User)
 /// final json = UserModel.fromDomain(user).toJson();
 /// ```
-@freezed
-abstract class UserModel with _$UserModel {
-  const factory UserModel({
-    required String id,
-    required String email,
-  }) = _UserModel;
-  const UserModel._();
+@MappableClass()
+class UserModel with UserModelMappable {
+  /// User ID.
+  final String id;
 
-  /// Creates model from JSON.
-  factory UserModel.fromJson(Json json) => _$UserModelFromJson(json);
+  /// User email address.
+  final String email;
+
+  /// Creates a [UserModel].
+  const UserModel({
+    required this.id,
+    required this.email,
+  });
+
+  /// Creates model from JSON map.
+  static UserModel fromJson(Json json) => UserModelMapper.fromMap(json);
 
   /// Creates model from domain entity.
   factory UserModel.fromDomain(User user) {

@@ -1,22 +1,23 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/types/types.dart';
 
-part 'check_user_exists_request_model.freezed.dart';
-part 'check_user_exists_request_model.g.dart';
+part 'check_user_exists_request_model.mapper.dart';
 
 /// Data transfer object for check user exists requests.
-@freezed
-abstract class CheckUserExistsRequestModel with _$CheckUserExistsRequestModel {
-  const factory CheckUserExistsRequestModel({
-    required String email,
-  }) = _CheckUserExistsRequestModel;
+@MappableClass()
+class CheckUserExistsRequestModel with CheckUserExistsRequestModelMappable {
+  /// User email address to check.
+  final String email;
 
-  const CheckUserExistsRequestModel._();
+  /// Creates a [CheckUserExistsRequestModel].
+  const CheckUserExistsRequestModel({
+    required this.email,
+  });
 
-  /// Creates model from JSON (rarely used).
-  factory CheckUserExistsRequestModel.fromJson(Json json) =>
-      _$CheckUserExistsRequestModelFromJson(json);
+  /// Creates model from JSON map (rarely used).
+  static CheckUserExistsRequestModel fromJson(Json json) =>
+      CheckUserExistsRequestModelMapper.fromMap(json);
 
   /// Creates model from domain email.
   factory CheckUserExistsRequestModel.fromDomain(EmailAddress email) {

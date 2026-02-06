@@ -1,18 +1,20 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/types/types.dart';
 
-part 'check_user_exists_response_model.freezed.dart';
-part 'check_user_exists_response_model.g.dart';
+part 'check_user_exists_response_model.mapper.dart';
 
 /// Data transfer object for check user exists responses.
-@freezed
-abstract class CheckUserExistsResponseModel
-    with _$CheckUserExistsResponseModel {
-  const factory CheckUserExistsResponseModel({
-    required bool exists,
-  }) = _CheckUserExistsResponseModel;
+@MappableClass()
+class CheckUserExistsResponseModel with CheckUserExistsResponseModelMappable {
+  /// Whether the user exists.
+  final bool exists;
 
-  /// Creates model from JSON.
-  factory CheckUserExistsResponseModel.fromJson(Json json) =>
-      _$CheckUserExistsResponseModelFromJson(json);
+  /// Creates a [CheckUserExistsResponseModel].
+  const CheckUserExistsResponseModel({
+    required this.exists,
+  });
+
+  /// Creates model from JSON map.
+  static CheckUserExistsResponseModel fromJson(Json json) =>
+      CheckUserExistsResponseModelMapper.fromMap(json);
 }

@@ -10,7 +10,7 @@ void main() {
     test('fromJson creates model correctly', () {
       final json = {
         'event': 'user_authenticated',
-        'data': tUser.toJson(),
+        'data': tUser.toMap(),
         'timestamp': '2023-01-01T12:00:00.000Z',
       };
 
@@ -54,7 +54,7 @@ void main() {
           timestamp: timestamp,
         );
 
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['event'], 'user_authenticated');
         expect(json['data'], isNotNull);
@@ -64,7 +64,7 @@ void main() {
       test('converts model to JSON with null data and timestamp', () {
         const model = AuthWsEventModel(event: 'user_logged_out');
 
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['event'], 'user_logged_out');
         expect(json['data'], isNull);

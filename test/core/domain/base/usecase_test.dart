@@ -64,7 +64,7 @@ void main() {
     });
 
     test('handles failure result', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final useCase = TestUseCase((params) async => left(failure));
       final result = await useCase.call('test');
 
@@ -101,7 +101,7 @@ void main() {
     });
 
     test('handles failure result', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final useCase = TestUseCaseNoParams(() async => left(failure));
       final result = await useCase.call();
 
@@ -143,7 +143,7 @@ void main() {
     });
 
     test('handles failure result in stream', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final useCase = TestStreamUseCase(
         (params) => Stream.value(left(failure)),
       );
@@ -207,7 +207,7 @@ void main() {
     });
 
     test('handles failure result in stream', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final useCase = TestStreamUseCaseNoParams(
         () => Stream.value(left(failure)),
       );

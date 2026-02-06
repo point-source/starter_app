@@ -52,7 +52,7 @@ void main() {
       () async {
         // Arrange
         const exception = ServerException(message: 'error', statusCode: 500);
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'mapped error',
           statusCode: 500,
         );

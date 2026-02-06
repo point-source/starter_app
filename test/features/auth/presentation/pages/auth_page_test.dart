@@ -36,18 +36,16 @@ class MockFailureMessageService extends Mock implements FailureMessageService {}
 
 class FakeBuildContext extends Fake implements BuildContext {}
 
-class FakeAuthFailure extends Fake implements AuthFailure {}
-
-class FakeInfrastructureFailure extends Fake implements InfrastructureFailure {}
-
 void main() {
   late MockAuthBloc mockAuthBloc;
   late MockFailureMessageService mockFailureMessageService;
 
   setUpAll(() {
     registerFallbackValue(FakeBuildContext());
-    registerFallbackValue(FakeAuthFailure());
-    registerFallbackValue(FakeInfrastructureFailure());
+    registerFallbackValue(
+      const UnauthorizedFailure(message: 'fallback'),
+    );
+    registerFallbackValue(const NetworkFailure(message: 'fallback'));
     registerFallbackValue(FakePageRouteInfo());
   });
 
@@ -289,7 +287,7 @@ void main() {
 
       testWidgets('shows snackbar on error', (tester) async {
         setUpViewSize(tester);
-        const failure = AuthFailure.unauthorized(message: 'fake');
+        const failure = UnauthorizedFailure(message: 'fake');
         when(
           () => mockFailureMessageService.getLocalizedMessage(any(), any()),
         ).thenReturn('Something went wrong');
@@ -324,7 +322,7 @@ void main() {
         tester,
       ) async {
         setUpViewSize(tester);
-        const failure = InfrastructureFailure.network(message: 'fake');
+        const failure = NetworkFailure(message: 'fake');
         when(
           () => mockFailureMessageService.getLocalizedMessage(any(), any()),
         ).thenReturn('Error');
@@ -360,7 +358,7 @@ void main() {
         tester,
       ) async {
         setUpViewSize(tester);
-        const failure = InfrastructureFailure.network(message: 'fake');
+        const failure = NetworkFailure(message: 'fake');
         when(
           () => mockFailureMessageService.getLocalizedMessage(any(), any()),
         ).thenReturn('Error');
@@ -402,7 +400,7 @@ void main() {
         'retries last action on snackbar action tap (registration)',
         (tester) async {
           setUpViewSize(tester);
-          const failure = InfrastructureFailure.network(message: 'fake');
+          const failure = NetworkFailure(message: 'fake');
           when(
             () => mockFailureMessageService.getLocalizedMessage(any(), any()),
           ).thenReturn('Error');

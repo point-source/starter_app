@@ -1,44 +1,133 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:starter_app/core/error/failures/technical_failure.dart';
-
-part 'profile_failure.freezed.dart';
 
 /// Profile domain failures.
 ///
 /// Represents business logic errors specific to user profile operations.
 /// Extends [TechnicalFailure] which provides [isRetryable] and [stackTrace].
-@freezed
-abstract class ProfileFailure extends TechnicalFailure with _$ProfileFailure {
-  const ProfileFailure._();
+sealed class ProfileFailure extends TechnicalFailure {
+  /// Creates a [ProfileFailure].
+  const ProfileFailure();
 
-  const factory ProfileFailure.unexpected({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _Unexpected;
+  /// Returns the error message.
+  String get message;
+}
 
-  const factory ProfileFailure.serverError({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _ServerError;
-
-  const factory ProfileFailure.notFound({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _NotFound;
+/// Unexpected error in profile operations.
+final class ProfileUnexpectedFailure extends ProfileFailure {
+  @override
+  final String message;
 
   @override
-  bool get isRetryable => when(
-    unexpected: (_, _) => false,
-    serverError: (_, _) => true,
-    notFound: (_, _) => false,
-  );
+  final StackTrace? stackTrace;
 
-  // coverage:ignore-start
+  /// Creates a [ProfileUnexpectedFailure].
+  const ProfileUnexpectedFailure({
+    required this.message,
+    this.stackTrace,
+  });
+
   @override
-  StackTrace? get stackTrace => when(
-    unexpected: (_, stackTrace) => stackTrace,
-    serverError: (_, stackTrace) => stackTrace,
-    notFound: (_, stackTrace) => stackTrace,
-  );
-  // coverage:ignore-end
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  ProfileUnexpectedFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return ProfileUnexpectedFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProfileUnexpectedFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'ProfileFailure.unexpected(message: $message)';
+}
+
+/// Server error in profile operations.
+final class ProfileServerError extends ProfileFailure {
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
+
+  /// Creates a [ProfileServerError].
+  const ProfileServerError({
+    required this.message,
+    this.stackTrace,
+  });
+
+  @override
+  bool get isRetryable => true;
+
+  /// Creates a copy with the given fields replaced.
+  ProfileServerError copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return ProfileServerError(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProfileServerError && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'ProfileFailure.serverError(message: $message)';
+}
+
+/// Profile not found.
+final class ProfileNotFoundFailure extends ProfileFailure {
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
+
+  /// Creates a [ProfileNotFoundFailure].
+  const ProfileNotFoundFailure({
+    required this.message,
+    this.stackTrace,
+  });
+
+  @override
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  ProfileNotFoundFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return ProfileNotFoundFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProfileNotFoundFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'ProfileFailure.notFound(message: $message)';
 }

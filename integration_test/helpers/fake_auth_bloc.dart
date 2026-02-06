@@ -187,7 +187,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
           currentState.copyWith(
             isSubmitting: false,
             error: ErrorModel.fromFailure(
-              const AuthFailure.unauthorized(
+              const UnauthorizedFailure(
                 message: 'Invalid credentials',
               ),
             ),
@@ -215,7 +215,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
           currentState.copyWith(
             isSubmitting: false,
             error: ErrorModel.fromFailure(
-              const AuthFailure.emailAlreadyInUse(),
+              const EmailAlreadyInUseFailure(),
             ),
           ),
         );

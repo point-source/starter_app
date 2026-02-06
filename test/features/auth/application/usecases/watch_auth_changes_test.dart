@@ -89,7 +89,7 @@ void main() {
 
     test('should emit Left(Failure) on error', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(message: 'Session expired');
+      const tFailure = UnauthorizedFailure(message: 'Session expired');
       when(
         () => mockRepository.watchAuthChanges(),
       ).thenAnswer((_) => Stream.value(const Left(tFailure)));
@@ -224,7 +224,7 @@ void main() {
 
       test('session expiry triggers stream error', () async {
         // Given - session expires during watch
-        const failure = AuthFailure.unauthorized(
+        const failure = UnauthorizedFailure(
           message: 'Session expired',
         );
         when(() => mockRepository.watchAuthChanges()).thenAnswer(

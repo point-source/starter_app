@@ -23,7 +23,7 @@ void main() {
     group('canHandle', () {
       test('returns true for PasswordFailure', () {
         // Arrange
-        const failure = PasswordFailure.empty();
+        const failure = PasswordEmpty();
 
         // Act & Assert
         expect(mapper.canHandle(failure), isTrue);
@@ -31,14 +31,14 @@ void main() {
 
       test('returns true for all PasswordFailure variants', () {
         // Arrange
-        const failures = [
-          PasswordFailure.empty(),
-          PasswordFailure.tooShort(minLength: 8, actualLength: 5),
-          PasswordFailure.tooLong(maxLength: 128, actualLength: 150),
-          PasswordFailure.missingUppercase(),
-          PasswordFailure.missingLowercase(),
-          PasswordFailure.missingDigit(),
-          PasswordFailure.missingSpecialCharacter(),
+        const failures = <PasswordFailure>[
+          PasswordEmpty(),
+          PasswordTooShort(minLength: 8, actualLength: 5),
+          PasswordTooLong(maxLength: 128, actualLength: 150),
+          PasswordMissingUppercase(),
+          PasswordMissingLowercase(),
+          PasswordMissingDigit(),
+          PasswordMissingSpecialCharacter(),
         ];
 
         // Act & Assert
@@ -49,7 +49,7 @@ void main() {
 
       test('returns false for non-PasswordFailure', () {
         // Arrange
-        const failure = InfrastructureFailure.network(message: 'test');
+        const failure = NetworkFailure(message: 'test');
 
         // Act & Assert
         expect(mapper.canHandle(failure), isFalse);
@@ -64,7 +64,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.empty();
+              const failure = PasswordEmpty();
 
               // Act
               final message = mapper.map(context, failure);
@@ -85,7 +85,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.tooShort(
+              const failure = PasswordTooShort(
                 minLength: 8,
                 actualLength: 5,
               );
@@ -109,7 +109,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.tooLong(
+              const failure = PasswordTooLong(
                 maxLength: 128,
                 actualLength: 150,
               );
@@ -131,7 +131,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.missingUppercase();
+              const failure = PasswordMissingUppercase();
 
               // Act
               final message = mapper.map(context, failure);
@@ -150,7 +150,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.missingLowercase();
+              const failure = PasswordMissingLowercase();
 
               // Act
               final message = mapper.map(context, failure);
@@ -169,7 +169,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.missingDigit();
+              const failure = PasswordMissingDigit();
 
               // Act
               final message = mapper.map(context, failure);
@@ -190,7 +190,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = PasswordFailure.missingSpecialCharacter();
+              const failure = PasswordMissingSpecialCharacter();
 
               // Act
               final message = mapper.map(context, failure);

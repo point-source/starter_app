@@ -53,7 +53,7 @@ void main() {
           name: TestData.name,
         );
 
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['email'], TestData.email);
         expect(json['password'], TestData.password);

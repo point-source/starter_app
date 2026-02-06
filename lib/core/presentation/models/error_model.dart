@@ -1,11 +1,10 @@
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:starter_app/core/error/failures/failure.dart';
 import 'package:starter_app/core/error/failures/technical_failure.dart';
-import 'package:starter_app/core/error/failures/value_failure.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
 
-part 'error_model.freezed.dart';
+part 'error_model.mapper.dart';
 
 /// Presentation model for displaying errors in the UI.
 ///
@@ -32,16 +31,19 @@ part 'error_model.freezed.dart';
 ///   showSnackBar(message);
 /// }
 /// ```
-@freezed
-abstract class ErrorModel with _$ErrorModel {
-  /// Creates an error model from a domain failure.
-  const factory ErrorModel({
-    /// The underlying domain failure.
-    required Failure failure,
+@MappableClass()
+class ErrorModel with ErrorModelMappable {
+  /// The underlying domain failure.
+  final Failure failure;
 
-    /// Whether this error can be retried by the user.
-    required bool isRetryable,
-  }) = _ErrorModel;
+  /// Whether this error can be retried by the user.
+  final bool isRetryable;
+
+  /// Creates an [ErrorModel].
+  const ErrorModel({
+    required this.failure,
+    required this.isRetryable,
+  });
 
   /// Factory to create from a Failure (used by BLoC).
   ///

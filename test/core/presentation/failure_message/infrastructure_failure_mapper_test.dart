@@ -24,7 +24,7 @@ void main() {
     });
 
     test('canHandle returns true for InfrastructureFailure', () {
-      expect(mapper.canHandle(const InfrastructureFailure.network()), true);
+      expect(mapper.canHandle(const NetworkFailure()), true);
     });
 
     group('map', () {
@@ -34,7 +34,7 @@ void main() {
             builder: (context) {
               final message = mapper.map(
                 context,
-                const InfrastructureFailure.network(),
+                const NetworkFailure(),
               );
               expect(message, isNotEmpty);
               expect(message.toLowerCase(), contains('connect'));
@@ -50,7 +50,7 @@ void main() {
             builder: (context) {
               final message = mapper.map(
                 context,
-                const InfrastructureFailure.unexpected(),
+                const UnexpectedFailure(),
               );
               expect(message, isNotEmpty);
               expect(message.toLowerCase(), contains('unexpected'));
@@ -66,7 +66,7 @@ void main() {
             builder: (context) {
               final message = mapper.map(
                 context,
-                const InfrastructureFailure.server(
+                const ServerFailure(
                   message: 'Error',
                   statusCode: 500,
                 ),
@@ -85,7 +85,7 @@ void main() {
             builder: (context) {
               final message = mapper.map(
                 context,
-                const InfrastructureFailure.cache(),
+                const CacheFailure(),
               );
               expect(message, isNotEmpty);
               expect(message.toLowerCase(), contains('storage'));
@@ -101,7 +101,7 @@ void main() {
             builder: (context) {
               final message = mapper.map(
                 context,
-                const InfrastructureFailure.parse(),
+                const ParseFailure(),
               );
               expect(message, isNotEmpty);
               expect(message.toLowerCase(), contains('data'));
@@ -119,7 +119,7 @@ void main() {
             builder: (context) {
               final message = mapper.map(
                 context,
-                const InfrastructureFailure.circuitBreaker(),
+                const CircuitBreakerFailure(),
               );
               expect(message, isNotEmpty);
               expect(message.toLowerCase(), contains('circuit'));

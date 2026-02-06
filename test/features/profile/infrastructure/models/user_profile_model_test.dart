@@ -51,7 +51,7 @@ void main() {
           avatarUrl: TestData.profileImageUrl,
         );
 
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['id'], equals(TestData.userId));
         expect(json['userId'], equals(TestData.userId));
@@ -66,7 +66,7 @@ void main() {
           displayName: TestData.name,
         );
 
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['avatarUrl'], isNull);
       });

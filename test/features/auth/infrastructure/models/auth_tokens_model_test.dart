@@ -40,14 +40,14 @@ void main() {
 
     group('toJson', () {
       test('serializes to JSON', () {
-        final result = tModel.toJson();
+        final result = tModel.toMap();
 
         expect(result['accessToken'], tAccessToken);
         expect(result['refreshToken'], tRefreshToken);
       });
 
       test('produces valid JSON for API requests', () {
-        final json = tModel.toJson();
+        final json = tModel.toMap();
 
         expect(json, isA<Map<String, dynamic>>());
         expect(json.keys, containsAll(['accessToken', 'refreshToken']));
@@ -106,7 +106,7 @@ void main() {
         };
 
         final model = AuthTokensModel.fromJson(originalJson);
-        final backToJson = model.toJson();
+        final backToJson = model.toMap();
 
         expect(backToJson, originalJson);
       });

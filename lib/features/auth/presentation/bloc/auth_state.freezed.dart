@@ -241,7 +241,7 @@ $Res call({
 });
 
 
-$FieldValidationStateCopyWith<$Res> get validation;$ErrorModelCopyWith<$Res>? get error;
+$FieldValidationStateCopyWith<$Res> get validation;
 
 }
 /// @nodoc
@@ -272,18 +272,6 @@ $FieldValidationStateCopyWith<$Res> get validation {
   
   return $FieldValidationStateCopyWith<$Res>(_self.validation, (value) {
     return _then(_self.copyWith(validation: value));
-  });
-}/// Create a copy of AuthState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ErrorModelCopyWith<$Res>? get error {
-    if (_self.error == null) {
-    return null;
-  }
-
-  return $ErrorModelCopyWith<$Res>(_self.error!, (value) {
-    return _then(_self.copyWith(error: value));
   });
 }
 }
@@ -369,7 +357,7 @@ $Res call({
 });
 
 
-$FieldValidationStateCopyWith<$Res> get validation;$ErrorModelCopyWith<$Res>? get error;
+$FieldValidationStateCopyWith<$Res> get validation;
 
 }
 /// @nodoc
@@ -403,18 +391,6 @@ $FieldValidationStateCopyWith<$Res> get validation {
   
   return $FieldValidationStateCopyWith<$Res>(_self.validation, (value) {
     return _then(_self.copyWith(validation: value));
-  });
-}/// Create a copy of AuthState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ErrorModelCopyWith<$Res>? get error {
-    if (_self.error == null) {
-    return null;
-  }
-
-  return $ErrorModelCopyWith<$Res>(_self.error!, (value) {
-    return _then(_self.copyWith(error: value));
   });
 }
 }
@@ -467,7 +443,7 @@ $Res call({
 });
 
 
-$FieldValidationStateCopyWith<$Res> get validation;$ErrorModelCopyWith<$Res>? get error;
+$FieldValidationStateCopyWith<$Res> get validation;
 
 }
 /// @nodoc
@@ -500,18 +476,6 @@ $FieldValidationStateCopyWith<$Res> get validation {
   
   return $FieldValidationStateCopyWith<$Res>(_self.validation, (value) {
     return _then(_self.copyWith(validation: value));
-  });
-}/// Create a copy of AuthState
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ErrorModelCopyWith<$Res>? get error {
-    if (_self.error == null) {
-    return null;
-  }
-
-  return $ErrorModelCopyWith<$Res>(_self.error!, (value) {
-    return _then(_self.copyWith(error: value));
   });
 }
 }

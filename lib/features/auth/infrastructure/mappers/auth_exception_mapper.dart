@@ -13,10 +13,10 @@ import 'package:starter_app/features/auth/domain/failure/auth_failure.dart';
 /// mapping for authentication-related HTTP errors.
 ///
 /// Status code mapping:
-/// - 401 Unauthorized → [AuthFailure.unauthorized]
-/// - 403 Forbidden → [AuthFailure.forbidden]
-/// - 404 Not Found → [AuthFailure.notFound]
-/// - Other 4xx/5xx → [InfrastructureFailure.server]
+/// - 401 Unauthorized → [UnauthorizedFailure]
+/// - 403 Forbidden → [ForbiddenFailure]
+/// - 404 Not Found → [AuthNotFoundFailure]
+/// - Other 4xx/5xx → [ServerFailure]
 @injectable
 final class AuthExceptionMapper implements IExceptionMapper {
   const AuthExceptionMapper();
@@ -24,20 +24,20 @@ final class AuthExceptionMapper implements IExceptionMapper {
   @override
   TechnicalFailure mapToFailure(ServerException exception) {
     return switch (exception.statusCode) {
-      HttpStatus.badRequest => AuthFailure.invalidInput(
+      HttpStatus.badRequest => InvalidInputFailure(
         message: exception.message,
       ),
-      HttpStatus.unauthorized => AuthFailure.unauthorized(
+      HttpStatus.unauthorized => UnauthorizedFailure(
         message: exception.message,
       ),
-      HttpStatus.forbidden => AuthFailure.forbidden(
+      HttpStatus.forbidden => ForbiddenFailure(
         message: exception.message,
       ),
-      HttpStatus.notFound => AuthFailure.notFound(
+      HttpStatus.notFound => AuthNotFoundFailure(
         message: exception.message,
       ),
-      HttpStatus.conflict => const AuthFailure.emailAlreadyInUse(),
-      _ => InfrastructureFailure.server(
+      HttpStatus.conflict => const EmailAlreadyInUseFailure(),
+      _ => ServerFailure(
         message: exception.message,
         statusCode: exception.statusCode,
       ),

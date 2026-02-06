@@ -72,7 +72,7 @@ void main() {
       blocTest<ProfileBloc, ProfileState>(
         'emits [loading, error] when GetProfile fails',
         build: () {
-          const failure = ProfileFailure.serverError(message: 'Server error');
+          const failure = ProfileServerError(message: 'Server error');
           when(() => mockRepository.getCurrentProfile()).thenAnswer(
             (_) async => const Left(failure),
           );

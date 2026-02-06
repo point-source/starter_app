@@ -22,10 +22,10 @@ class EmailFailureMapper extends FailureMessageMapper {
   @override
   String map(BuildContext context, Failure failure) {
     final emailFailure = failure as EmailFailure;
-    return emailFailure.when(
-      empty: () => context.appL10n.emailEmpty,
-      tooLong: (maxLength, _) => context.appL10n.emailTooLong(maxLength),
-      invalidFormat: (_) => context.appL10n.emailInvalidFormat,
-    );
+    return switch (emailFailure) {
+      EmailEmpty() => context.appL10n.emailEmpty,
+      EmailTooLong(:final maxLength) => context.appL10n.emailTooLong(maxLength),
+      EmailInvalidFormat() => context.appL10n.emailInvalidFormat,
+    };
   }
 }

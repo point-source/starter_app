@@ -28,13 +28,13 @@ void main() {
 
     group('toJson', () {
       test('serializes to JSON', () {
-        final result = tModel.toJson();
+        final result = tModel.toMap();
 
         expect(result['email'], tEmail);
       });
 
       test('produces valid JSON for API requests', () {
-        final json = tModel.toJson();
+        final json = tModel.toMap();
 
         expect(json, isA<Map<String, dynamic>>());
         expect(json.keys, contains('email'));
@@ -74,7 +74,7 @@ void main() {
         final originalJson = {'email': tEmail};
 
         final model = CheckUserExistsRequestModel.fromJson(originalJson);
-        final backToJson = model.toJson();
+        final backToJson = model.toMap();
 
         expect(backToJson, originalJson);
       });
@@ -83,7 +83,7 @@ void main() {
         final emailAddress = EmailAddress(tEmail);
 
         final model = CheckUserExistsRequestModel.fromDomain(emailAddress);
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['email'], tEmail);
       });
@@ -140,7 +140,7 @@ void main() {
         final emailAddress = TestData.emailAddress('check@example.com');
 
         final model = CheckUserExistsRequestModel.fromDomain(emailAddress);
-        final json = model.toJson();
+        final json = model.toMap();
 
         // Should produce JSON ready for POST /auth/check-user-exists
         expect(json, {'email': 'check@example.com'});
@@ -152,7 +152,7 @@ void main() {
         final model = CheckUserExistsRequestModel.fromDomain(emailAddress);
 
         expect(model.email, 'newuser@example.com');
-        expect(model.toJson(), {'email': 'newuser@example.com'});
+        expect(model.toMap(), {'email': 'newuser@example.com'});
       });
     });
   });

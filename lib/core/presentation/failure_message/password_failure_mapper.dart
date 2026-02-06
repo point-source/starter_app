@@ -22,15 +22,19 @@ class PasswordFailureMapper extends FailureMessageMapper {
   @override
   String map(BuildContext context, Failure failure) {
     final passwordFailure = failure as PasswordFailure;
-    return passwordFailure.when(
-      empty: () => context.appL10n.passwordEmpty,
-      tooShort: (minLength, _) => context.appL10n.passwordTooShort(minLength),
-      tooLong: (maxLength, _) => context.appL10n.passwordTooLong(maxLength),
-      missingUppercase: () => context.appL10n.passwordMissingUppercase,
-      missingLowercase: () => context.appL10n.passwordMissingLowercase,
-      missingDigit: () => context.appL10n.passwordMissingDigit,
-      missingSpecialCharacter: () =>
-          context.appL10n.passwordMissingSpecialCharacter,
-    );
+    return switch (passwordFailure) {
+      PasswordEmpty() => context.appL10n.passwordEmpty,
+      PasswordTooShort(:final minLength) => context.appL10n.passwordTooShort(
+        minLength,
+      ),
+      PasswordTooLong(:final maxLength) => context.appL10n.passwordTooLong(
+        maxLength,
+      ),
+      PasswordMissingUppercase() => context.appL10n.passwordMissingUppercase,
+      PasswordMissingLowercase() => context.appL10n.passwordMissingLowercase,
+      PasswordMissingDigit() => context.appL10n.passwordMissingDigit,
+      PasswordMissingSpecialCharacter() =>
+        context.appL10n.passwordMissingSpecialCharacter,
+    };
   }
 }

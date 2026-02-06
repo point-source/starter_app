@@ -129,14 +129,8 @@ void main() {
         expect(result.isLeft(), true);
         result.fold(
           (failure) {
-            expect(failure, isA<AuthFailure>());
-            (failure as AuthFailure).when(
-              notFound: (message, _) => expect(message, 'User not found'),
-              unauthorized: (_, _) => fail('Should be notFound'),
-              forbidden: (_, _) => fail('Should be notFound'),
-              emailAlreadyInUse: (_, _) => fail('Should be notFound'),
-              invalidInput: (_, _) => fail('Should be notFound'),
-            );
+            expect(failure, isA<AuthNotFoundFailure>());
+            expect((failure as AuthNotFoundFailure).message, 'User not found');
           },
           (r) => fail('Should return Left'),
         );
@@ -202,14 +196,10 @@ void main() {
         expect(result.isLeft(), true);
         result.fold(
           (failure) {
-            expect(failure, isA<AuthFailure>());
-            (failure as AuthFailure).when(
-              unauthorized: (message, _) =>
-                  expect(message, 'Invalid credentials'),
-              notFound: (_, _) => fail('Should be unauthorized'),
-              forbidden: (_, _) => fail('Should be unauthorized'),
-              emailAlreadyInUse: (_, _) => fail('Should be unauthorized'),
-              invalidInput: (_, _) => fail('Should be unauthorized'),
+            expect(failure, isA<UnauthorizedFailure>());
+            expect(
+              (failure as UnauthorizedFailure).message,
+              'Invalid credentials',
             );
           },
           (r) => fail('Should return Left'),
@@ -412,14 +402,10 @@ void main() {
         expect(result.isLeft(), true);
         result.fold(
           (failure) {
-            expect(failure, isA<AuthFailure>());
-            (failure as AuthFailure).when(
-              unauthorized: (message, _) =>
-                  expect(message, 'Invalid refresh token'),
-              notFound: (_, _) => fail('Should be unauthorized'),
-              forbidden: (_, _) => fail('Should be unauthorized'),
-              emailAlreadyInUse: (_, _) => fail('Should be unauthorized'),
-              invalidInput: (_, _) => fail('Should be unauthorized'),
+            expect(failure, isA<UnauthorizedFailure>());
+            expect(
+              (failure as UnauthorizedFailure).message,
+              'Invalid refresh token',
             );
           },
           (r) => fail('Should return Left'),
@@ -505,13 +491,10 @@ void main() {
           expect(result.isLeft(), true);
           result.fold(
             (failure) {
-              expect(failure, isA<AuthFailure>());
-              (failure as AuthFailure).when(
-                unauthorized: (message, _) => expect(message, 'Token expired'),
-                notFound: (_, _) => fail('Should be unauthorized'),
-                forbidden: (_, _) => fail('Should be unauthorized'),
-                emailAlreadyInUse: (_, _) => fail('Should be unauthorized'),
-                invalidInput: (_, _) => fail('Should be unauthorized'),
+              expect(failure, isA<UnauthorizedFailure>());
+              expect(
+                (failure as UnauthorizedFailure).message,
+                'Token expired',
               );
             },
             (r) => fail('Should return Left'),

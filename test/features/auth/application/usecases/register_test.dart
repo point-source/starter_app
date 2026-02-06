@@ -76,7 +76,7 @@ void main() {
 
     test('should return Left(AuthFailure) when service fails', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(
+      const tFailure = UnauthorizedFailure(
         message: 'Email already registered',
       );
       when(

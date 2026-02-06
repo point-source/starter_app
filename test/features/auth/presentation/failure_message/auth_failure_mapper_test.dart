@@ -40,7 +40,7 @@ void main() {
     test('canHandle returns true for AuthFailure', () {
       expect(
         mapper.canHandle(
-          const AuthFailure.unauthorized(message: 'Unauthorized'),
+          const UnauthorizedFailure(message: 'Unauthorized'),
         ),
         true,
       );
@@ -73,7 +73,7 @@ void main() {
               expect(
                 mapper.map(
                   context,
-                  const AuthFailure.unauthorized(
+                  const UnauthorizedFailure(
                     message: 'Invalid email or password',
                   ),
                 ),
@@ -82,7 +82,7 @@ void main() {
               expect(
                 mapper.map(
                   context,
-                  const AuthFailure.forbidden(message: 'Access denied'),
+                  const ForbiddenFailure(message: 'Access denied'),
                 ),
                 'Access denied - insufficient permissions',
               );
@@ -91,21 +91,21 @@ void main() {
               expect(
                 mapper.map(
                   context,
-                  const AuthFailure.notFound(message: 'Not found'),
+                  const AuthNotFoundFailure(message: 'Not found'),
                 ),
                 'Authentication resource not found',
               );
               expect(
                 mapper.map(
                   context,
-                  const AuthFailure.emailAlreadyInUse(),
+                  const EmailAlreadyInUseFailure(),
                 ),
                 'This email is already registered. Please login instead.',
               );
               expect(
                 mapper.map(
                   context,
-                  const AuthFailure.invalidInput(message: 'Invalid'),
+                  const InvalidInputFailure(message: 'Invalid'),
                 ),
                 'Please check your input and try again.',
               );

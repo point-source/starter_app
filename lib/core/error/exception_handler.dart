@@ -46,13 +46,13 @@ class ExceptionHandler {
   /// Handles exceptions from repository operations.
   ///
   /// Maps common infrastructure exceptions to failures:
-  /// - [NetworkException] → [InfrastructureFailure.network]
-  /// - [CacheException] → [InfrastructureFailure.cache]
-  /// - [CircuitBreakerException] → [InfrastructureFailure.circuitBreaker]
+  /// - [NetworkException] → [NetworkFailure]
+  /// - [CacheException] → [CacheFailure]
+  /// - [CircuitBreakerException] → [CircuitBreakerFailure]
   /// - [ServerException] → Uses custom [serverExceptionMapper] if provided,
-  ///   otherwise maps to [InfrastructureFailure.server]
-  /// - [FormatException] → [InfrastructureFailure.parse]
-  /// - Other exceptions → [InfrastructureFailure.unexpected]
+  ///   otherwise maps to [ServerFailure]
+  /// - [FormatException] → [ParseFailure]
+  /// - Other exceptions → [UnexpectedFailure]
   ///
   /// Parameters:
   /// - [operation]: The async operation to execute
@@ -71,7 +71,7 @@ class ExceptionHandler {
         return Left(serverExceptionMapper(e));
       }
       return Left(
-        InfrastructureFailure.server(
+        ServerFailure(
           message: e.message,
           statusCode: e.statusCode,
           stackTrace: stackTrace,
@@ -79,35 +79,35 @@ class ExceptionHandler {
       );
     } on NetworkException catch (e, stackTrace) {
       return Left(
-        InfrastructureFailure.network(
+        NetworkFailure(
           message: e.message,
           stackTrace: stackTrace,
         ),
       );
     } on CacheException catch (e, stackTrace) {
       return Left(
-        InfrastructureFailure.cache(
+        CacheFailure(
           message: e.message,
           stackTrace: stackTrace,
         ),
       );
     } on CircuitBreakerException catch (e, stackTrace) {
       return Left(
-        InfrastructureFailure.circuitBreaker(
+        CircuitBreakerFailure(
           message: e.message,
           stackTrace: stackTrace,
         ),
       );
     } on FormatException catch (e, stackTrace) {
       return Left(
-        InfrastructureFailure.parse(
+        ParseFailure(
           message: e.message,
           stackTrace: stackTrace,
         ),
       );
     } on Exception catch (e, stackTrace) {
       return Left(
-        InfrastructureFailure.unexpected(
+        UnexpectedFailure(
           message: 'An unexpected error occurred: $e',
           stackTrace: stackTrace,
         ),

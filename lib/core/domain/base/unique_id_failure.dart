@@ -1,7 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
-
-part 'unique_id_failure.freezed.dart';
 
 /// Unique ID validation failures.
 ///
@@ -10,19 +7,42 @@ part 'unique_id_failure.freezed.dart';
 ///
 /// ```dart
 /// // In UI mapper
-/// final message = failure.when(
-///   empty: () => context.l10n.uniqueIdRequired,
-///   invalidFormat: () => context.l10n.uniqueIdInvalid,
-/// );
+/// final message = switch (failure) {
+///   UniqueIdEmpty() => context.l10n.uniqueIdRequired,
+///   UniqueIdInvalidFormat() => context.l10n.uniqueIdInvalid,
+/// };
 /// ```
-@freezed
-sealed class UniqueIdFailure extends ValueFailure<String>
-    with _$UniqueIdFailure {
-  const UniqueIdFailure._();
+sealed class UniqueIdFailure extends ValueFailure<String> {
+  /// Creates a [UniqueIdFailure].
+  const UniqueIdFailure();
+}
 
-  /// Unique ID is empty.
-  const factory UniqueIdFailure.empty() = UniqueIdEmpty;
+/// Unique ID is empty.
+final class UniqueIdEmpty extends UniqueIdFailure {
+  /// Creates a [UniqueIdEmpty] failure.
+  const UniqueIdEmpty();
 
-  /// Unique ID format is invalid.
-  const factory UniqueIdFailure.invalidFormat() = UniqueIdInvalidFormat;
+  @override
+  bool operator ==(Object other) => other is UniqueIdEmpty;
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() => 'UniqueIdFailure.empty()';
+}
+
+/// Unique ID format is invalid.
+final class UniqueIdInvalidFormat extends UniqueIdFailure {
+  /// Creates a [UniqueIdInvalidFormat] failure.
+  const UniqueIdInvalidFormat();
+
+  @override
+  bool operator ==(Object other) => other is UniqueIdInvalidFormat;
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() => 'UniqueIdFailure.invalidFormat()';
 }

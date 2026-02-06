@@ -8,7 +8,7 @@ void main() {
 
     group('unexpected', () {
       test('should have correct properties', () {
-        final failure = ProfileFailure.unexpected(
+        final failure = ProfileUnexpectedFailure(
           message: message,
           stackTrace: stackTrace,
         );
@@ -18,14 +18,14 @@ void main() {
       });
 
       test('isRetryable should be false', () {
-        const failure = ProfileFailure.unexpected(message: message);
+        const failure = ProfileUnexpectedFailure(message: message);
         expect(failure.isRetryable, isFalse);
       });
     });
 
     group('serverError', () {
       test('should have correct properties', () {
-        final failure = ProfileFailure.serverError(
+        final failure = ProfileServerError(
           message: message,
           stackTrace: stackTrace,
         );
@@ -35,14 +35,14 @@ void main() {
       });
 
       test('isRetryable should be true', () {
-        const failure = ProfileFailure.serverError(message: message);
+        const failure = ProfileServerError(message: message);
         expect(failure.isRetryable, isTrue);
       });
     });
 
     group('notFound', () {
       test('should have correct properties', () {
-        final failure = ProfileFailure.notFound(
+        final failure = ProfileNotFoundFailure(
           message: message,
           stackTrace: stackTrace,
         );
@@ -52,7 +52,7 @@ void main() {
       });
 
       test('isRetryable should be false', () {
-        const failure = ProfileFailure.notFound(message: message);
+        const failure = ProfileNotFoundFailure(message: message);
         expect(failure.isRetryable, isFalse);
       });
     });

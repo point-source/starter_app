@@ -1,8 +1,7 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/features/auth/infrastructure/models/user_model.dart';
 
-part 'auth_ws_event_model.freezed.dart';
-part 'auth_ws_event_model.g.dart';
+part 'auth_ws_event_model.mapper.dart';
 
 /// WebSocket event model for authentication state changes.
 ///
@@ -23,22 +22,28 @@ part 'auth_ws_event_model.g.dart';
 ///   }
 /// }
 /// ```
-@freezed
-abstract class AuthWsEventModel with _$AuthWsEventModel {
-  const factory AuthWsEventModel({
-    /// Event type (
-    /// e.g., 'user_authenticated', 'user_updated', 'user_logged_out')
-    required String event,
+@MappableClass()
+class AuthWsEventModel with AuthWsEventModelMappable {
+  /// Event type (
+  /// e.g., 'user_authenticated', 'user_updated', 'user_logged_out')
+  final String event;
 
-    /// Event data (user object or null)
-    UserModel? data,
+  /// Event data (user object or null)
+  final UserModel? data;
 
-    /// Optional timestamp of the event
-    DateTime? timestamp,
-  }) = _AuthWsEventModel;
+  /// Optional timestamp of the event
+  final DateTime? timestamp;
 
-  factory AuthWsEventModel.fromJson(Map<String, dynamic> json) =>
-      _$AuthWsEventModelFromJson(json);
+  /// Creates an [AuthWsEventModel].
+  const AuthWsEventModel({
+    required this.event,
+    this.data,
+    this.timestamp,
+  });
+
+  /// Creates model from JSON map.
+  static AuthWsEventModel fromJson(Map<String, dynamic> json) =>
+      AuthWsEventModelMapper.fromMap(json);
 }
 
 /// Extension to determine event types

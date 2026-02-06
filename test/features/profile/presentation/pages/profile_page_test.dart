@@ -139,7 +139,7 @@ void main() {
     ) async {
       final user = TestData.user();
       final errorModel = ErrorModel.fromFailure(
-        const InfrastructureFailure.server(message: 'Test error'),
+        const ServerFailure(message: 'Test error'),
       );
       when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
       when(

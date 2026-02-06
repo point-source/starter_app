@@ -27,7 +27,7 @@ void main() {
       expect(failure, isA<ProfileFailure>());
       expect(
         failure,
-        equals(const ProfileFailure.notFound(message: message)),
+        equals(const ProfileNotFoundFailure(message: message)),
       );
     });
 
@@ -42,7 +42,7 @@ void main() {
       expect(failure, isA<ProfileFailure>());
       expect(
         failure,
-        equals(const ProfileFailure.serverError(message: message)),
+        equals(const ProfileServerError(message: message)),
       );
     });
 
@@ -58,7 +58,7 @@ void main() {
       expect(
         failure,
         equals(
-          const InfrastructureFailure.server(
+          const ServerFailure(
             message: message,
             statusCode: HttpStatus.badGateway,
           ),

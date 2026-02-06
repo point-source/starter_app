@@ -75,7 +75,7 @@ void main() {
 
     test('should return Left(Failure) when fetching user fails', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(message: 'Token expired');
+      const tFailure = UnauthorizedFailure(message: 'Token expired');
       when(
         () => mockRepository.getCurrentUser(),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -96,7 +96,7 @@ void main() {
 
     test('should pass through repository failures unchanged', () async {
       // Given
-      const tFailure = AuthFailure.forbidden(message: 'Access denied');
+      const tFailure = ForbiddenFailure(message: 'Access denied');
       when(
         () => mockRepository.getCurrentUser(),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -162,7 +162,7 @@ void main() {
 
       test('app startup with expired token', () async {
         // Given - token has expired
-        const failure = AuthFailure.unauthorized(
+        const failure = UnauthorizedFailure(
           message: 'Session expired, please login again',
         );
         when(

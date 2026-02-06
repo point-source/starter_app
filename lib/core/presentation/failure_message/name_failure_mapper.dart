@@ -22,10 +22,9 @@ class NameFailureMapper extends FailureMessageMapper {
   @override
   String map(BuildContext context, Failure failure) {
     final nameFailure = failure as NameFailure;
-    return nameFailure.when(
-      empty: () => context.appL10n.nameEmpty,
-      tooLong: (maxLength, actualLength) =>
-          context.appL10n.nameTooLong(maxLength),
-    );
+    return switch (nameFailure) {
+      NameEmpty() => context.appL10n.nameEmpty,
+      NameTooLong(:final maxLength) => context.appL10n.nameTooLong(maxLength),
+    };
   }
 }

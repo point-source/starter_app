@@ -9,11 +9,13 @@ environment:
 
 dependencies:
   auto_route: ^11.1.0
+  dart_mappable: ^4.6.1
   bloc_concurrency: ^0.3.0
   chopper: ^8.5.0
   flex_color_scheme: ^8.4.0
   flutter:
     sdk: flutter
+  fast_immutable_collections: ^11.1.0
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
@@ -44,6 +46,7 @@ dev_dependencies:
   bloc_test: ^10.0.0
   build_runner: ^2.10.4
   chopper_generator: ^8.5.0
+  dart_mappable_builder: ^4.6.4
   flutter_test:
     sdk: flutter
   freezed: ^3.2.3

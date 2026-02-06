@@ -1,7 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
-
-part 'token_failure.freezed.dart';
 
 /// Token validation failures.
 ///
@@ -10,31 +7,116 @@ part 'token_failure.freezed.dart';
 ///
 /// ```dart
 /// // In UI mapper
-/// final message = failure.when(
-///   empty: () => context.l10n.tokenRequired,
-///   tooShort: (min, actual) => context.l10n.tokenTooShort(min),
-///   invalidFormat: (expected) => context.l10n.tokenInvalid,
-///   expired: () => context.l10n.tokenExpired,
-/// );
+/// final message = switch (failure) {
+///   TokenEmpty() => context.l10n.tokenRequired,
+///   TokenTooShort(:final minLength) => context.l10n.tokenTooShort(minLength),
+///   TokenInvalidFormat(:final expectedFormat) => context.l10n.tokenInvalid,
+///   TokenExpired() => context.l10n.tokenExpired,
+/// };
 /// ```
-@freezed
-sealed class TokenFailure extends ValueFailure<String> with _$TokenFailure {
-  const TokenFailure._();
+sealed class TokenFailure extends ValueFailure<String> {
+  /// Creates a [TokenFailure].
+  const TokenFailure();
+}
 
-  /// Token is empty.
-  const factory TokenFailure.empty() = TokenEmpty;
+/// Token is empty.
+final class TokenEmpty extends TokenFailure {
+  /// Creates a [TokenEmpty] failure.
+  const TokenEmpty();
 
-  /// Token is too short.
-  const factory TokenFailure.tooShort({
-    required int minLength,
-    required int actualLength,
-  }) = TokenTooShort;
+  @override
+  bool operator ==(Object other) => other is TokenEmpty;
 
-  /// Token format is invalid.
-  const factory TokenFailure.invalidFormat({
-    required String expectedFormat,
-  }) = TokenInvalidFormat;
+  @override
+  int get hashCode => runtimeType.hashCode;
 
-  /// Token has expired.
-  const factory TokenFailure.expired() = TokenExpired;
+  @override
+  String toString() => 'TokenFailure.empty()';
+}
+
+/// Token is too short.
+final class TokenTooShort extends TokenFailure {
+  /// Minimum required length.
+  final int minLength;
+
+  /// Actual length of the input.
+  final int actualLength;
+
+  /// Creates a [TokenTooShort] failure.
+  const TokenTooShort({
+    required this.minLength,
+    required this.actualLength,
+  });
+
+  /// Creates a copy with the given fields replaced.
+  TokenTooShort copyWith({
+    int? minLength,
+    int? actualLength,
+  }) {
+    return TokenTooShort(
+      minLength: minLength ?? this.minLength,
+      actualLength: actualLength ?? this.actualLength,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TokenTooShort &&
+          minLength == other.minLength &&
+          actualLength == other.actualLength;
+
+  @override
+  int get hashCode => Object.hash(minLength, actualLength);
+
+  @override
+  String toString() =>
+      'TokenFailure.tooShort(minLength: $minLength, actualLength: $actualLength)';
+}
+
+/// Token format is invalid.
+final class TokenInvalidFormat extends TokenFailure {
+  /// Expected format description.
+  final String expectedFormat;
+
+  /// Creates a [TokenInvalidFormat] failure.
+  const TokenInvalidFormat({
+    required this.expectedFormat,
+  });
+
+  /// Creates a copy with the given fields replaced.
+  TokenInvalidFormat copyWith({
+    String? expectedFormat,
+  }) {
+    return TokenInvalidFormat(
+      expectedFormat: expectedFormat ?? this.expectedFormat,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TokenInvalidFormat && expectedFormat == other.expectedFormat;
+
+  @override
+  int get hashCode => expectedFormat.hashCode;
+
+  @override
+  String toString() =>
+      'TokenFailure.invalidFormat(expectedFormat: $expectedFormat)';
+}
+
+/// Token has expired.
+final class TokenExpired extends TokenFailure {
+  /// Creates a [TokenExpired] failure.
+  const TokenExpired();
+
+  @override
+  bool operator ==(Object other) => other is TokenExpired;
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() => 'TokenFailure.expired()';
 }

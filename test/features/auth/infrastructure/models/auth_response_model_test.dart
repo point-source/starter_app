@@ -46,7 +46,7 @@ void main() {
 
     group('toJson', () {
       test('serializes to JSON with all fields', () {
-        final result = tModel.toJson();
+        final result = tModel.toMap();
 
         expect(result, isA<Map<String, dynamic>>());
         expect(result.containsKey('user'), true);
@@ -54,7 +54,7 @@ void main() {
       });
 
       test('serializes nested models correctly', () {
-        final json = tModel.toJson();
+        final json = tModel.toMap();
 
         expect(json, isA<Map<String, dynamic>>());
         expect(json.containsKey('user'), true);
@@ -83,7 +83,7 @@ void main() {
         const originalJson = TestData.authResponseJson;
 
         final model = AuthResponseModel.fromJson(originalJson);
-        final backToJson = model.toJson();
+        final backToJson = model.toMap();
 
         // Verify it's a Map
         expect(backToJson, isA<Map<String, dynamic>>());

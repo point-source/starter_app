@@ -46,7 +46,7 @@ class AuthRemoteDataSourceImpl extends BaseRemoteDataSource
   @override
   Future<bool> checkUserExists(CheckUserExistsRequestModel request) => execute(
     () async {
-      final response = await _apiService.checkUserExists(request.toJson());
+      final response = await _apiService.checkUserExists(request.toMap());
       return CheckUserExistsResponseModel.fromJson(response.requireBody).exists;
     },
   );
@@ -54,14 +54,14 @@ class AuthRemoteDataSourceImpl extends BaseRemoteDataSource
   @override
   Future<AuthResponseModel> login(LoginRequestModel request) =>
       execute(() async {
-        final response = await _apiService.login(request.toJson());
+        final response = await _apiService.login(request.toMap());
         return AuthResponseModel.fromJson(response.requireBody);
       });
 
   @override
   Future<AuthResponseModel> register(RegisterRequestModel request) =>
       execute(() async {
-        final response = await _apiService.register(request.toJson());
+        final response = await _apiService.register(request.toMap());
         return AuthResponseModel.fromJson(response.requireBody);
       });
 

@@ -101,7 +101,7 @@ void main() {
         build: () {
           when(() => mockWatchAuthChanges()).thenAnswer(
             (_) => Stream.value(
-              const Left(AuthFailure.unauthorized(message: 'Stream Error')),
+              const Left(UnauthorizedFailure(message: 'Stream Error')),
             ),
           );
           return bloc;
@@ -203,7 +203,7 @@ void main() {
         'emits [empty] and logs warning when failure occurs',
         build: () {
           when(() => mockGetCurrentUser()).thenAnswer(
-            (_) async => const Left(AuthFailure.unauthorized(message: 'Error')),
+            (_) async => const Left(UnauthorizedFailure(message: 'Error')),
           );
           return bloc;
         },
@@ -349,7 +349,7 @@ void main() {
         ),
         build: () {
           when(() => mockLogin(any())).thenAnswer(
-            (_) async => const Left(AuthFailure.unauthorized(message: 'Error')),
+            (_) async => const Left(UnauthorizedFailure(message: 'Error')),
           );
           return bloc;
         },
@@ -461,7 +461,7 @@ void main() {
           when(
             () => mockCheckUserExists(any()),
           ).thenAnswer(
-            (_) async => const Left(AuthFailure.unauthorized(message: 'Error')),
+            (_) async => const Left(UnauthorizedFailure(message: 'Error')),
           );
           return bloc;
         },
@@ -537,7 +537,7 @@ void main() {
         ),
         build: () {
           when(() => mockRegister(any())).thenAnswer(
-            (_) async => const Left(AuthFailure.emailAlreadyInUse()),
+            (_) async => const Left(EmailAlreadyInUseFailure()),
           );
           return bloc;
         },
@@ -836,7 +836,7 @@ void main() {
         build: () {
           when(() => mockLogout()).thenAnswer(
             (_) async =>
-                const Left(AuthFailure.unauthorized(message: 'Logout Error')),
+                const Left(UnauthorizedFailure(message: 'Logout Error')),
           );
           return bloc;
         },

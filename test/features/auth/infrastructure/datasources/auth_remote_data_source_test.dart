@@ -64,7 +64,7 @@ void main() {
         // Then
         expect(result, true);
         verify(
-          () => mockApiService.checkUserExists(request.toJson()),
+          () => mockApiService.checkUserExists(request.toMap()),
         ).called(1);
       });
 
@@ -120,7 +120,7 @@ void main() {
         expect(result, isA<AuthResponseModel>());
         expect(result.user.email, tEmail);
         expect(result.tokens.accessToken, TestData.accessToken);
-        verify(() => mockApiService.login(request.toJson())).called(1);
+        verify(() => mockApiService.login(request.toMap())).called(1);
       });
 
       test('throws ServerException on API error', () async {

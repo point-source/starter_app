@@ -69,7 +69,7 @@ void main() {
       test('returns failure when auth registration fails', () async {
         // Arrange
         final credentials = registrationCredentials();
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Registration failed',
         );
         when(

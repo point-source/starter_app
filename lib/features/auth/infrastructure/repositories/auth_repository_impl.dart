@@ -145,20 +145,20 @@ final class AuthRepositoryImpl extends BaseRepository
         handleData: (userModel, sink) => sink.add(right(userModel?.toDomain())),
         handleError: (error, stackTrace, sink) {
           final failure = switch (error) {
-            final ServerException e => InfrastructureFailure.server(
+            final ServerException e => ServerFailure(
               message: e.message,
               statusCode: e.statusCode,
             ),
-            final NetworkException e => InfrastructureFailure.network(
+            final NetworkException e => NetworkFailure(
               message: e.message,
             ),
-            final CacheException e => InfrastructureFailure.cache(
+            final CacheException e => CacheFailure(
               message: e.message,
             ),
-            final FormatException e => InfrastructureFailure.parse(
+            final FormatException e => ParseFailure(
               message: e.message,
             ),
-            _ => InfrastructureFailure.parse(
+            _ => ParseFailure(
               message: 'An unexpected error occurred: $error',
             ),
           };
