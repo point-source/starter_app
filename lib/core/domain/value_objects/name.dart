@@ -28,10 +28,12 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 /// } else {
 ///   final failures = name.getFailuresOrNull();
 ///   for (final failure in failures!) {
-///     failure.when(
-///       empty: () => print('Name is required'),
-///       tooLong: (max, actual) => print('Name too long: $actual > $max'),
-///     );
+///     switch (failure) {
+///       case NameEmpty():
+///         print('Name is required');
+///       case NameTooLong(:final maxLength, :final actualLength):
+///         print('Name too long: $actualLength > $maxLength');
+///     }
 ///   }
 /// }
 ///
@@ -60,20 +62,20 @@ final class Name extends ValueObject<String> {
 
   /// Validates name is not empty and within length limits.
   ///
-  /// Returns [NameFailure.empty] if the name is null or whitespace only.
-  /// Returns [NameFailure.tooLong] if the name exceeds [maxLength].
+  /// Returns [NameEmpty] if the name is null or whitespace only.
+  /// Returns [NameTooLong] if the name exceeds [maxLength].
   static Either<List<ValueFailure<String>>, String> _validateName(
     String? input,
   ) {
     if (input == null || input.trim().isEmpty) {
-      return left([const NameFailure.empty()]);
+      return left([const NameEmpty()]);
     }
 
     final trimmed = input.trim();
 
     if (trimmed.length > maxLength) {
       return left([
-        NameFailure.tooLong(
+        NameTooLong(
           maxLength: maxLength,
           actualLength: trimmed.length,
         ),

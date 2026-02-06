@@ -50,7 +50,7 @@ void main() {
 
     test('should return Left(Failure) when logout fails', () async {
       // Given
-      const tFailure = InfrastructureFailure.server(
+      const tFailure = ServerFailure(
         message: 'Server error during logout',
       );
       when(
@@ -76,7 +76,7 @@ void main() {
 
     test('should pass through repository failures unchanged', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(message: 'Session expired');
+      const tFailure = UnauthorizedFailure(message: 'Session expired');
       when(
         () => mockRepository.logout(),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -119,7 +119,7 @@ void main() {
 
       test('logout clears session even if server call fails', () async {
         // Given - server is unavailable
-        const failure = InfrastructureFailure.network(
+        const failure = NetworkFailure(
           message: 'No internet connection',
         );
         when(

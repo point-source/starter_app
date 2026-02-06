@@ -15,7 +15,7 @@ void main() {
     });
 
     group('mapToFailure', () {
-      test('maps 401 Unauthorized to AuthFailure.unauthorized', () {
+      test('maps 401 Unauthorized to UnauthorizedFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.unauthorized,
           message: 'Invalid credentials',
@@ -23,19 +23,11 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        expect(result, isA<AuthFailure>());
-        (result as AuthFailure).when(
-          unauthorized: (message, stackTrace) {
-            expect(message, 'Invalid credentials');
-          },
-          forbidden: (_, _) => fail('Should be unauthorized'),
-          notFound: (_, _) => fail('Should be unauthorized'),
-          emailAlreadyInUse: (_, _) => fail('Should be unauthorized'),
-          invalidInput: (_, _) => fail('Should be unauthorized'),
-        );
+        expect(result, isA<UnauthorizedFailure>());
+        expect((result as UnauthorizedFailure).message, 'Invalid credentials');
       });
 
-      test('maps 403 Forbidden to AuthFailure.forbidden', () {
+      test('maps 403 Forbidden to ForbiddenFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.forbidden,
           message: 'Account suspended',
@@ -43,19 +35,11 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        expect(result, isA<AuthFailure>());
-        (result as AuthFailure).when(
-          forbidden: (message, stackTrace) {
-            expect(message, 'Account suspended');
-          },
-          unauthorized: (_, _) => fail('Should be forbidden'),
-          notFound: (_, _) => fail('Should be forbidden'),
-          emailAlreadyInUse: (_, _) => fail('Should be forbidden'),
-          invalidInput: (_, _) => fail('Should be forbidden'),
-        );
+        expect(result, isA<ForbiddenFailure>());
+        expect((result as ForbiddenFailure).message, 'Account suspended');
       });
 
-      test('maps 404 Not Found to AuthFailure.notFound', () {
+      test('maps 404 Not Found to AuthNotFoundFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.notFound,
           message: 'User not found',
@@ -63,19 +47,11 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        expect(result, isA<AuthFailure>());
-        (result as AuthFailure).when(
-          notFound: (message, stackTrace) {
-            expect(message, 'User not found');
-          },
-          unauthorized: (_, _) => fail('Should be not found'),
-          forbidden: (_, _) => fail('Should be not found'),
-          emailAlreadyInUse: (_, _) => fail('Should be not found'),
-          invalidInput: (_, _) => fail('Should be not found'),
-        );
+        expect(result, isA<AuthNotFoundFailure>());
+        expect((result as AuthNotFoundFailure).message, 'User not found');
       });
 
-      test('maps 409 Conflict to AuthFailure.emailAlreadyInUse', () {
+      test('maps 409 Conflict to EmailAlreadyInUseFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.conflict,
           message: 'Email already in use',
@@ -83,25 +59,10 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        expect(result, isA<AuthFailure>());
-        (result as AuthFailure).when(
-          emailAlreadyInUse: (message, stackTrace) {
-            // message is default in the failure if not passed, verify this
-            // The mapper calls: const AuthFailure.emailAlreadyInUse()
-            // without message from exception?
-            // Let's check the mapper implementation again.
-            // valid: HttpStatus.conflict =>
-            // const AuthFailure.emailAlreadyInUse(),
-            // It ignores the exception message.
-          },
-          unauthorized: (_, _) => fail('Should be emailAlreadyInUse'),
-          forbidden: (_, _) => fail('Should be emailAlreadyInUse'),
-          notFound: (_, _) => fail('Should be emailAlreadyInUse'),
-          invalidInput: (_, _) => fail('Should be emailAlreadyInUse'),
-        );
+        expect(result, isA<EmailAlreadyInUseFailure>());
       });
 
-      test('maps 400 Bad Request to AuthFailure.invalidInput', () {
+      test('maps 400 Bad Request to InvalidInputFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.badRequest,
           message: 'Invalid request',
@@ -109,20 +70,12 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        expect(result, isA<AuthFailure>());
-        (result as AuthFailure).when(
-          invalidInput: (message, stackTrace) {
-            expect(message, 'Invalid request');
-          },
-          unauthorized: (_, _) => fail('Should be invalidInput'),
-          forbidden: (_, _) => fail('Should be invalidInput'),
-          notFound: (_, _) => fail('Should be invalidInput'),
-          emailAlreadyInUse: (_, _) => fail('Should be invalidInput'),
-        );
+        expect(result, isA<InvalidInputFailure>());
+        expect((result as InvalidInputFailure).message, 'Invalid request');
       });
 
       test(
-        'maps 500 Internal Server Error to InfrastructureFailure.server',
+        'maps 500 Internal Server Error to ServerFailure',
         () {
           const exception = ServerException(
             statusCode: HttpStatus.internalServerError,
@@ -131,22 +84,14 @@ void main() {
 
           final result = mapper.mapToFailure(exception);
 
-          expect(result, isA<InfrastructureFailure>());
-          (result as InfrastructureFailure).when(
-            server: (message, statusCode, stackTrace) {
-              expect(message, 'Server error');
-              expect(statusCode, HttpStatus.internalServerError);
-            },
-            network: (_, _) => fail('Should be server failure'),
-            cache: (_, _) => fail('Should be server failure'),
-            parse: (_, _) => fail('Should be server failure'),
-            circuitBreaker: (_, _) => fail('Should be server failure'),
-            unexpected: (_, _) => fail('Should be server failure'),
-          );
+          expect(result, isA<ServerFailure>());
+          final serverFailure = result as ServerFailure;
+          expect(serverFailure.message, 'Server error');
+          expect(serverFailure.statusCode, HttpStatus.internalServerError);
         },
       );
 
-      test('maps 503 Service Unavailable to InfrastructureFailure.server', () {
+      test('maps 503 Service Unavailable to ServerFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.serviceUnavailable,
           message: 'Service unavailable',
@@ -154,21 +99,13 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        expect(result, isA<InfrastructureFailure>());
-        (result as InfrastructureFailure).when(
-          server: (message, statusCode, stackTrace) {
-            expect(message, 'Service unavailable');
-            expect(statusCode, HttpStatus.serviceUnavailable);
-          },
-          network: (_, _) => fail('Should be server failure'),
-          cache: (_, _) => fail('Should be server failure'),
-          parse: (_, _) => fail('Should be server failure'),
-          circuitBreaker: (_, _) => fail('Should be server failure'),
-          unexpected: (_, _) => fail('Should be server failure'),
-        );
+        expect(result, isA<ServerFailure>());
+        final serverFailure = result as ServerFailure;
+        expect(serverFailure.message, 'Service unavailable');
+        expect(serverFailure.statusCode, HttpStatus.serviceUnavailable);
       });
 
-      test('maps unknown 4xx status codes to InfrastructureFailure.server', () {
+      test('maps unknown 4xx status codes to ServerFailure', () {
         const exception = ServerException(
           statusCode: HttpStatus.paymentRequired,
           message: 'Payment required',
@@ -200,16 +137,8 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        (result as InfrastructureFailure).when(
-          server: (message, code, stackTrace) {
-            expect(code, statusCode);
-          },
-          network: (_, _) => fail('Should be server failure'),
-          cache: (_, _) => fail('Should be server failure'),
-          parse: (_, _) => fail('Should be server failure'),
-          circuitBreaker: (_, _) => fail('Should be server failure'),
-          unexpected: (_, _) => fail('Should be server failure'),
-        );
+        expect(result, isA<ServerFailure>());
+        expect((result as ServerFailure).statusCode, statusCode);
       });
     });
 
@@ -257,14 +186,10 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        (result as AuthFailure).when(
-          unauthorized: (message, stackTrace) {
-            expect(message, 'Invalid email or password');
-          },
-          forbidden: (_, _) => fail('Should be unauthorized'),
-          notFound: (_, _) => fail('Should be unauthorized'),
-          emailAlreadyInUse: (_, _) => fail('Should be unauthorized'),
-          invalidInput: (_, _) => fail('Should be unauthorized'),
+        expect(result, isA<UnauthorizedFailure>());
+        expect(
+          (result as UnauthorizedFailure).message,
+          'Invalid email or password',
         );
       });
 
@@ -276,14 +201,10 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        (result as AuthFailure).when(
-          forbidden: (message, stackTrace) {
-            expect(message, contains('suspended'));
-          },
-          unauthorized: (_, _) => fail('Should be forbidden'),
-          notFound: (_, _) => fail('Should be forbidden'),
-          emailAlreadyInUse: (_, _) => fail('Should be forbidden'),
-          invalidInput: (_, _) => fail('Should be forbidden'),
+        expect(result, isA<ForbiddenFailure>());
+        expect(
+          (result as ForbiddenFailure).message,
+          contains('suspended'),
         );
       });
 
@@ -295,14 +216,10 @@ void main() {
 
         final result = mapper.mapToFailure(exception);
 
-        (result as AuthFailure).when(
-          notFound: (message, stackTrace) {
-            expect(message, 'Email not registered');
-          },
-          unauthorized: (_, _) => fail('Should be not found'),
-          forbidden: (_, _) => fail('Should be not found'),
-          emailAlreadyInUse: (_, _) => fail('Should be not found'),
-          invalidInput: (_, _) => fail('Should be not found'),
+        expect(result, isA<AuthNotFoundFailure>());
+        expect(
+          (result as AuthNotFoundFailure).message,
+          'Email not registered',
         );
       });
 

@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,6 +8,7 @@ import 'package:starter_app/features/{{feature_name.snakeCase()}}/presentation/b
 import 'package:starter_app/features/{{feature_name.snakeCase()}}/presentation/bloc/{{feature_name.snakeCase()}}_state.dart';
 
 /// Main page for {{feature_name.pascalCase()}} feature.
+@RoutePage()
 class {{feature_name.pascalCase()}}Page extends StatelessWidget {
   const {{feature_name.pascalCase()}}Page({super.key});
 
@@ -14,7 +16,7 @@ class {{feature_name.pascalCase()}}Page extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<{{feature_name.pascalCase()}}Bloc>()
-        ..add(const {{feature_name.pascalCase()}}Event.started()),
+        ..add(const {{feature_name.pascalCase()}}Started()),
       child: const _{{feature_name.pascalCase()}}View(),
     );
   }
@@ -31,32 +33,32 @@ class _{{feature_name.pascalCase()}}View extends StatelessWidget {
       ),
       body: BlocBuilder<{{feature_name.pascalCase()}}Bloc, {{feature_name.pascalCase()}}State>(
         builder: (context, state) {
-          return state.when(
-            initial: () => const SizedBox.shrink(),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            loaded: (items) => _buildContent(context, items),
-            error: (message) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    message,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context
-                        .read<{{feature_name.pascalCase()}}Bloc>()
-                        .add(const {{feature_name.pascalCase()}}Event.started()),
-                    child: const Text('Retry'),
-                  ),
-                ],
+          return switch (state) {
+            {{feature_name.pascalCase()}}Initial() => const SizedBox.shrink(),
+            {{feature_name.pascalCase()}}Loading() => const Center(
+                child: CircularProgressIndicator(),
               ),
-            ),
-          );
+            {{feature_name.pascalCase()}}Loaded(:final items) => _buildContent(context, items),
+            {{feature_name.pascalCase()}}Error(:final error) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      error.toString(),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context
+                          .read<{{feature_name.pascalCase()}}Bloc>()
+                          .add(const {{feature_name.pascalCase()}}Started()),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+          };
         },
       ),
     );

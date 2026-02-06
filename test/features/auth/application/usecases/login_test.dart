@@ -68,7 +68,7 @@ void main() {
 
     test('should return Left(AuthFailure) when login fails', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(message: 'Invalid credentials');
+      const tFailure = UnauthorizedFailure(message: 'Invalid credentials');
       when(
         () => mockRepository.login(any()),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -89,7 +89,7 @@ void main() {
 
     test('should pass through repository failures unchanged', () async {
       // Given
-      const tFailure = AuthFailure.forbidden(message: 'Account suspended');
+      const tFailure = ForbiddenFailure(message: 'Account suspended');
       when(
         () => mockRepository.login(any()),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -139,7 +139,7 @@ void main() {
 
       test('failed login with invalid credentials', () async {
         // Given - user has invalid credentials
-        const failure = AuthFailure.unauthorized(
+        const failure = UnauthorizedFailure(
           message: 'Invalid email or password',
         );
         when(

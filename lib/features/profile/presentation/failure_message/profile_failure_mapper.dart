@@ -19,10 +19,10 @@ final class ProfileFailureMapper extends FailureMessageMapper {
   String map(BuildContext context, Failure failure) {
     final l10n = context.profileL10n;
     final profileFailure = failure as ProfileFailure;
-    return profileFailure.map(
-      unexpected: (_) => l10n.unexpectedError,
-      serverError: (_) => l10n.serverError,
-      notFound: (_) => l10n.notFound,
-    );
+    return switch (profileFailure) {
+      ProfileUnexpectedFailure() => l10n.unexpectedError,
+      ProfileServerError() => l10n.serverError,
+      ProfileNotFoundFailure() => l10n.notFound,
+    };
   }
 }

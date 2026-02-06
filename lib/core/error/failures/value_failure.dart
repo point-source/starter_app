@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/failures.dart';
 
 /// Abstract base class for all domain validation failures.
@@ -31,6 +32,7 @@ import 'package:starter_app/core/error/failures/failures.dart';
 ///
 /// The type parameter [T] represents the underlying value type being validated
 /// (e.g., String for passwords, emails).
+@immutable
 abstract class ValueFailure<T> extends Failure {
   /// Creates a [ValueFailure].
   const ValueFailure();

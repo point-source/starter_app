@@ -1,6 +1,7 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
+import 'package:flutter/foundation.dart';
 
-part 'field_validation_state.freezed.dart';
+part 'field_validation_state.mapper.dart';
 
 /// Tracks which form fields have been interacted with (touched/blurred).
 ///
@@ -12,21 +13,24 @@ part 'field_validation_state.freezed.dart';
 ///
 /// The actual validation logic lives in ValueObjects (EmailAddress, Password).
 /// This class only tracks UI interaction state.
-@freezed
-abstract class FieldValidationState with _$FieldValidationState {
-  const factory FieldValidationState({
-    @Default(false) bool emailTouched,
-    @Default(false) bool passwordTouched,
-    @Default(false) bool nameTouched,
-  }) = _FieldValidationState;
+@immutable
+@MappableClass()
+class FieldValidationState with FieldValidationStateMappable {
+  const FieldValidationState({
+    this.emailTouched = false,
+    this.passwordTouched = false,
+    this.nameTouched = false,
+  });
 
-  /// Initial state - no fields touched
   factory FieldValidationState.initial() => const FieldValidationState();
 
-  /// All fields touched - used on form submission
   factory FieldValidationState.allTouched() => const FieldValidationState(
     emailTouched: true,
     passwordTouched: true,
     nameTouched: true,
   );
+
+  final bool emailTouched;
+  final bool passwordTouched;
+  final bool nameTouched;
 }

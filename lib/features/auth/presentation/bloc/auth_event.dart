@@ -1,32 +1,104 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/features/auth/domain/entities/user.dart';
 
-part 'auth_event.freezed.dart';
+part 'auth_event.mapper.dart';
 
-@freezed
-abstract class AuthEvent with _$AuthEvent {
-  const factory AuthEvent.emailChanged(String email) = AuthEmailChanged;
-  const factory AuthEvent.passwordChanged(String password) =
-      AuthPasswordChanged;
-  const factory AuthEvent.nameChanged(String name) = AuthNameChanged;
-  const factory AuthEvent.togglePasswordVisibility() =
-      AuthTogglePasswordVisibility;
-  const factory AuthEvent.emailUnfocused() = AuthEmailUnfocused;
-  const factory AuthEvent.passwordUnfocused() = AuthPasswordUnfocused;
-  const factory AuthEvent.nameUnfocused() = AuthNameUnfocused;
-  const factory AuthEvent.emailSubmitted() = AuthEmailSubmitted;
-  const factory AuthEvent.loginSubmitted() = AuthLoginSubmitted;
-  const factory AuthEvent.registerSubmitted() = AuthRegisterSubmitted;
-  const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
-  const factory AuthEvent.authUserChanged(User? user) = AuthUserChanged;
-  const factory AuthEvent.watchStarted() = AuthWatchStarted;
-  const factory AuthEvent.getCurrentUser() = AuthGetCurrentUser;
+@MappableClass()
+sealed class AuthEvent with AuthEventMappable {
+  const AuthEvent();
+}
 
-  /// Starts watching for session expiration events.
-  /// Called at app initialization to monitor token refresh failures.
-  const factory AuthEvent.sessionWatchStarted() = AuthSessionWatchStarted;
+@MappableClass()
+final class AuthEmailChanged extends AuthEvent with AuthEmailChangedMappable {
+  const AuthEmailChanged(this.email);
+  final String email;
+}
 
-  /// Fired when token refresh fails or session is forcibly expired.
-  /// This triggers navigation to the Dashboard/public area.
-  const factory AuthEvent.sessionExpired() = AuthSessionExpired;
+@MappableClass()
+final class AuthPasswordChanged extends AuthEvent
+    with AuthPasswordChangedMappable {
+  const AuthPasswordChanged(this.password);
+  final String password;
+}
+
+@MappableClass()
+final class AuthNameChanged extends AuthEvent with AuthNameChangedMappable {
+  const AuthNameChanged(this.name);
+  final String name;
+}
+
+@MappableClass()
+final class AuthTogglePasswordVisibility extends AuthEvent
+    with AuthTogglePasswordVisibilityMappable {
+  const AuthTogglePasswordVisibility();
+}
+
+@MappableClass()
+final class AuthEmailUnfocused extends AuthEvent
+    with AuthEmailUnfocusedMappable {
+  const AuthEmailUnfocused();
+}
+
+@MappableClass()
+final class AuthPasswordUnfocused extends AuthEvent
+    with AuthPasswordUnfocusedMappable {
+  const AuthPasswordUnfocused();
+}
+
+@MappableClass()
+final class AuthNameUnfocused extends AuthEvent with AuthNameUnfocusedMappable {
+  const AuthNameUnfocused();
+}
+
+@MappableClass()
+final class AuthEmailSubmitted extends AuthEvent
+    with AuthEmailSubmittedMappable {
+  const AuthEmailSubmitted();
+}
+
+@MappableClass()
+final class AuthLoginSubmitted extends AuthEvent
+    with AuthLoginSubmittedMappable {
+  const AuthLoginSubmitted();
+}
+
+@MappableClass()
+final class AuthRegisterSubmitted extends AuthEvent
+    with AuthRegisterSubmittedMappable {
+  const AuthRegisterSubmitted();
+}
+
+@MappableClass()
+final class AuthLogoutRequested extends AuthEvent
+    with AuthLogoutRequestedMappable {
+  const AuthLogoutRequested();
+}
+
+@MappableClass()
+final class AuthUserChanged extends AuthEvent with AuthUserChangedMappable {
+  const AuthUserChanged(this.user);
+  final User? user;
+}
+
+@MappableClass()
+final class AuthWatchStarted extends AuthEvent with AuthWatchStartedMappable {
+  const AuthWatchStarted();
+}
+
+@MappableClass()
+final class AuthGetCurrentUser extends AuthEvent
+    with AuthGetCurrentUserMappable {
+  const AuthGetCurrentUser();
+}
+
+@MappableClass()
+final class AuthSessionWatchStarted extends AuthEvent
+    with AuthSessionWatchStartedMappable {
+  const AuthSessionWatchStarted();
+}
+
+@MappableClass()
+final class AuthSessionExpired extends AuthEvent
+    with AuthSessionExpiredMappable {
+  const AuthSessionExpired();
 }

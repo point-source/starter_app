@@ -36,14 +36,14 @@ void main() {
 
     group('toJson', () {
       test('serializes to JSON', () {
-        final result = tModel.toJson();
+        final result = tModel.toMap();
 
         expect(result['email'], tEmail);
         expect(result['password'], tPassword);
       });
 
       test('produces valid JSON for API requests', () {
-        final json = tModel.toJson();
+        final json = tModel.toMap();
 
         expect(json, isA<Map<String, dynamic>>());
         expect(json.keys, containsAll(['email', 'password']));
@@ -87,7 +87,7 @@ void main() {
         };
 
         final model = LoginRequestModel.fromJson(originalJson);
-        final backToJson = model.toJson();
+        final backToJson = model.toMap();
 
         expect(backToJson, originalJson);
       });
@@ -99,7 +99,7 @@ void main() {
         );
 
         final model = LoginRequestModel.fromDomain(credentials);
-        final json = model.toJson();
+        final json = model.toMap();
 
         expect(json['email'], tEmail);
         expect(json['password'], tPassword);
@@ -186,7 +186,7 @@ void main() {
         final credentials = TestData.loginCredentials();
 
         final model = LoginRequestModel.fromDomain(credentials);
-        final json = model.toJson();
+        final json = model.toMap();
 
         // Should produce JSON ready for POST /auth/login
         expect(json, {

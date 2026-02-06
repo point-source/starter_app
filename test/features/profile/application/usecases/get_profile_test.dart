@@ -42,7 +42,7 @@ void main() {
 
     test('should return failure when repository fails', () async {
       // Arrange
-      const failure = ProfileFailure.serverError(message: 'Server error');
+      const failure = ProfileServerError(message: 'Server error');
       when(() => mockRepository.getCurrentProfile()).thenAnswer(
         (_) async => const Left(failure),
       );

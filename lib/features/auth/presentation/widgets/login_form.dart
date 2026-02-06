@@ -19,30 +19,30 @@ final class _LoginForm extends StatelessWidget {
               showError: state.validation.passwordTouched,
               obscureText: !state.passwordVisible,
               onToggleVisibility: () => context.read<AuthBloc>().add(
-                const AuthEvent.togglePasswordVisibility(),
+                const AuthTogglePasswordVisibility(),
               ),
               label: context.authL10n.passwordLabel,
               onChanged: (password) => context.read<AuthBloc>().add(
-                AuthEvent.passwordChanged(password),
+                AuthPasswordChanged(password),
               ),
               onEditingComplete: () => context.read<AuthBloc>().add(
-                const AuthEvent.passwordUnfocused(),
+                const AuthPasswordUnfocused(),
               ),
               onSubmitted: (password) => context.read<AuthBloc>().add(
-                const AuthEvent.loginSubmitted(),
+                const AuthLoginSubmitted(),
               ),
             ),
             const ResponsiveVerticalGap(),
             ElevatedButton(
               onPressed: () => context.read<AuthBloc>().add(
-                const AuthEvent.loginSubmitted(),
+                const AuthLoginSubmitted(),
               ),
               child: Text(context.authL10n.login),
             ),
             const ResponsiveVerticalGap(),
             TextButton(
               onPressed: () => context.read<AuthBloc>().add(
-                const AuthEvent.emailChanged(''),
+                const AuthEmailChanged(''),
               ),
               child: Text(context.authL10n.differentEmail),
             ),

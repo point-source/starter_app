@@ -5,7 +5,7 @@ void main() {
   group('InfrastructureFailure', () {
     group('ServerFailure', () {
       test('creates server failure with message and status code', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Internal server error',
           statusCode: 500,
         );
@@ -18,7 +18,7 @@ void main() {
 
       test('creates server failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = InfrastructureFailure.server(
+        final failure = ServerFailure(
           message: 'Error',
           statusCode: 500,
           stackTrace: stackTrace,
@@ -28,7 +28,7 @@ void main() {
       });
 
       test('creates server failure with only message', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
         );
 
@@ -36,11 +36,11 @@ void main() {
       });
 
       test('equals another server failure with same values', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
@@ -49,11 +49,11 @@ void main() {
       });
 
       test('not equals server failure with different message', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error 1',
           statusCode: 500,
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error 2',
           statusCode: 500,
         );
@@ -62,11 +62,11 @@ void main() {
       });
 
       test('not equals server failure with different status code', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error',
           statusCode: 404,
         );
@@ -75,10 +75,10 @@ void main() {
       });
 
       test('not equals server failure when one has null status code', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error',
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
@@ -87,10 +87,10 @@ void main() {
       });
 
       test('equals server failure when both have null status code', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error',
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error',
         );
 
@@ -98,11 +98,11 @@ void main() {
       });
 
       test('has consistent hashCode for equal instances', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
@@ -111,11 +111,11 @@ void main() {
       });
 
       test('has different hashCode for different instances', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Error 1',
           statusCode: 500,
         );
-        const failure2 = InfrastructureFailure.server(
+        const failure2 = ServerFailure(
           message: 'Error 2',
           statusCode: 500,
         );
@@ -124,7 +124,7 @@ void main() {
       });
 
       test('copyWith creates new instance with updated message', () {
-        const original = InfrastructureFailure.server(
+        const original = ServerFailure(
           message: 'Original',
           statusCode: 500,
         );
@@ -133,43 +133,23 @@ void main() {
         );
 
         expect(updated.message, 'Updated');
-        expect(
-          updated.when(
-            server: (msg, code, _) => code,
-            network: (_, _) => null,
-            cache: (_, _) => null,
-            parse: (_, _) => null,
-            circuitBreaker: (_, _) => null,
-            unexpected: (_, _) => null,
-          ),
-          500,
-        );
+        expect(updated.statusCode, 500);
         expect(original.message, 'Original');
       });
 
       test('copyWith creates new instance with partial updates', () {
-        const original = InfrastructureFailure.server(
+        const original = ServerFailure(
           message: 'Original',
           statusCode: 500,
         );
         final updated = original.copyWith(message: 'Updated');
 
         expect(updated.message, 'Updated');
-        expect(
-          updated.when(
-            server: (msg, code, _) => code,
-            network: (_, _) => null,
-            cache: (_, _) => null,
-            parse: (_, _) => null,
-            circuitBreaker: (_, _) => null,
-            unexpected: (_, _) => null,
-          ),
-          500,
-        );
+        expect(updated.statusCode, 500);
       });
 
       test('is a Failure', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
@@ -180,7 +160,7 @@ void main() {
 
     group('NetworkFailure', () {
       test('creates network failure with default message', () {
-        const failure = InfrastructureFailure.network();
+        const failure = NetworkFailure();
 
         expect(failure, isA<NetworkFailure>());
         expect(failure.message, 'Network error');
@@ -190,7 +170,7 @@ void main() {
 
       test('creates network failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = InfrastructureFailure.network(
+        final failure = NetworkFailure(
           stackTrace: stackTrace,
         );
 
@@ -198,7 +178,7 @@ void main() {
       });
 
       test('creates network failure with custom message', () {
-        const failure = InfrastructureFailure.network(
+        const failure = NetworkFailure(
           message: 'No internet connection',
         );
 
@@ -206,10 +186,10 @@ void main() {
       });
 
       test('equals another network failure with same message', () {
-        const failure1 = InfrastructureFailure.network(
+        const failure1 = NetworkFailure(
           message: 'Connection timeout',
         );
-        const failure2 = InfrastructureFailure.network(
+        const failure2 = NetworkFailure(
           message: 'Connection timeout',
         );
 
@@ -217,10 +197,10 @@ void main() {
       });
 
       test('not equals network failure with different message', () {
-        const failure1 = InfrastructureFailure.network(
+        const failure1 = NetworkFailure(
           message: 'Connection timeout',
         );
-        const failure2 = InfrastructureFailure.network(
+        const failure2 = NetworkFailure(
           message: 'No internet',
         );
 
@@ -228,10 +208,10 @@ void main() {
       });
 
       test('has consistent hashCode for equal instances', () {
-        const failure1 = InfrastructureFailure.network(
+        const failure1 = NetworkFailure(
           message: 'Connection timeout',
         );
-        const failure2 = InfrastructureFailure.network(
+        const failure2 = NetworkFailure(
           message: 'Connection timeout',
         );
 
@@ -239,10 +219,10 @@ void main() {
       });
 
       test('has different hashCode for different messages', () {
-        const failure1 = InfrastructureFailure.network(
+        const failure1 = NetworkFailure(
           message: 'Connection timeout',
         );
-        const failure2 = InfrastructureFailure.network(
+        const failure2 = NetworkFailure(
           message: 'No internet',
         );
 
@@ -250,7 +230,7 @@ void main() {
       });
 
       test('copyWith creates new instance with updated message', () {
-        const original = InfrastructureFailure.network(
+        const original = NetworkFailure(
           message: 'Original',
         );
         final updated = original.copyWith(message: 'Updated');
@@ -260,7 +240,7 @@ void main() {
       });
 
       test('is retryable', () {
-        const failure = InfrastructureFailure.network();
+        const failure = NetworkFailure();
 
         expect(failure.isRetryable, true);
       });
@@ -268,7 +248,7 @@ void main() {
 
     group('CacheFailure', () {
       test('creates cache failure with default message', () {
-        const failure = InfrastructureFailure.cache();
+        const failure = CacheFailure();
 
         expect(failure, isA<CacheFailure>());
         expect(failure.message, 'Cache error');
@@ -278,7 +258,7 @@ void main() {
 
       test('creates cache failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = InfrastructureFailure.cache(
+        final failure = CacheFailure(
           stackTrace: stackTrace,
         );
 
@@ -286,7 +266,7 @@ void main() {
       });
 
       test('creates cache failure with custom message', () {
-        const failure = InfrastructureFailure.cache(
+        const failure = CacheFailure(
           message: 'Failed to read from cache',
         );
 
@@ -294,23 +274,23 @@ void main() {
       });
 
       test('is not retryable', () {
-        const failure = InfrastructureFailure.cache();
+        const failure = CacheFailure();
 
         expect(failure.isRetryable, false);
       });
 
       test('equals another cache failure with same message', () {
-        const failure1 = InfrastructureFailure.cache();
-        const failure2 = InfrastructureFailure.cache();
+        const failure1 = CacheFailure();
+        const failure2 = CacheFailure();
 
         expect(failure1, failure2);
       });
 
       test('equals another cache failure with same custom message', () {
-        const failure1 = InfrastructureFailure.cache(
+        const failure1 = CacheFailure(
           message: 'Custom cache error',
         );
-        const failure2 = InfrastructureFailure.cache(
+        const failure2 = CacheFailure(
           message: 'Custom cache error',
         );
 
@@ -318,10 +298,10 @@ void main() {
       });
 
       test('not equals cache failure with different message', () {
-        const failure1 = InfrastructureFailure.cache(
+        const failure1 = CacheFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.cache(
+        const failure2 = CacheFailure(
           message: 'Error 2',
         );
 
@@ -329,17 +309,17 @@ void main() {
       });
 
       test('has consistent hashCode for equal instances', () {
-        const failure1 = InfrastructureFailure.cache();
-        const failure2 = InfrastructureFailure.cache();
+        const failure1 = CacheFailure();
+        const failure2 = CacheFailure();
 
         expect(failure1.hashCode, failure2.hashCode);
       });
 
       test('has different hashCode for different messages', () {
-        const failure1 = InfrastructureFailure.cache(
+        const failure1 = CacheFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.cache(
+        const failure2 = CacheFailure(
           message: 'Error 2',
         );
 
@@ -347,7 +327,7 @@ void main() {
       });
 
       test('copyWith creates new instance with updated message', () {
-        const original = InfrastructureFailure.cache(
+        const original = CacheFailure(
           message: 'Original',
         );
         final updated = original.copyWith(message: 'Updated');
@@ -359,7 +339,7 @@ void main() {
 
     group('ParseFailure', () {
       test('creates parse failure with default message', () {
-        const failure = InfrastructureFailure.parse();
+        const failure = ParseFailure();
 
         expect(failure, isA<ParseFailure>());
         expect(failure.message, 'Parse error');
@@ -369,7 +349,7 @@ void main() {
 
       test('creates parse failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = InfrastructureFailure.parse(
+        final failure = ParseFailure(
           stackTrace: stackTrace,
         );
 
@@ -377,7 +357,7 @@ void main() {
       });
 
       test('creates parse failure with custom message', () {
-        const failure = InfrastructureFailure.parse(
+        const failure = ParseFailure(
           message: 'Failed to parse JSON',
         );
 
@@ -385,23 +365,23 @@ void main() {
       });
 
       test('is not retryable', () {
-        const failure = InfrastructureFailure.parse();
+        const failure = ParseFailure();
 
         expect(failure.isRetryable, false);
       });
 
       test('equals another parse failure with same message', () {
-        const failure1 = InfrastructureFailure.parse();
-        const failure2 = InfrastructureFailure.parse();
+        const failure1 = ParseFailure();
+        const failure2 = ParseFailure();
 
         expect(failure1, failure2);
       });
 
       test('equals another parse failure with same custom message', () {
-        const failure1 = InfrastructureFailure.parse(
+        const failure1 = ParseFailure(
           message: 'Custom parse error',
         );
-        const failure2 = InfrastructureFailure.parse(
+        const failure2 = ParseFailure(
           message: 'Custom parse error',
         );
 
@@ -409,10 +389,10 @@ void main() {
       });
 
       test('not equals parse failure with different message', () {
-        const failure1 = InfrastructureFailure.parse(
+        const failure1 = ParseFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.parse(
+        const failure2 = ParseFailure(
           message: 'Error 2',
         );
 
@@ -420,17 +400,17 @@ void main() {
       });
 
       test('has consistent hashCode for equal instances', () {
-        const failure1 = InfrastructureFailure.parse();
-        const failure2 = InfrastructureFailure.parse();
+        const failure1 = ParseFailure();
+        const failure2 = ParseFailure();
 
         expect(failure1.hashCode, failure2.hashCode);
       });
 
       test('has different hashCode for different messages', () {
-        const failure1 = InfrastructureFailure.parse(
+        const failure1 = ParseFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.parse(
+        const failure2 = ParseFailure(
           message: 'Error 2',
         );
 
@@ -438,7 +418,7 @@ void main() {
       });
 
       test('copyWith creates new instance with updated message', () {
-        const original = InfrastructureFailure.parse(
+        const original = ParseFailure(
           message: 'Original',
         );
         final updated = original.copyWith(message: 'Updated');
@@ -450,7 +430,7 @@ void main() {
 
     group('CircuitBreakerFailure', () {
       test('creates circuit breaker failure with default message', () {
-        const failure = InfrastructureFailure.circuitBreaker();
+        const failure = CircuitBreakerFailure();
 
         expect(failure, isA<CircuitBreakerFailure>());
         expect(failure.message, 'Service temporarily unavailable');
@@ -460,7 +440,7 @@ void main() {
 
       test('creates circuit breaker failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = InfrastructureFailure.circuitBreaker(
+        final failure = CircuitBreakerFailure(
           stackTrace: stackTrace,
         );
 
@@ -468,7 +448,7 @@ void main() {
       });
 
       test('creates circuit breaker failure with custom message', () {
-        const failure = InfrastructureFailure.circuitBreaker(
+        const failure = CircuitBreakerFailure(
           message: 'Circuit is open, try again later',
         );
 
@@ -476,14 +456,14 @@ void main() {
       });
 
       test('is retryable', () {
-        const failure = InfrastructureFailure.circuitBreaker();
+        const failure = CircuitBreakerFailure();
 
         expect(failure.isRetryable, true);
       });
 
       test('equals another circuit breaker failure with same message', () {
-        const failure1 = InfrastructureFailure.circuitBreaker();
-        const failure2 = InfrastructureFailure.circuitBreaker();
+        const failure1 = CircuitBreakerFailure();
+        const failure2 = CircuitBreakerFailure();
 
         expect(failure1, failure2);
       });
@@ -491,10 +471,10 @@ void main() {
       test(
         'equals another circuit breaker failure with same custom message',
         () {
-          const failure1 = InfrastructureFailure.circuitBreaker(
+          const failure1 = CircuitBreakerFailure(
             message: 'Custom circuit breaker error',
           );
-          const failure2 = InfrastructureFailure.circuitBreaker(
+          const failure2 = CircuitBreakerFailure(
             message: 'Custom circuit breaker error',
           );
 
@@ -503,10 +483,10 @@ void main() {
       );
 
       test('not equals circuit breaker failure with different message', () {
-        const failure1 = InfrastructureFailure.circuitBreaker(
+        const failure1 = CircuitBreakerFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.circuitBreaker(
+        const failure2 = CircuitBreakerFailure(
           message: 'Error 2',
         );
 
@@ -514,17 +494,17 @@ void main() {
       });
 
       test('has consistent hashCode for equal instances', () {
-        const failure1 = InfrastructureFailure.circuitBreaker();
-        const failure2 = InfrastructureFailure.circuitBreaker();
+        const failure1 = CircuitBreakerFailure();
+        const failure2 = CircuitBreakerFailure();
 
         expect(failure1.hashCode, failure2.hashCode);
       });
 
       test('has different hashCode for different messages', () {
-        const failure1 = InfrastructureFailure.circuitBreaker(
+        const failure1 = CircuitBreakerFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.circuitBreaker(
+        const failure2 = CircuitBreakerFailure(
           message: 'Error 2',
         );
 
@@ -532,7 +512,7 @@ void main() {
       });
 
       test('copyWith creates new instance with updated message', () {
-        const original = InfrastructureFailure.circuitBreaker(
+        const original = CircuitBreakerFailure(
           message: 'Original',
         );
         final updated = original.copyWith(message: 'Updated');
@@ -544,7 +524,7 @@ void main() {
 
     group('UnexpectedFailure', () {
       test('creates unexpected failure with default message', () {
-        const failure = InfrastructureFailure.unexpected();
+        const failure = UnexpectedFailure();
 
         expect(failure, isA<UnexpectedFailure>());
         expect(failure.message, 'An unexpected error occurred');
@@ -554,7 +534,7 @@ void main() {
 
       test('creates unexpected failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = InfrastructureFailure.unexpected(
+        final failure = UnexpectedFailure(
           stackTrace: stackTrace,
         );
 
@@ -562,7 +542,7 @@ void main() {
       });
 
       test('creates unexpected failure with custom message', () {
-        const failure = InfrastructureFailure.unexpected(
+        const failure = UnexpectedFailure(
           message: 'Something went wrong',
         );
 
@@ -570,23 +550,23 @@ void main() {
       });
 
       test('is not retryable', () {
-        const failure = InfrastructureFailure.unexpected();
+        const failure = UnexpectedFailure();
 
         expect(failure.isRetryable, false);
       });
 
       test('equals another unexpected failure with same message', () {
-        const failure1 = InfrastructureFailure.unexpected();
-        const failure2 = InfrastructureFailure.unexpected();
+        const failure1 = UnexpectedFailure();
+        const failure2 = UnexpectedFailure();
 
         expect(failure1, failure2);
       });
 
       test('not equals unexpected failure with different message', () {
-        const failure1 = InfrastructureFailure.unexpected(
+        const failure1 = UnexpectedFailure(
           message: 'Error 1',
         );
-        const failure2 = InfrastructureFailure.unexpected(
+        const failure2 = UnexpectedFailure(
           message: 'Error 2',
         );
 
@@ -594,7 +574,7 @@ void main() {
       });
 
       test('copyWith creates new instance with updated message', () {
-        const original = InfrastructureFailure.unexpected(
+        const original = UnexpectedFailure(
           message: 'Original',
         );
         final updated = original.copyWith(message: 'Updated');
@@ -604,181 +584,100 @@ void main() {
       });
     });
 
-    group('when pattern matching', () {
-      test('matches server failure', () {
-        const failure = InfrastructureFailure.server(
+    group('switch expression pattern matching', () {
+      test('matches server failure with switch expression', () {
+        const InfrastructureFailure failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
 
-        final result = failure.when(
-          server: (message, statusCode, _) => 'Server: $message',
-          network: (message, _) => 'Network: $message',
-          cache: (message, _) => 'Cache: $message',
-          parse: (message, _) => 'Parse: $message',
-          circuitBreaker: (message, _) => 'CircuitBreaker: $message',
-          unexpected: (message, _) => 'Unexpected: $message',
-        );
+        final result = switch (failure) {
+          ServerFailure(:final message) => 'Server: $message',
+          NetworkFailure(:final message) => 'Network: $message',
+          CacheFailure(:final message) => 'Cache: $message',
+          ParseFailure(:final message) => 'Parse: $message',
+          CircuitBreakerFailure(:final message) => 'CircuitBreaker: $message',
+          UnexpectedFailure(:final message) => 'Unexpected: $message',
+        };
 
         expect(result, 'Server: Server error');
       });
 
       test('matches server failure with null status code', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
         );
 
-        final result = failure.when(
-          server: (message, statusCode, _) =>
-              'Server: $message (code: $statusCode)',
-          network: (message, _) => 'Network: $message',
-          cache: (message, _) => 'Cache: $message',
-          parse: (message, _) => 'Parse: $message',
-          circuitBreaker: (message, _) => 'CircuitBreaker: $message',
-          unexpected: (message, _) => 'Unexpected: $message',
-        );
+        final result =
+            'Server: ${failure.message} (code: ${failure.statusCode})';
 
         expect(result, 'Server: Server error (code: null)');
       });
 
-      test('matches network failure', () {
-        const failure = InfrastructureFailure.network(
+      test('matches network failure with switch expression', () {
+        const InfrastructureFailure failure = NetworkFailure(
           message: 'No connection',
         );
 
-        final result = failure.when(
-          server: (message, statusCode, _) => 'Server',
-          network: (message, _) => 'Network: $message',
-          cache: (message, _) => 'Cache',
-          parse: (message, _) => 'Parse',
-          circuitBreaker: (message, _) => 'CircuitBreaker',
-          unexpected: (message, _) => 'Unexpected',
-        );
+        final result = switch (failure) {
+          ServerFailure() => 'Server',
+          NetworkFailure(:final message) => 'Network: $message',
+          CacheFailure() => 'Cache',
+          ParseFailure() => 'Parse',
+          CircuitBreakerFailure() => 'CircuitBreaker',
+          UnexpectedFailure() => 'Unexpected',
+        };
 
         expect(result, 'Network: No connection');
       });
 
-      test('matches cache failure', () {
-        const failure = InfrastructureFailure.cache(message: 'Cache failed');
-
-        final result = failure.when(
-          server: (message, statusCode, _) => 'Server',
-          network: (message, _) => 'Network',
-          cache: (message, _) => 'Cache: $message',
-          parse: (message, _) => 'Parse',
-          circuitBreaker: (message, _) => 'CircuitBreaker',
-          unexpected: (message, _) => 'Unexpected',
+      test('matches cache failure with switch expression', () {
+        const InfrastructureFailure failure = CacheFailure(
+          message: 'Cache failed',
         );
+
+        final result = switch (failure) {
+          ServerFailure() => 'Server',
+          NetworkFailure() => 'Network',
+          CacheFailure(:final message) => 'Cache: $message',
+          ParseFailure() => 'Parse',
+          CircuitBreakerFailure() => 'CircuitBreaker',
+          UnexpectedFailure() => 'Unexpected',
+        };
 
         expect(result, 'Cache: Cache failed');
       });
 
-      test('matches parse failure', () {
-        const failure = InfrastructureFailure.parse(message: 'Parse failed');
-
-        final result = failure.when(
-          server: (message, statusCode, _) => 'Server',
-          network: (message, _) => 'Network',
-          cache: (message, _) => 'Cache',
-          parse: (message, _) => 'Parse: $message',
-          circuitBreaker: (message, _) => 'CircuitBreaker',
-          unexpected: (message, _) => 'Unexpected',
+      test('matches parse failure with switch expression', () {
+        const InfrastructureFailure failure = ParseFailure(
+          message: 'Parse failed',
         );
+
+        final result = switch (failure) {
+          ServerFailure() => 'Server',
+          NetworkFailure() => 'Network',
+          CacheFailure() => 'Cache',
+          ParseFailure(:final message) => 'Parse: $message',
+          CircuitBreakerFailure() => 'CircuitBreaker',
+          UnexpectedFailure() => 'Unexpected',
+        };
 
         expect(result, 'Parse: Parse failed');
       });
 
-      test('matches circuit breaker failure', () {
-        const failure = InfrastructureFailure.circuitBreaker(
+      test('matches circuit breaker failure with switch expression', () {
+        const InfrastructureFailure failure = CircuitBreakerFailure(
           message: 'Circuit open',
         );
 
-        final result = failure.when(
-          server: (message, statusCode, _) => 'Server',
-          network: (message, _) => 'Network',
-          cache: (message, _) => 'Cache',
-          parse: (message, _) => 'Parse',
-          circuitBreaker: (message, _) => 'CircuitBreaker: $message',
-          unexpected: (message, _) => 'Unexpected: $message',
-        );
-
-        expect(result, 'CircuitBreaker: Circuit open');
-      });
-    });
-
-    group('maybeWhen pattern matching', () {
-      test('matches server failure with maybeWhen', () {
-        const failure = InfrastructureFailure.server(
-          message: 'Server error',
-          statusCode: 500,
-        );
-
-        final result = failure.maybeWhen(
-          server: (message, statusCode, _) => 'Server: $message',
-          orElse: () => 'Other',
-        );
-
-        expect(result, 'Server: Server error');
-      });
-
-      test('matches network failure with maybeWhen', () {
-        const failure = InfrastructureFailure.network(
-          message: 'No connection',
-        );
-
-        final result = failure.maybeWhen(
-          network: (message, _) => 'Network: $message',
-          orElse: () => 'Other',
-        );
-
-        expect(result, 'Network: No connection');
-      });
-
-      test('matches cache failure with maybeWhen', () {
-        const failure = InfrastructureFailure.cache(message: 'Cache failed');
-
-        final result = failure.maybeWhen(
-          cache: (message, _) => 'Cache: $message',
-          orElse: () => 'Other',
-        );
-
-        expect(result, 'Cache: Cache failed');
-      });
-
-      test('matches parse failure with maybeWhen', () {
-        const failure = InfrastructureFailure.parse(message: 'Parse failed');
-
-        final result = failure.maybeWhen(
-          parse: (message, _) => 'Parse: $message',
-          orElse: () => 'Other',
-        );
-
-        expect(result, 'Parse: Parse failed');
-      });
-
-      test('returns orElse when no match in maybeWhen', () {
-        const failure = InfrastructureFailure.network(
-          message: 'No connection',
-        );
-
-        final result = failure.maybeWhen(
-          server: (message, statusCode, _) => 'Server',
-          orElse: () => 'Other',
-        );
-
-        expect(result, 'Other');
-      });
-
-      test('matches circuit breaker failure with maybeWhen', () {
-        const failure = InfrastructureFailure.circuitBreaker(
-          message: 'Circuit open',
-        );
-
-        final result = failure.maybeWhen(
-          circuitBreaker: (message, _) => 'CircuitBreaker: $message',
-          unexpected: (message, _) => 'Unexpected: $message',
-          orElse: () => 'Other',
-        );
+        final result = switch (failure) {
+          ServerFailure() => 'Server',
+          NetworkFailure() => 'Network',
+          CacheFailure() => 'Cache',
+          ParseFailure() => 'Parse',
+          CircuitBreakerFailure(:final message) => 'CircuitBreaker: $message',
+          UnexpectedFailure(:final message) => 'Unexpected: $message',
+        };
 
         expect(result, 'CircuitBreaker: Circuit open');
       });
@@ -786,7 +685,7 @@ void main() {
 
     group('message getter', () {
       test('returns correct message for server failure', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server message',
           statusCode: 500,
         );
@@ -800,7 +699,7 @@ void main() {
       test(
         'returns correct message for server failure with null status code',
         () {
-          const failure = InfrastructureFailure.server(
+          const failure = ServerFailure(
             message: 'Server message without code',
           );
 
@@ -812,7 +711,7 @@ void main() {
       );
 
       test('returns correct message for network failure', () {
-        const failure = InfrastructureFailure.network(
+        const failure = NetworkFailure(
           message: 'Network message',
         );
 
@@ -823,7 +722,7 @@ void main() {
       });
 
       test('returns default message for network failure', () {
-        const failure = InfrastructureFailure.network();
+        const failure = NetworkFailure();
 
         // Explicitly access message getter to ensure coverage
         final message = failure.message;
@@ -832,7 +731,7 @@ void main() {
       });
 
       test('returns correct message for cache failure', () {
-        const failure = InfrastructureFailure.cache(
+        const failure = CacheFailure(
           message: 'Cache message',
         );
 
@@ -843,7 +742,7 @@ void main() {
       });
 
       test('returns default message for cache failure', () {
-        const failure = InfrastructureFailure.cache();
+        const failure = CacheFailure();
 
         // Explicitly access message getter to ensure coverage
         final message = failure.message;
@@ -852,7 +751,7 @@ void main() {
       });
 
       test('returns correct message for parse failure', () {
-        const failure = InfrastructureFailure.parse(
+        const failure = ParseFailure(
           message: 'Parse message',
         );
 
@@ -863,7 +762,7 @@ void main() {
       });
 
       test('returns default message for parse failure', () {
-        const failure = InfrastructureFailure.parse();
+        const failure = ParseFailure();
 
         // Explicitly access message getter to ensure coverage
         final message = failure.message;
@@ -872,7 +771,7 @@ void main() {
       });
 
       test('returns correct message for circuit breaker failure', () {
-        const failure = InfrastructureFailure.circuitBreaker(
+        const failure = CircuitBreakerFailure(
           message: 'Circuit breaker message',
         );
 
@@ -882,7 +781,7 @@ void main() {
       });
 
       test('returns default message for circuit breaker failure', () {
-        const failure = InfrastructureFailure.circuitBreaker();
+        const failure = CircuitBreakerFailure();
 
         final message = failure.message;
         expect(message, 'Service temporarily unavailable');
@@ -892,26 +791,26 @@ void main() {
 
     group('isRetryable getter', () {
       test('returns true for retryable failures', () {
-        const server = InfrastructureFailure.server(
+        const server = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
-        const network = InfrastructureFailure.network();
+        const network = NetworkFailure();
 
         expect(server.isRetryable, true);
         expect(network.isRetryable, true);
       });
 
       test('returns false for non-retryable failures', () {
-        const cache = InfrastructureFailure.cache();
-        const parse = InfrastructureFailure.parse();
+        const cache = CacheFailure();
+        const parse = ParseFailure();
 
         expect(cache.isRetryable, false);
         expect(parse.isRetryable, false);
       });
 
       test('returns true for circuit breaker failure', () {
-        const circuitBreaker = InfrastructureFailure.circuitBreaker();
+        const circuitBreaker = CircuitBreakerFailure();
 
         expect(circuitBreaker.isRetryable, true);
       });
@@ -919,7 +818,7 @@ void main() {
 
     group('toString', () {
       test('returns string representation for server failure', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -933,7 +832,7 @@ void main() {
       test(
         'returns string representation for server failure without status code',
         () {
-          const failure = InfrastructureFailure.server(
+          const failure = ServerFailure(
             message: 'Server error',
           );
 
@@ -944,7 +843,7 @@ void main() {
       );
 
       test('returns string representation for network failure', () {
-        const failure = InfrastructureFailure.network();
+        const failure = NetworkFailure();
 
         final string = failure.toString();
         expect(string, contains('InfrastructureFailure.network'));
@@ -952,7 +851,7 @@ void main() {
       });
 
       test('returns string representation for cache failure', () {
-        const failure = InfrastructureFailure.cache();
+        const failure = CacheFailure();
 
         final string = failure.toString();
         expect(string, contains('InfrastructureFailure.cache'));
@@ -960,7 +859,7 @@ void main() {
       });
 
       test('returns string representation for parse failure', () {
-        const failure = InfrastructureFailure.parse();
+        const failure = ParseFailure();
 
         final string = failure.toString();
         expect(string, contains('InfrastructureFailure.parse'));
@@ -968,7 +867,7 @@ void main() {
       });
 
       test('returns string representation for circuit breaker failure', () {
-        const failure = InfrastructureFailure.circuitBreaker();
+        const failure = CircuitBreakerFailure();
 
         final string = failure.toString();
         expect(string, contains('InfrastructureFailure.circuitBreaker'));
@@ -978,13 +877,13 @@ void main() {
 
     group('type safety', () {
       test('different failure types are not equal', () {
-        const server = InfrastructureFailure.server(
+        const server = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
-        const network = InfrastructureFailure.network(message: 'Error');
-        const cache = InfrastructureFailure.cache(message: 'Error');
-        const parse = InfrastructureFailure.parse(message: 'Error');
+        const network = NetworkFailure(message: 'Error');
+        const cache = CacheFailure(message: 'Error');
+        const parse = ParseFailure(message: 'Error');
 
         expect(server, isNot(network));
         expect(server, isNot(cache));
@@ -995,14 +894,14 @@ void main() {
       });
 
       test('all failure types implement Failure interface', () {
-        const server = InfrastructureFailure.server(
+        const server = ServerFailure(
           message: 'Error',
           statusCode: 500,
         );
-        const network = InfrastructureFailure.network();
-        const cache = InfrastructureFailure.cache();
-        const parse = InfrastructureFailure.parse();
-        const circuitBreaker = InfrastructureFailure.circuitBreaker();
+        const network = NetworkFailure();
+        const cache = CacheFailure();
+        const parse = ParseFailure();
+        const circuitBreaker = CircuitBreakerFailure();
 
         expect(server, isA<Failure>());
         expect(network, isA<Failure>());

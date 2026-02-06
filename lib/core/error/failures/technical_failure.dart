@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:starter_app/core/error/failures/failure.dart';
 import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
 import 'package:starter_app/core/error/failures/value_failure.dart';
@@ -26,6 +27,7 @@ import 'package:starter_app/features/auth/domain/failure/auth_failure.dart';
 /// See also:
 /// - [InfrastructureFailure] - Server, network, cache errors
 /// - [AuthFailure] - Authentication/authorization errors
+@immutable
 abstract class TechnicalFailure extends Failure {
   /// Creates a [TechnicalFailure].
   const TechnicalFailure();

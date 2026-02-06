@@ -6,7 +6,7 @@ void main() {
   group('AuthFailure', () {
     group('notFound', () {
       test('creates failure with message', () {
-        const failure = AuthFailure.notFound(message: 'User not found');
+        const failure = AuthNotFoundFailure(message: 'User not found');
 
         expect(failure.message, 'User not found');
         expect(failure.isRetryable, false);
@@ -15,7 +15,7 @@ void main() {
 
       test('creates failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = AuthFailure.notFound(
+        final failure = AuthNotFoundFailure(
           message: 'User not found',
           stackTrace: stackTrace,
         );
@@ -24,14 +24,14 @@ void main() {
       });
 
       test('extends Failure', () {
-        const failure = AuthFailure.notFound(message: 'test');
+        const failure = AuthNotFoundFailure(message: 'test');
         expect(failure, isA<Failure>());
       });
     });
 
     group('unauthorized', () {
       test('creates failure with message', () {
-        const failure = AuthFailure.unauthorized(
+        const failure = UnauthorizedFailure(
           message: 'Invalid credentials',
         );
 
@@ -42,7 +42,7 @@ void main() {
 
       test('creates failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = AuthFailure.unauthorized(
+        final failure = UnauthorizedFailure(
           message: 'Invalid credentials',
           stackTrace: stackTrace,
         );
@@ -53,7 +53,7 @@ void main() {
 
     group('forbidden', () {
       test('creates failure with message', () {
-        const failure = AuthFailure.forbidden(message: 'Account suspended');
+        const failure = ForbiddenFailure(message: 'Account suspended');
 
         expect(failure.message, 'Account suspended');
         expect(failure.isRetryable, false);
@@ -62,7 +62,7 @@ void main() {
 
       test('creates failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = AuthFailure.forbidden(
+        final failure = ForbiddenFailure(
           message: 'Account suspended',
           stackTrace: stackTrace,
         );
@@ -73,7 +73,7 @@ void main() {
 
     group('emailAlreadyInUse', () {
       test('creates failure with default message', () {
-        const failure = AuthFailure.emailAlreadyInUse();
+        const failure = EmailAlreadyInUseFailure();
 
         expect(failure.message, 'Email already in use');
         expect(failure.isRetryable, false);
@@ -81,7 +81,7 @@ void main() {
       });
 
       test('creates failure with custom message', () {
-        const failure = AuthFailure.emailAlreadyInUse(
+        const failure = EmailAlreadyInUseFailure(
           message: 'This email is taken',
         );
 
@@ -90,7 +90,7 @@ void main() {
 
       test('creates failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = AuthFailure.emailAlreadyInUse(stackTrace: stackTrace);
+        final failure = EmailAlreadyInUseFailure(stackTrace: stackTrace);
 
         expect(failure.stackTrace, stackTrace);
       });
@@ -98,7 +98,7 @@ void main() {
 
     group('invalidInput', () {
       test('creates failure with message', () {
-        const failure = AuthFailure.invalidInput(
+        const failure = InvalidInputFailure(
           message: 'Invalid email format',
         );
 
@@ -109,7 +109,7 @@ void main() {
 
       test('creates failure with stackTrace', () {
         final stackTrace = StackTrace.current;
-        final failure = AuthFailure.invalidInput(
+        final failure = InvalidInputFailure(
           message: 'Invalid email format',
           stackTrace: stackTrace,
         );
@@ -121,23 +121,23 @@ void main() {
     group('isRetryable', () {
       test('all failure types are not retryable', () {
         expect(
-          const AuthFailure.notFound(message: 'test').isRetryable,
+          const AuthNotFoundFailure(message: 'test').isRetryable,
           false,
         );
         expect(
-          const AuthFailure.unauthorized(message: 'test').isRetryable,
+          const UnauthorizedFailure(message: 'test').isRetryable,
           false,
         );
         expect(
-          const AuthFailure.forbidden(message: 'test').isRetryable,
+          const ForbiddenFailure(message: 'test').isRetryable,
           false,
         );
         expect(
-          const AuthFailure.emailAlreadyInUse().isRetryable,
+          const EmailAlreadyInUseFailure().isRetryable,
           false,
         );
         expect(
-          const AuthFailure.invalidInput(message: 'test').isRetryable,
+          const InvalidInputFailure(message: 'test').isRetryable,
           false,
         );
       });
@@ -148,19 +148,19 @@ void main() {
         // Test through base AuthFailure type to exercise the when() pattern
         AuthFailure failure;
 
-        failure = const AuthFailure.notFound(message: 'not found msg');
+        failure = const AuthNotFoundFailure(message: 'not found msg');
         expect(failure.message, 'not found msg');
 
-        failure = const AuthFailure.unauthorized(message: 'unauthorized msg');
+        failure = const UnauthorizedFailure(message: 'unauthorized msg');
         expect(failure.message, 'unauthorized msg');
 
-        failure = const AuthFailure.forbidden(message: 'forbidden msg');
+        failure = const ForbiddenFailure(message: 'forbidden msg');
         expect(failure.message, 'forbidden msg');
 
-        failure = const AuthFailure.emailAlreadyInUse(message: 'email msg');
+        failure = const EmailAlreadyInUseFailure(message: 'email msg');
         expect(failure.message, 'email msg');
 
-        failure = const AuthFailure.invalidInput(message: 'invalid msg');
+        failure = const InvalidInputFailure(message: 'invalid msg');
         expect(failure.message, 'invalid msg');
       });
     });
@@ -170,25 +170,25 @@ void main() {
         final stackTrace = StackTrace.current;
         AuthFailure failure;
 
-        failure = AuthFailure.notFound(message: 'test', stackTrace: stackTrace);
+        failure = AuthNotFoundFailure(message: 'test', stackTrace: stackTrace);
         expect(failure.stackTrace, stackTrace);
 
-        failure = AuthFailure.unauthorized(
+        failure = UnauthorizedFailure(
           message: 'test',
           stackTrace: stackTrace,
         );
         expect(failure.stackTrace, stackTrace);
 
-        failure = AuthFailure.forbidden(
+        failure = ForbiddenFailure(
           message: 'test',
           stackTrace: stackTrace,
         );
         expect(failure.stackTrace, stackTrace);
 
-        failure = AuthFailure.emailAlreadyInUse(stackTrace: stackTrace);
+        failure = EmailAlreadyInUseFailure(stackTrace: stackTrace);
         expect(failure.stackTrace, stackTrace);
 
-        failure = AuthFailure.invalidInput(
+        failure = InvalidInputFailure(
           message: 'test',
           stackTrace: stackTrace,
         );
@@ -198,19 +198,19 @@ void main() {
       test('returns null stackTrace when not provided', () {
         AuthFailure failure;
 
-        failure = const AuthFailure.notFound(message: 'test');
+        failure = const AuthNotFoundFailure(message: 'test');
         expect(failure.stackTrace, isNull);
 
-        failure = const AuthFailure.unauthorized(message: 'test');
+        failure = const UnauthorizedFailure(message: 'test');
         expect(failure.stackTrace, isNull);
 
-        failure = const AuthFailure.forbidden(message: 'test');
+        failure = const ForbiddenFailure(message: 'test');
         expect(failure.stackTrace, isNull);
 
-        failure = const AuthFailure.emailAlreadyInUse();
+        failure = const EmailAlreadyInUseFailure();
         expect(failure.stackTrace, isNull);
 
-        failure = const AuthFailure.invalidInput(message: 'test');
+        failure = const InvalidInputFailure(message: 'test');
         expect(failure.stackTrace, isNull);
       });
     });

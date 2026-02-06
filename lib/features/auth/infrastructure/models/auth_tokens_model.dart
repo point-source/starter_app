@@ -1,11 +1,10 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/types/types.dart';
 
 import 'package:starter_app/features/auth/domain/value_objects/auth_token.dart';
 import 'package:starter_app/features/auth/domain/value_objects/refresh_token.dart';
 
-part 'auth_tokens_model.freezed.dart';
-part 'auth_tokens_model.g.dart';
+part 'auth_tokens_model.mapper.dart';
 
 /// Data transfer object for authentication tokens.
 ///
@@ -19,17 +18,23 @@ part 'auth_tokens_model.g.dart';
 /// final accessToken = model.toAccessToken();
 /// final refreshToken = model.toRefreshToken();
 /// ```
-@freezed
-abstract class AuthTokensModel with _$AuthTokensModel {
-  const factory AuthTokensModel({
-    required String accessToken,
-    required String refreshToken,
-  }) = _AuthTokensModel;
-  const AuthTokensModel._();
+@MappableClass()
+class AuthTokensModel with AuthTokensModelMappable {
+  /// Creates an [AuthTokensModel].
+  const AuthTokensModel({
+    required this.accessToken,
+    required this.refreshToken,
+  });
 
-  /// Creates model from JSON.
-  factory AuthTokensModel.fromJson(Json json) =>
-      _$AuthTokensModelFromJson(json);
+  /// The access token.
+  final String accessToken;
+
+  /// The refresh token.
+  final String refreshToken;
+
+  /// Creates model from JSON map.
+  static AuthTokensModel fromJson(Json json) =>
+      AuthTokensModelMapper.fromMap(json);
 
   /// Converts access token to domain value object.
   ///

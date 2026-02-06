@@ -1,9 +1,18 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 
-part 'profile_event.freezed.dart';
+part 'profile_event.mapper.dart';
 
-@freezed
-class ProfileEvent with _$ProfileEvent {
-  const factory ProfileEvent.getMyProfile() = GetMyProfile;
-  const factory ProfileEvent.reset() = ProfileReset;
+@MappableClass()
+sealed class ProfileEvent with ProfileEventMappable {
+  const ProfileEvent();
+}
+
+@MappableClass()
+final class GetMyProfile extends ProfileEvent with GetMyProfileMappable {
+  const GetMyProfile();
+}
+
+@MappableClass()
+final class ProfileReset extends ProfileEvent with ProfileResetMappable {
+  const ProfileReset();
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:chopper/chopper.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
@@ -64,7 +65,7 @@ void main() {
         // Then
         expect(result, true);
         verify(
-          () => mockApiService.checkUserExists(request.toJson()),
+          () => mockApiService.checkUserExists(request.toMap()),
         ).called(1);
       });
 
@@ -120,7 +121,7 @@ void main() {
         expect(result, isA<AuthResponseModel>());
         expect(result.user.email, tEmail);
         expect(result.tokens.accessToken, TestData.accessToken);
-        verify(() => mockApiService.login(request.toJson())).called(1);
+        verify(() => mockApiService.login(request.toMap())).called(1);
       });
 
       test('throws ServerException on API error', () async {
@@ -198,7 +199,7 @@ void main() {
         );
       });
 
-      test('throws FormatException on JSON parsing error', () async {
+      test('throws MapperException on JSON parsing error', () async {
         // Given - response with invalid JSON structure
         final response = createTestResponse({'invalid': 'structure'});
         when(
@@ -208,7 +209,7 @@ void main() {
         // When/Then
         expect(
           () => dataSource.register(tRegisterRequest),
-          throwsA(isA<FormatException>()),
+          throwsA(isA<MapperException>()),
         );
       });
     });
@@ -326,7 +327,7 @@ void main() {
         );
       });
 
-      test('throws FormatException on JSON parsing error', () async {
+      test('throws MapperException on JSON parsing error', () async {
         // Given
         final response = createTestResponse({'bad': 'data'});
         when(
@@ -336,7 +337,7 @@ void main() {
         // When/Then
         expect(
           () => dataSource.getCurrentUser(),
-          throwsA(isA<FormatException>()),
+          throwsA(isA<MapperException>()),
         );
       });
     });

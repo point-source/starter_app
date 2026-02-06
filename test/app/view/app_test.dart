@@ -62,8 +62,8 @@ void main() {
     late AppRouter appRouter;
 
     setUpAll(() {
-      registerFallbackValue(AuthState.empty());
-      registerFallbackValue(const ProfileState.initial());
+      registerFallbackValue(AuthInitial.empty());
+      registerFallbackValue(const ProfileInitial());
       registerFallbackValue(AppThemeMode.system);
       registerFallbackValue(AppLocale.en);
     });
@@ -82,10 +82,10 @@ void main() {
       // Use real AppRouter with mocked notifier
       appRouter = AppRouter(mockAuthChangeNotifier);
 
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(
         () => mockProfileBloc.state,
-      ).thenReturn(const ProfileState.initial());
+      ).thenReturn(const ProfileInitial());
       when(() => mockThemeCubit.state).thenReturn(AppThemeMode.system);
       when(() => mockLocaleCubit.state).thenReturn(AppLocale.en);
       when(() => mockAppTheme.lightTheme).thenReturn(ThemeData.light());

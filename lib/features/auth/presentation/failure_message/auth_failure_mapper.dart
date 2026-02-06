@@ -23,12 +23,12 @@ class AuthFailureMessageMapper extends FailureMessageMapper {
   @override
   String map(BuildContext context, Failure failure) {
     final authFailure = failure as AuthFailure;
-    return authFailure.map(
-      unauthorized: (_) => context.authL10n.unauthorized,
-      forbidden: (_) => context.authL10n.forbidden,
-      notFound: (_) => context.authL10n.notFound,
-      emailAlreadyInUse: (_) => context.authL10n.emailAlreadyInUse,
-      invalidInput: (_) => context.authL10n.invalidInput,
-    );
+    return switch (authFailure) {
+      UnauthorizedFailure() => context.authL10n.unauthorized,
+      ForbiddenFailure() => context.authL10n.forbidden,
+      AuthNotFoundFailure() => context.authL10n.notFound,
+      EmailAlreadyInUseFailure() => context.authL10n.emailAlreadyInUse,
+      InvalidInputFailure() => context.authL10n.invalidInput,
+    };
   }
 }

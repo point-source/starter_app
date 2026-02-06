@@ -14,7 +14,7 @@ void main() {
   group('ErrorModel', () {
     group('direct constructor', () {
       test('creates error model with required parameters', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -29,7 +29,7 @@ void main() {
       });
 
       test('creates error model with isRetryable false', () {
-        const failure = InfrastructureFailure.cache();
+        const failure = CacheFailure();
 
         const model = ErrorModel(
           failure: failure,
@@ -43,7 +43,7 @@ void main() {
 
     group('fromFailure factory', () {
       test('creates error model from server failure (retryable)', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -55,7 +55,7 @@ void main() {
       });
 
       test('creates error model from network failure (retryable)', () {
-        const failure = InfrastructureFailure.network();
+        const failure = NetworkFailure();
 
         final model = ErrorModel.fromFailure(failure);
 
@@ -64,7 +64,7 @@ void main() {
       });
 
       test('creates error model from cache failure (not retryable)', () {
-        const failure = InfrastructureFailure.cache();
+        const failure = CacheFailure();
 
         final model = ErrorModel.fromFailure(failure);
 
@@ -73,7 +73,7 @@ void main() {
       });
 
       test('creates error model from parse failure (not retryable)', () {
-        const failure = InfrastructureFailure.parse();
+        const failure = ParseFailure();
 
         final model = ErrorModel.fromFailure(failure);
 
@@ -82,7 +82,7 @@ void main() {
       });
 
       test('creates error model from auth failure (not retryable)', () {
-        const failure = AuthFailure.unauthorized(
+        const failure = UnauthorizedFailure(
           message: 'Unauthorized',
         );
 
@@ -95,7 +95,7 @@ void main() {
       test(
         'creates error model from auth notFound failure (not retryable)',
         () {
-          const failure = AuthFailure.notFound(
+          const failure = AuthNotFoundFailure(
             message: 'Not found',
           );
 
@@ -109,7 +109,7 @@ void main() {
       test(
         'creates error model from auth forbidden failure (not retryable)',
         () {
-          const failure = AuthFailure.forbidden(
+          const failure = ForbiddenFailure(
             message: 'Forbidden',
           );
 
@@ -125,7 +125,7 @@ void main() {
         creates error model from auth 
         emailAlreadyInUse failure (not retryable)''',
         () {
-          const failure = AuthFailure.emailAlreadyInUse();
+          const failure = EmailAlreadyInUseFailure();
 
           final model = ErrorModel.fromFailure(failure);
 
@@ -137,7 +137,7 @@ void main() {
       test(
         'creates error model from auth invalidInput failure (not retryable)',
         () {
-          const failure = AuthFailure.invalidInput(
+          const failure = InvalidInputFailure(
             message: 'Invalid input',
           );
 
@@ -151,7 +151,7 @@ void main() {
 
     group('equality', () {
       test('two models with same failure are equal', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -164,11 +164,11 @@ void main() {
       });
 
       test('two models with different failures are not equal', () {
-        const failure1 = InfrastructureFailure.server(
+        const failure1 = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
-        const failure2 = InfrastructureFailure.network();
+        const failure2 = NetworkFailure();
 
         final model1 = ErrorModel.fromFailure(failure1);
         final model2 = ErrorModel.fromFailure(failure2);
@@ -179,7 +179,7 @@ void main() {
       test(
         'two models with same failure but different isRetryable are not equal',
         () {
-          const failure = InfrastructureFailure.server(
+          const failure = ServerFailure(
             message: 'Server error',
             statusCode: 500,
           );
@@ -200,11 +200,11 @@ void main() {
 
     group('copyWith', () {
       test('creates copy with updated failure', () {
-        const originalFailure = InfrastructureFailure.server(
+        const originalFailure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
-        const newFailure = InfrastructureFailure.network();
+        const newFailure = NetworkFailure();
 
         final original = ErrorModel.fromFailure(originalFailure);
         final updated = original.copyWith(failure: newFailure);
@@ -215,7 +215,7 @@ void main() {
       });
 
       test('creates copy with updated isRetryable', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -229,7 +229,7 @@ void main() {
       });
 
       test('creates copy without changes returns same instance', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -251,7 +251,7 @@ void main() {
       });
 
       test('delegates to FailureMessageService.getLocalizedMessage', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );
@@ -271,8 +271,8 @@ void main() {
       });
 
       test('getMessage works with different failure types', () {
-        const networkFailure = InfrastructureFailure.network();
-        const authFailure = AuthFailure.unauthorized(
+        const networkFailure = NetworkFailure();
+        const authFailure = UnauthorizedFailure(
           message: 'Unauthorized',
         );
 
@@ -318,7 +318,7 @@ void main() {
 
     group('toString', () {
       test('returns string representation', () {
-        const failure = InfrastructureFailure.server(
+        const failure = ServerFailure(
           message: 'Server error',
           statusCode: 500,
         );

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:starter_app/core/error/exception_handler.dart';
 import 'package:starter_app/core/error/exceptions/server_exception.dart';
 import 'package:starter_app/core/error/failures/failure.dart';
+import 'package:starter_app/core/error/failures/failures.dart'
+    show InfrastructureFailure;
 import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
 import 'package:starter_app/core/error/i_exception_mapper.dart';
 import 'package:starter_app/core/types/types.dart';

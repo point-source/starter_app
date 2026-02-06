@@ -1,533 +1,197 @@
-# Data Modeling Rules (Freezed & Immutability)
+# Data Modeling Rules (Dart Mappable & Sealed Classes)
 
 ## Core Principles
 
 - All data classes MUST be immutable
-- Use `freezed` for **specific patterns only** (see ADR-008):
-  - ✅ **Failures** - Sealed class pattern with exhaustive matching
+- Use `dart_mappable` for **DTOs/Models** (JSON serialization)
+- Use **`fast_immutable_collections`** (`IList`, `ISet`, `IMap`) for all collection fields to ensure immutability and deep equality.
+- Use **Dart 3 Sealed Classes** for:
+  - ✅ **Failures** - Exhaustive matching for error handling
   - ✅ **BLoC Events** - Discriminated unions for event handling
   - ✅ **BLoC States** - Discriminated unions for state handling
-  - ✅ **DTOs/Models** - Data transfer objects in infrastructure
-- **DO NOT use freezed for**:
+- **DO NOT use freezed** (replaced by native features + dart_mappable)
+- **DO NOT** use code generation for:
   - ❌ **Entities** - Use plain Dart classes with `Entity`/`AggregateRoot` base class
   - ❌ **Value Objects** - Use `ValueObject` base class with validation
-- Leverage union types for mutually exclusive states
-- Separate domain entities from data transfer objects (DTOs)
 
-## Freezed Setup
+## Data Transfer Objects (dart_mappable)
 
-### Basic Data Class
+### Setup
 
 ```dart
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
-part 'product.freezed.dart';
-part 'product.g.dart'; // Only if you need JSON serialization
+part 'product_model.mapper.dart';
 
-@freezed
-class Product with _$Product {
-  const Product._(); // Required for custom getters/methods
-  
-  const factory Product({
-    required String id,
-    required String name,
-    required double price,
-    @Default('') String description,
-    @Default([]) List<String> tags,
-  }) = _Product;
-  
-  // JSON serialization (optional)
-  factory Product.fromJson(Map<String, dynamic> json) => 
-      _$ProductFromJson(json);
-}
-```
+@MappableClass()
+class ProductModel with ProductModelMappable {
+  const ProductModel({
+    required this.id,
+    required this.name,
+    required this.price,
+    this.description = '',
+    this.tags = const [],
+  });
 
-### Rules (for DTOs/Models)
+  final String id;
+  final String name;
+  final double price;
+  final String description;
+  final IList<String> tags;
 
-- ✅ **DO**: Use `@freezed` annotation for DTOs in infrastructure layer
-- ✅ **DO**: Add `const ClassName._();` for custom methods
-- ✅ **DO**: Use required for mandatory fields
-- ✅ **DO**: Use `@Default()` for optional fields with defaults
-- ❌ **DON'T**: Use nullable fields when a default makes sense
-- ❌ **DON'T**: Forget part directives
-- ❌ **DON'T**: Use `@freezed` for domain entities (see ADR-008)
-
-## Custom Methods and Getters
-
-### DTO Business Logic
-
-When DTOs need custom computed properties:
-
-```dart
-@freezed
-class ProductModel with _$ProductModel {
-  const ProductModel._();
-  
-  const factory ProductModel({
-    required String id,
-    required String name,
-    required double price,
-    DateTime? lastModified,
-  }) = _ProductModel;
-  
+  // JSON serialization
   factory ProductModel.fromJson(Map<String, dynamic> json) =>
-      _$ProductModelFromJson(json);
-  
-  // Custom getters for computed properties
-  String get formattedPrice => '\$${price.toStringAsFixed(2)}';
+      ProductModelMapper.fromMap(json);
 }
 ```
 
-### Custom Method Rules
+### Rules for DTOs
 
-- ✅ **DO**: Add computed properties as getters
-- ✅ **DO**: Use `const ClassName._();` constructor
-- ✅ **DO**: Keep logic pure (no side effects)
-- ❌ **DON'T**: Mutate state in methods
-- ❌ **DON'T**: Put business logic in DTOs (that belongs in entities)
+- ✅ **DO**: Use `@MappableClass()` annotation
+- ✅ **DO**: Mixin `WithClassNameMappable`
+- ✅ **DO**: Use standard Dart constructor with named parameters
+- ✅ **DO**: Add `part 'filename.mapper.dart';`
+- ✅ **DO**: Implement `fromJson` using the generated Mapper
+- ❌ **DON'T**: Use `@freezed`
 
 ## Union Types (Sealed Classes)
 
-### State Representation
+### State Representation (BLoC)
 
 **Example from auth feature:**
 
 ```dart
 // lib/features/auth/presentation/bloc/auth_state.dart
-@freezed
-abstract class AuthState with _$AuthState {
-  const factory AuthState.initial({
-    required EmailAddress email,
-    required bool isSubmitting,
-    required FieldValidationState validation,
-    ErrorModel? error,
-  }) = Initial;
+import 'package:dart_mappable/dart_mappable.dart';
 
-  const factory AuthState.unauthenticated() = Unauthenticated;
+part 'auth_state.mapper.dart';
 
-  const factory AuthState.loginRequired({
-    required EmailAddress email,
-    required Password password,
-    required bool isSubmitting,
-    required FieldValidationState validation,
-    ErrorModel? error,
-  }) = LoginRequired;
-
-  const factory AuthState.registrationRequired({
-    required EmailAddress email,
-    required Password password,
-    required Name name,
-    required bool isSubmitting,
-    required FieldValidationState validation,
-    ErrorModel? error,
-  }) = RegistrationRequired;
-
-  const factory AuthState.authenticated(User user) = Authenticated;
+@MappableClass()
+sealed class AuthState with AuthStateMappable {
+  const AuthState();
 }
 
-// Usage with pattern matching
-state.when(
-  initial: (email, isSubmitting, validation, error) => const EmailForm(),
-  unauthenticated: () => const LoginPrompt(),
-  loginRequired: (email, password, isSubmitting, validation, error) =>
-      const LoginForm(),
-  registrationRequired: (email, password, name, isSubmitting, validation, error) =>
-      const RegistrationForm(),
-  authenticated: (user) => HomePage(user: user),
-);
+@MappableClass()
+final class AuthInitial extends AuthState with AuthInitialMappable {
+  const AuthInitial();
+}
 
-// Partial matching
-state.mapOrNull(
-  authenticated: (s) => s.user,
-);
+@MappableClass()
+final class AuthLoading extends AuthState with AuthLoadingMappable {
+  const AuthLoading();
+}
 
-// Type checking
-if (state is Authenticated) {
-  final user = state.user;
+@MappableClass()
+final class AuthAuthenticated extends AuthState with AuthAuthenticatedMappable {
+  const AuthAuthenticated(this.user);
+  final User user;
+}
+
+@MappableClass()
+final class AuthError extends AuthState with AuthErrorMappable {
+  const AuthError(this.message);
+  final String message;
+}
+
+// Usage with switch (exhaustive)
+switch (state) {
+  case AuthInitial():
+    return const LoginScreen();
+  case AuthLoading():
+    return const LoadingSpinner();
+  case AuthAuthenticated(:final user):
+    return HomeScreen(user: user);
+  case AuthError(:final message):
+    return ErrorBanner(message);
 }
 ```
 
-### Result Types
+### Failures
+
+**Example:**
 
 ```dart
-@freezed
-class LoginResult with _$LoginResult {
-  const factory LoginResult.success(User user) = LoginSuccess;
-  const factory LoginResult.invalidCredentials() = InvalidCredentials;
-  const factory LoginResult.accountLocked() = AccountLocked;
-  const factory LoginResult.networkError() = NetworkError;
+// lib/features/auth/domain/failure/auth_failure.dart
+import 'package:starter_app/core/error/failures/failure.dart';
+
+sealed class AuthFailure extends Failure {
+  const AuthFailure();
 }
-```
 
-### Union Type Rules
-
-- ✅ **DO**: Use union types for mutually exclusive states
-- ✅ **DO**: Make all cases const
-- ✅ **DO**: Use `when` for exhaustive handling
-- ✅ **DO**: Use `maybeWhen` for partial handling
-- ❌ **DON'T**: Use nullable fields instead of union types
-- ❌ **DON'T**: Mix data with state tags (use union types)
-
-## JSON Serialization
-
-### Basic Serialization
-
-```dart
-@freezed
-class ProductModel with _$ProductModel {
-  const ProductModel._();
-  
-  const factory ProductModel({
-    required String id,
-    required String name,
-    required double price,
-    @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-  }) = _ProductModel;
-  
-  factory ProductModel.fromJson(Map<String, dynamic> json) =>
-      _$ProductModelFromJson(json);
+final class Unauthorized extends AuthFailure {
+  const Unauthorized();
 }
-```
 
-### Custom Converters
-
-```dart
-// Date converter
-class DateTimeConverter implements JsonConverter<DateTime, String> {
-  const DateTimeConverter();
-  
-  @override
-  DateTime fromJson(String json) => DateTime.parse(json);
-  
-  @override
-  String toJson(DateTime object) => object.toIso8601String();
+final class ServerError extends AuthFailure {
+  const ServerError(this.message);
+  final String message;
 }
 
 // Usage
-@freezed
-class Event with _$Event {
-  const factory Event({
-    required String id,
-    @DateTimeConverter() required DateTime timestamp,
-  }) = _Event;
-  
-  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
-}
+bool isRetryable(AuthFailure failure) => switch (failure) {
+  Unauthorized() => false,
+  ServerError() => true,
+};
 ```
 
-### JSON Null and Default Values
+### Rules for Sealed Classes
 
-```dart
-@freezed
-class ProductModel with _$ProductModel {
-  const factory ProductModel({
-    required String id,
-    required String name,
-    @JsonKey(defaultValue: 0.0) required double price,
-    @JsonKey(defaultValue: '') required String description,
-    @JsonKey(defaultValue: []) required List<String> tags,
-    @JsonKey(includeIfNull: false) String? discount,
-  }) = _ProductModel;
-  
-  factory ProductModel.fromJson(Map<String, dynamic> json) =>
-      _$ProductModelFromJson(json);
-}
-```
-
-### JSON Serialization Rules
-
-- ✅ **DO**: Use `@JsonKey()` for field name mapping
-- ✅ **DO**: Handle null values with defaults
-- ✅ **DO**: Use custom converters for complex types
-- ✅ **DO**: Use `includeIfNull: false` for optional fields
-- ❌ **DON'T**: Let null propagate into domain
-- ❌ **DON'T**: Use JSON serialization in domain entities
+- ✅ **DO**: Use `sealed class BaseName`
+- ✅ **DO**: Use `final class SubName extends BaseName`
+- ✅ **DO**: Use `dart_mappable` for value comparison (auto-generates `==`, `hashCode`, and `copyWith`)
+- ✅ **DO**: Use Dart 3 `switch` expressions for pattern matching
+- ❌ **DON'T**: Use `freezed` for unions
 
 ## Domain Entity vs DTO Pattern
 
-### Domain Entity (Plain Dart Class - NOT Freezed)
+### Domain Entity (Plain Dart Class)
 
-**CRITICAL: Entities do NOT use freezed** (see ADR-008)
-
-**Example from auth feature:**
+**CRITICAL: Entities use plain Dart classes**
 
 ```dart
-// lib/features/auth/domain/entities/user.dart
-import 'package:starter_app/core/domain/base/aggregate_root.dart';
-
-/// User entity representing an authenticated user.
 class User extends AggregateRoot {
   User({
     required this.id,
     required this.email,
-    required this.isEmailVerified,
   });
 
   @override
   final UserId id;
   final EmailAddress email;
-  final bool isEmailVerified;
 
-  /// Domain behavior - emits domain event
-  User verifyEmail() {
-    if (isEmailVerified) return this;
-    final updatedUser = copyWith(isEmailVerified: true);
-    updatedUser.addDomainEvent(UserEmailVerified(updatedUser));
-    return updatedUser;
-  }
-
-  /// Manual copyWith for full control
   User copyWith({
     UserId? id,
     EmailAddress? email,
-    bool? isEmailVerified,
   }) {
     return User(
       id: id ?? this.id,
       email: email ?? this.email,
-      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );
   }
 }
 ```
-
-**Key points:**
-- No `@freezed` annotation
-- Extends `Entity` or `AggregateRoot` base class
-- Uses value objects (EmailAddress, Name)
-- Identity-based equality (handled by base class)
-- Manual `copyWith()` for immutable updates
-- Can emit domain events via `addDomainEvent()`
-
-### Why NOT Freezed for Entities? (ADR-008)
-
-1. **Identity-based equality** - handled by `Entity` base class
-2. **Domain events** - `AggregateRoot.addDomainEvent()` provides this
-3. **Custom behavior** - methods with domain logic
-4. **DDD semantics** - freezed's value semantics conflict with entity identity
 
 ### DTO/Model (With Serialization)
 
-**Example from auth feature:**
-
 ```dart
-// lib/features/auth/infrastructure/models/user_model.dart
-@freezed
-abstract class UserModel with _$UserModel {
-  const factory UserModel({
-    required String id,
-    required String email,
-    required String name,
-    required bool isEmailVerified,
-    String? profileImageUrl,
-  }) = _UserModel;
-  const UserModel._();
-
-  /// Creates model from JSON (from API response).
-  factory UserModel.fromJson(Json json) => _$UserModelFromJson(json);
-
-  /// Converts model to domain entity.
-  /// Uses `fromTrustedSource` since data comes from backend.
-  User toDomain() {
-    return User(
-      id: UniqueId.fromString(id),
-      email: EmailAddress.fromTrustedSource(email),
-      isEmailVerified: isEmailVerified,
-    );
-  }
-
-  /// Creates model from domain entity (for API requests).
-  factory UserModel.fromDomain(User user) {
-    return UserModel(
-      id: user.id.value,
-      email: user.email.getOrCrash(),
-      name: '', // Name moved to UserProfile
-      isEmailVerified: user.isEmailVerified,
-    );
-  }
+@MappableClass()
+class UserModel with UserModelMappable {
+   // ... implementation details
 }
 ```
 
-### DTO Pattern Rules
+### Rules
 
-- ✅ **DO**: Use `@freezed` for DTOs with JSON serialization
-- ✅ **DO**: Keep domain entities clean (no JSON, no freezed)
-- ✅ **DO**: Provide `toDomain()` and `fromDomain()` methods
-- ✅ **DO**: Handle null/missing fields in DTOs
-- ✅ **DO**: Use `fromTrustedSource` when converting from backend data
-- ❌ **DON'T**: Use `@freezed` on domain entities (ADR-008)
-- ❌ **DON'T**: Mix domain and infrastructure concerns
-- ❌ **DON'T**: Let DTOs leak into domain layer
-- ❌ **DON'T**: Use JSON serialization in domain entities
-
-## CopyWith Pattern
-
-### Basic Usage
-
-```dart
-final product = Product(id: '1', name: 'Item', price: 100);
-
-// Create modified copy
-final expensive = product.copyWith(price: 200);
-
-// Partial update
-final renamed = product.copyWith(name: 'New Name');
-
-// Multiple fields
-final updated = product.copyWith(
-  name: 'Updated Item',
-  price: 150,
-);
-```
-
-### CopyWith Nullable Fields
-
-```dart
-@freezed
-class User with _$User {
-  const factory User({
-    required String id,
-    required String name,
-    String? bio,
-  }) = _User;
-}
-
-// Update nullable field
-final user = User(id: '1', name: 'John');
-final withBio = user.copyWith(bio: 'Developer'); // Set value
-final removedBio = user.copyWith(bio: null); // Keep as null
-
-// To explicitly set to null, use wrapped nullable
-final clearedBio = user.copyWith(bio: () => null);
-```
-
-### CopyWith Rules
-
-- ✅ **DO**: Use copyWith for immutable updates
-- ✅ **DO**: Chain copyWith calls when needed
-- ❌ **DON'T**: Mutate objects directly
-- ❌ **DON'T**: Create multiple intermediate variables
-
-## Deep Copying
-
-### Nested Objects
-
-```dart
-@freezed
-class Address with _$Address {
-  const factory Address({
-    required String street,
-    required String city,
-  }) = _Address;
-}
-
-@freezed
-class User with _$User {
-  const factory User({
-    required String id,
-    required String name,
-    required Address address,
-  }) = _User;
-}
-
-// Update nested object
-final user = User(
-  id: '1',
-  name: 'John',
-  address: const Address(street: '123 Main', city: 'NY'),
-);
-
-final updated = user.copyWith(
-  address: user.address.copyWith(city: 'LA'),
-);
-```
-
-### Collections
-
-```dart
-@freezed
-class ShoppingCart with _$ShoppingCart {
-  const ShoppingCart._();
-  
-  const factory ShoppingCart({
-    @Default([]) List<CartItem> items,
-  }) = _ShoppingCart;
-  
-  // Helper method for immutable updates
-  ShoppingCart addItem(CartItem item) {
-    return copyWith(items: [...items, item]);
-  }
-  
-  ShoppingCart removeItem(String itemId) {
-    return copyWith(
-      items: items.where((item) => item.id != itemId).toList(),
-    );
-  }
-}
-```
+- ✅ **DO**: Keep domain entities clean (no serialization annotations)
+- ✅ **DO**: Use `dart_mappable` only in infrastructure layer (DTOs)
+- ❌ **DON'T**: Mix infrastructure concerns into domain entities
 
 ## Code Generation
 
 ### Commands
 
 ```bash
-# One-time generation
-flutter pub run build_runner build --delete-conflicting-outputs
-
-# Watch mode (auto-regenerate)
-flutter pub run build_runner watch --delete-conflicting-outputs
-
-# Clean before build
-flutter pub run build_runner clean
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-### Code Generation Rules
-
-- ✅ **DO**: Run build_runner after adding/modifying freezed classes
-- ✅ **DO**: Commit generated files to version control
-- ✅ **DO**: Use watch mode during active development
-- ❌ **DON'T**: Manually edit generated files
-- ❌ **DON'T**: Check in conflicting outputs
-
-## Best Practices
-
-### Equality and HashCode
-
-```dart
-// Automatically provided by freezed
-final product1 = Product(id: '1', name: 'Item', price: 100);
-final product2 = Product(id: '1', name: 'Item', price: 100);
-
-print(product1 == product2); // true (value equality)
-print(product1.hashCode == product2.hashCode); // true
-```
-
-### ToString
-
-```dart
-// Automatically provided by freezed
-final product = Product(id: '1', name: 'Item', price: 100);
-print(product); // Product(id: 1, name: Item, price: 100.0)
-```
-
-### Late and Lazy
-
-```dart
-@freezed
-class ExpensiveObject with _$ExpensiveObject {
-  const ExpensiveObject._();
-  
-  const factory ExpensiveObject({
-    required String id,
-  }) = _ExpensiveObject;
-  
-  // Lazy computed property
-  @late
-  String get computedValue {
-    // Expensive computation
-    return 'computed_$id';
-  }
-}
+# Generate code
+dart run build_runner build --delete-conflicting-outputs
 ```

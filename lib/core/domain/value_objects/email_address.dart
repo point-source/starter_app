@@ -24,11 +24,14 @@ import 'package:starter_app/core/error/failures/value_failure.dart';
 /// } else {
 ///   final failures = email.getFailuresOrNull();
 ///   for (final failure in failures!) {
-///     failure.when(
-///       empty: () => print('Email is required'),
-///       tooLong: (max, actual) => print('Email too long'),
-///       invalidFormat: (value) => print('Invalid email format'),
-///     );
+///     switch (failure) {
+///       case EmailEmpty():
+///         print('Email is required');
+///       case EmailTooLong(:final maxLength, :final actualLength):
+///         print('Email too long');
+///       case EmailInvalidFormat(:final failedValue):
+///         print('Invalid email format');
+///     }
 ///   }
 /// }
 ///
@@ -54,7 +57,7 @@ final class EmailAddress extends ValueObject<String> {
 
   /// Constant empty email address.
   static const empty = EmailAddress._(
-    Left([EmailFailure.empty()]),
+    Left([EmailEmpty()]),
   );
 
   @override
@@ -88,12 +91,12 @@ final class EmailAddress extends ValueObject<String> {
     String? input,
   ) {
     if (input == null || input.isEmpty) {
-      return left([const EmailFailure.empty()]);
+      return left([const EmailEmpty()]);
     }
 
     if (input.length > maxLength) {
       return left([
-        EmailFailure.tooLong(
+        EmailTooLong(
           maxLength: maxLength,
           actualLength: input.length,
         ),
@@ -102,7 +105,7 @@ final class EmailAddress extends ValueObject<String> {
 
     if (!_emailRegex.hasMatch(input)) {
       return left([
-        EmailFailure.invalidFormat(
+        EmailInvalidFormat(
           failedValue: input,
         ),
       ]);

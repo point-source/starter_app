@@ -20,13 +20,13 @@ class InfrastructureFailureMapper extends FailureMessageMapper {
   @override
   String map(BuildContext context, Failure failure) {
     final infraFailure = failure as InfrastructureFailure;
-    return infraFailure.map(
-      server: (f) => context.appL10n.serverError,
-      network: (_) => context.appL10n.networkError,
-      cache: (_) => context.appL10n.cacheError,
-      parse: (_) => context.appL10n.parseError,
-      circuitBreaker: (_) => context.appL10n.circuitBreakerError,
-      unexpected: (_) => context.appL10n.unexpectedError,
-    );
+    return switch (infraFailure) {
+      ServerFailure() => context.appL10n.serverError,
+      NetworkFailure() => context.appL10n.networkError,
+      CacheFailure() => context.appL10n.cacheError,
+      ParseFailure() => context.appL10n.parseError,
+      CircuitBreakerFailure() => context.appL10n.circuitBreakerError,
+      UnexpectedFailure() => context.appL10n.unexpectedError,
+    };
   }
 }

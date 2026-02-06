@@ -89,7 +89,7 @@ void main() {
           await tester.pumpAndSettle();
 
           // Should still be on initial state (not transitioning)
-          expect(config.authBloc.state, isA<Initial>());
+          expect(config.authBloc.state, isA<AuthInitial>());
         }
       });
 

@@ -18,13 +18,13 @@ final class ProfileExceptionMapper implements IExceptionMapper {
   @override
   TechnicalFailure mapToFailure(ServerException exception) {
     return switch (exception.statusCode) {
-      HttpStatus.notFound => ProfileFailure.notFound(
+      HttpStatus.notFound => ProfileNotFoundFailure(
         message: exception.message,
       ),
-      HttpStatus.internalServerError => ProfileFailure.serverError(
+      HttpStatus.internalServerError => ProfileServerError(
         message: exception.message,
       ),
-      _ => InfrastructureFailure.server(
+      _ => ServerFailure(
         message: exception.message,
         statusCode: exception.statusCode,
       ),

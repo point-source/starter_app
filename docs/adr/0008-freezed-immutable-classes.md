@@ -1,8 +1,8 @@
-# ADR-0008: freezed for Immutable Data Classes
+# ADR-0008: Immutable Data Classes
 
 ## Status
 
-Accepted
+**Superseded** — Superseded by [ADR-019](0019-dart-mappable-and-sealed-classes.md). Originally adopted `freezed`, now migrated to Dart 3 sealed classes + `dart_mappable`.
 
 ## Context
 
@@ -13,60 +13,64 @@ Dart requires significant boilerplate for immutable classes:
 
 I needed code generation for immutable data classes while keeping domain entities as pure Dart classes.
 
-## Decision
+## Decision (Original)
 
-I adopt **freezed** for:
-- ✅ **Failures** - Sealed class pattern with exhaustive matching
-- ✅ **BLoC Events** - Discriminated unions for event handling
-- ✅ **BLoC States** - Discriminated unions for state handling
-- ✅ **DTOs/Models** - Data transfer objects in infrastructure
+I originally adopted **freezed** for failures, BLoC events/states, and DTOs.
 
-I do **NOT** use freezed for:
-- ❌ **Entities** - Use plain Dart classes with `Entity` base class
-- ❌ **Value Objects** - Use `ValueObject` base class with validation
+## Decision (Current - Phase 2 Migration)
 
-### Why Not Entities?
+As of Phase 2 of the stack migration, I now use:
 
-Entities require:
-1. **Identity-based equality** (not value-based)
-2. **Domain events** via `AggregateRoot`
-3. **Custom behavior methods**
+- ✅ **Dart 3 Sealed Classes** for failures (no codegen needed)
+- ✅ **Dart 3 Sealed Classes** for BLoC states/events (Phase 4)
+- ✅ **dart_mappable** for DTOs/Models (JSON serialization)
+- ❌ **Entities** remain plain Dart classes with `Entity` base class
 
-Using freezed with `@Freezed(equal: false)` adds complexity without benefit.
+### Why the Migration?
+
+1. **Dart 3 native support**: Sealed classes and switch expressions eliminate need for freezed for union types
+2. **Simpler codegen**: `dart_mappable` is lighter-weight than `freezed` for JSON serialization
+3. **Better IDE support**: Native Dart patterns have better tooling support
+4. **Less generated code**: No `*.freezed.dart` files for failures
 
 ### Implementation
 
 ```dart
-// Failures - freezed for sealed class pattern
-@freezed
-sealed class AuthFailure with _$AuthFailure {
-  const factory AuthFailure.invalidCredentials() = InvalidCredentials;
-  const factory AuthFailure.serverError(String message) = ServerError;
+// Failures - Dart 3 sealed class (no codegen)
+sealed class AuthFailure extends Failure {
+  const AuthFailure({required super.message, super.stackTrace});
 }
 
-// Entity - plain Dart class
-class User extends AggregateRoot {
-  User({required this.id, required this.email});
-  
-  @override
-  final UserId id;
-  final EmailAddress email;
-  
-  // Manual copyWith for full control
-  User copyWith({UserId? id, EmailAddress? email}) => User(...);
+final class UnauthorizedFailure extends AuthFailure {
+  const UnauthorizedFailure({required super.message, super.stackTrace});
+}
+
+// Pattern matching with switch expressions
+final message = switch (failure) {
+  UnauthorizedFailure() => 'Invalid credentials',
+  ForbiddenFailure() => 'Access denied',
+  _ => 'Unknown error',
+};
+
+// DTOs - dart_mappable for JSON
+@MappableClass()
+class UserModel with UserModelMappable {
+  const UserModel({required this.id, required this.email});
+  final String id;
+  final String email;
 }
 ```
 
 ## Consequences
 
 ### Positive
-- **Less boilerplate**: Automatic copyWith, ==, hashCode, toString
-- **Exhaustive matching**: Compiler ensures all cases handled
+- **Less boilerplate**: Automatic copyWith, ==, hashCode via dart_mappable
+- **Exhaustive matching**: Compiler ensures all sealed class cases handled
 - **Type safety**: Sealed classes for failures and states
+- **No freezed dependency**: Simpler build process
 
 ### Negative
-- **Build step**: Requires `build_runner`
-- **Generated code**: Larger output
+- **Migration effort**: Required updating tests to use new patterns
 
 ### Neutral
 - Entities remain pure Dart for DDD semantics

@@ -1,10 +1,9 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/types/types.dart';
 
 import 'package:starter_app/features/auth/domain/entities/auth_credentials.dart';
 
-part 'login_request_model.freezed.dart';
-part 'login_request_model.g.dart';
+part 'login_request_model.mapper.dart';
 
 /// Data transfer object for login requests.
 ///
@@ -16,17 +15,13 @@ part 'login_request_model.g.dart';
 /// final json = model.toJson();
 /// await dio.post('/auth/login', data: json);
 /// ```
-@freezed
-abstract class LoginRequestModel with _$LoginRequestModel {
-  const factory LoginRequestModel({
-    required String email,
-    required String password,
-  }) = _LoginRequestModel;
-  const LoginRequestModel._();
-
-  /// Creates model from JSON (rarely used).
-  factory LoginRequestModel.fromJson(Json json) =>
-      _$LoginRequestModelFromJson(json);
+@MappableClass()
+class LoginRequestModel with LoginRequestModelMappable {
+  /// Creates a [LoginRequestModel].
+  const LoginRequestModel({
+    required this.email,
+    required this.password,
+  });
 
   /// Creates model from domain credentials.
   factory LoginRequestModel.fromDomain(AuthCredentials credentials) {
@@ -35,4 +30,14 @@ abstract class LoginRequestModel with _$LoginRequestModel {
       password: credentials.passwordValue,
     );
   }
+
+  /// User email address.
+  final String email;
+
+  /// User password.
+  final String password;
+
+  /// Creates model from JSON map (rarely used).
+  static LoginRequestModel fromJson(Json json) =>
+      LoginRequestModelMapper.fromMap(json);
 }

@@ -25,7 +25,7 @@ void main() {
 
     group('toJson', () {
       test('serializes to JSON with all fields', () {
-        final result = tUserModel.toJson();
+        final result = tUserModel.toMap();
 
         expect(result['id'], tId);
         expect(result['email'], tEmail);
@@ -78,7 +78,7 @@ void main() {
         const originalJson = TestData.userJson;
 
         final model = UserModel.fromJson(originalJson);
-        final backToJson = model.toJson();
+        final backToJson = model.toMap();
 
         expect(backToJson, originalJson);
       });

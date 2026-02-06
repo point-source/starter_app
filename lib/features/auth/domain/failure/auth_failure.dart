@@ -1,8 +1,9 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
+import 'package:meta/meta.dart';
+import 'package:starter_app/core/error/failures/failures.dart'
+    show InfrastructureFailure;
+import 'package:starter_app/core/error/failures/infrastructure_failures.dart'
+    show InfrastructureFailure;
 import 'package:starter_app/core/error/failures/technical_failure.dart';
-
-part 'auth_failure.freezed.dart';
 
 /// Authentication domain failures.
 ///
@@ -16,67 +17,220 @@ part 'auth_failure.freezed.dart';
 /// ```dart
 /// // In Repository
 /// if (e.statusCode == 401) {
-///   return Left(AuthFailure.unauthorized(message: 'Invalid credentials'));
+///   return Left(UnauthorizedFailure(message: 'Invalid credentials'));
 /// }
 /// if (e.statusCode == 403) {
-///   return Left(AuthFailure.forbidden(message: 'Account suspended'));
+///   return Left(ForbiddenFailure(message: 'Account suspended'));
 /// }
 /// if (e.statusCode == 404) {
-///   return Left(AuthFailure.notFound(message: 'User not found'));
+///   return Left(AuthNotFoundFailure(message: 'User not found'));
 /// }
 /// ```
-@freezed
-abstract class AuthFailure extends TechnicalFailure with _$AuthFailure {
-  const AuthFailure._();
+@immutable
+sealed class AuthFailure extends TechnicalFailure {
+  /// Creates an [AuthFailure].
+  const AuthFailure();
 
-  /// User or resource not found (HTTP 404).
-  const factory AuthFailure.notFound({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _NotFoundFailure;
+  /// Returns the error message.
+  String get message;
+}
 
-  /// Invalid credentials or expired session (HTTP 401).
-  const factory AuthFailure.unauthorized({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _UnauthorizedFailure;
-
-  /// Access denied or account suspended (HTTP 403).
-  const factory AuthFailure.forbidden({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _ForbiddenFailure;
-
-  /// Email address is already registered (HTTP 409).
-  const factory AuthFailure.emailAlreadyInUse({
-    @Default('Email already in use') String message,
-    StackTrace? stackTrace,
-  }) = _EmailAlreadyInUseFailure;
-
-  /// Invalid input data (HTTP 400).
-  const factory AuthFailure.invalidInput({
-    required String message,
-    StackTrace? stackTrace,
-  }) = _InvalidInputFailure;
+/// User or resource not found (HTTP 404).
+@immutable
+final class AuthNotFoundFailure extends AuthFailure {
+  /// Creates an [AuthNotFoundFailure].
+  const AuthNotFoundFailure({
+    required this.message,
+    this.stackTrace,
+  });
+  @override
+  final String message;
 
   @override
-  bool get isRetryable => when(
-    notFound: (_, _) => false,
-    unauthorized: (_, _) => false,
-    forbidden: (_, _) => false,
-    emailAlreadyInUse: (_, _) => false,
-    invalidInput: (_, _) => false,
-  );
-
-  // coverage:ignore-start
+  final StackTrace? stackTrace;
 
   @override
-  StackTrace? get stackTrace => when(
-    notFound: (_, stackTrace) => stackTrace,
-    unauthorized: (_, stackTrace) => stackTrace,
-    forbidden: (_, stackTrace) => stackTrace,
-    emailAlreadyInUse: (_, stackTrace) => stackTrace,
-    invalidInput: (_, stackTrace) => stackTrace,
-  );
-  // coverage:ignore-end
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  AuthNotFoundFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return AuthNotFoundFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AuthNotFoundFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'AuthFailure.notFound(message: $message)';
+}
+
+/// Invalid credentials or expired session (HTTP 401).
+@immutable
+final class UnauthorizedFailure extends AuthFailure {
+  /// Creates an [UnauthorizedFailure].
+  const UnauthorizedFailure({
+    required this.message,
+    this.stackTrace,
+  });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
+
+  @override
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  UnauthorizedFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return UnauthorizedFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UnauthorizedFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'AuthFailure.unauthorized(message: $message)';
+}
+
+/// Access denied or account suspended (HTTP 403).
+@immutable
+final class ForbiddenFailure extends AuthFailure {
+  /// Creates a [ForbiddenFailure].
+  const ForbiddenFailure({
+    required this.message,
+    this.stackTrace,
+  });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
+
+  @override
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  ForbiddenFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return ForbiddenFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ForbiddenFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'AuthFailure.forbidden(message: $message)';
+}
+
+/// Email address is already registered (HTTP 409).
+@immutable
+final class EmailAlreadyInUseFailure extends AuthFailure {
+  /// Creates an [EmailAlreadyInUseFailure].
+  const EmailAlreadyInUseFailure({
+    this.message = 'Email already in use',
+    this.stackTrace,
+  });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
+
+  @override
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  EmailAlreadyInUseFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return EmailAlreadyInUseFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EmailAlreadyInUseFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'AuthFailure.emailAlreadyInUse(message: $message)';
+}
+
+/// Invalid input data (HTTP 400).
+@immutable
+final class InvalidInputFailure extends AuthFailure {
+  /// Creates an [InvalidInputFailure].
+  const InvalidInputFailure({
+    required this.message,
+    this.stackTrace,
+  });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
+
+  @override
+  bool get isRetryable => false;
+
+  /// Creates a copy with the given fields replaced.
+  InvalidInputFailure copyWith({
+    String? message,
+    StackTrace? stackTrace,
+  }) {
+    return InvalidInputFailure(
+      message: message ?? this.message,
+      stackTrace: stackTrace ?? this.stackTrace,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InvalidInputFailure && message == other.message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'AuthFailure.invalidInput(message: $message)';
 }

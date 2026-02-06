@@ -14,13 +14,13 @@ void main() {
 
     setUp(() {
       mockAuthBloc = MockAuthBloc();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       when(() => mockAuthBloc.stream).thenAnswer((_) => const Stream.empty());
       notifier = AuthChangeNotifier(mockAuthBloc);
     });
 
     test('state returns current auth bloc state', () {
-      final expectedState = AuthState.authenticated(MockUser());
+      final expectedState = Authenticated(MockUser());
       when(() => mockAuthBloc.state).thenReturn(expectedState);
 
       expect(notifier.state, equals(expectedState));
@@ -28,17 +28,17 @@ void main() {
 
     test('isAuthenticated returns true when state is authenticated', () {
       when(() => mockAuthBloc.state).thenReturn(
-        AuthState.authenticated(MockUser()),
+        Authenticated(MockUser()),
       );
       expect(notifier.isAuthenticated, isTrue);
     });
 
     test('isAuthenticated returns false when state is not authenticated', () {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
       expect(notifier.isAuthenticated, isFalse);
 
       when(() => mockAuthBloc.state).thenReturn(
-        const AuthState.unauthenticated(),
+        const Unauthenticated(),
       );
       expect(notifier.isAuthenticated, isFalse);
     });
@@ -57,7 +57,7 @@ void main() {
         notificationCount++;
       });
 
-      streamController.add(const AuthState.unauthenticated());
+      streamController.add(const Unauthenticated());
 
       await pumpEventQueue();
 

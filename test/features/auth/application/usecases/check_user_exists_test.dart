@@ -75,7 +75,7 @@ void main() {
 
     test('should return Left(Failure) when check fails', () async {
       // Given
-      const tFailure = AuthFailure.notFound(message: 'Service unavailable');
+      const tFailure = AuthNotFoundFailure(message: 'Service unavailable');
       when(
         () => mockRepository.checkUserExists(any()),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -96,7 +96,7 @@ void main() {
 
     test('should pass through repository failures unchanged', () async {
       // Given
-      const tFailure = AuthFailure.unauthorized(message: 'Unauthorized');
+      const tFailure = UnauthorizedFailure(message: 'Unauthorized');
       when(
         () => mockRepository.checkUserExists(any()),
       ).thenAnswer((_) async => const Left(tFailure));
@@ -179,7 +179,7 @@ void main() {
 
       test('service error during check', () async {
         // Given - service is temporarily unavailable
-        const failure = AuthFailure.notFound(
+        const failure = AuthNotFoundFailure(
           message: 'Service temporarily unavailable',
         );
         when(

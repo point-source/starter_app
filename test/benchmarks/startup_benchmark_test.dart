@@ -122,14 +122,14 @@ void main() {
 
       // Create many state objects
       final states = <AuthState>[
-        AuthState.empty(),
-        const AuthState.unauthenticated(),
+        AuthInitial.empty(),
+        const Unauthenticated(),
       ];
 
       for (var i = 1; i < 100; i++) {
         states
-          ..add(AuthState.empty())
-          ..add(const AuthState.unauthenticated());
+          ..add(AuthInitial.empty())
+          ..add(const Unauthenticated());
       }
 
       stopwatch.stop();

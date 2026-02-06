@@ -15,7 +15,7 @@ void main() {
   late MockAuthBloc mockAuthBloc;
 
   setUpAll(() {
-    registerFallbackValue(const AuthEvent.logoutRequested());
+    registerFallbackValue(const AuthLogoutRequested());
   });
 
   setUp(() {
@@ -31,7 +31,7 @@ void main() {
 
   group('LogoutButton', () {
     testWidgets('renders nothing when unauthenticated', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpApp(buildLogoutButton());
 
@@ -41,7 +41,7 @@ void main() {
 
     testWidgets('renders button when authenticated', (tester) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
 
       await tester.pumpApp(buildLogoutButton());
 
@@ -50,7 +50,7 @@ void main() {
 
     testWidgets('displays localized logout text', (tester) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
 
       await tester.pumpApp(buildLogoutButton());
 
@@ -59,7 +59,7 @@ void main() {
 
     testWidgets('dispatches logout event when tapped', (tester) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
 
       await tester.pumpApp(buildLogoutButton());
 

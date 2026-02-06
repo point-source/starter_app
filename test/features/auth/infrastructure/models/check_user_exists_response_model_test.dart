@@ -20,7 +20,7 @@ void main() {
     test('toJson converts model correctly', () {
       const model = CheckUserExistsResponseModel(exists: true);
 
-      final json = model.toJson();
+      final json = model.toMap();
 
       expect(json['exists'], true);
     });

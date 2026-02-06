@@ -53,7 +53,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   /// If [controller] is not provided, a default one is created.
   FakeAuthBloc({FakeAuthBlocController? controller})
     : _controller = controller ?? FakeAuthBlocController(),
-      super(AuthState.empty()) {
+      super(AuthInitial.empty()) {
     on<AuthGetCurrentUser>(_onGetCurrentUser);
     on<AuthEmailChanged>(_onEmailChanged);
     on<AuthPasswordChanged>(_onPasswordChanged);
@@ -71,7 +71,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     Emitter<AuthState> emit,
   ) {
     if (_controller.isUserLoggedIn) {
-      emit(AuthState.authenticated(IntegrationTestData.user));
+      emit(Authenticated(IntegrationTestData.user));
     }
   }
 
@@ -80,7 +80,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     Emitter<AuthState> emit,
   ) {
     final currentState = state;
-    if (currentState is Initial) {
+    if (currentState is AuthInitial) {
       emit(
         currentState.copyWith(
           email: EmailAddress(event.email),
@@ -94,34 +94,37 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     AuthPasswordChanged event,
     Emitter<AuthState> emit,
   ) {
-    state.mapOrNull(
-      loginRequired: (s) => emit(
-        s.copyWith(
+    final currentState = state;
+    if (currentState is LoginRequired) {
+      emit(
+        currentState.copyWith(
           password: Password(event.password),
-          validation: s.validation.copyWith(passwordTouched: true),
+          validation: currentState.validation.copyWith(passwordTouched: true),
         ),
-      ),
-      registrationRequired: (s) => emit(
-        s.copyWith(
+      );
+    } else if (currentState is RegistrationRequired) {
+      emit(
+        currentState.copyWith(
           password: Password(event.password),
-          validation: s.validation.copyWith(passwordTouched: true),
+          validation: currentState.validation.copyWith(passwordTouched: true),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _onNameChanged(
     AuthNameChanged event,
     Emitter<AuthState> emit,
   ) {
-    state.mapOrNull(
-      registrationRequired: (s) => emit(
-        s.copyWith(
+    final currentState = state;
+    if (currentState is RegistrationRequired) {
+      emit(
+        currentState.copyWith(
           name: Name(event.name),
-          validation: s.validation.copyWith(nameTouched: true),
+          validation: currentState.validation.copyWith(nameTouched: true),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onEmailSubmitted(
@@ -129,7 +132,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     Emitter<AuthState> emit,
   ) async {
     final currentState = state;
-    if (currentState is Initial) {
+    if (currentState is AuthInitial) {
       final email = currentState.email;
       if (email.isValid) {
         emit(currentState.copyWith(isSubmitting: true));
@@ -140,7 +143,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
         if (_controller.shouldUserExist) {
           // User exists - go to login
           emit(
-            AuthState.loginRequired(
+            LoginRequired(
               email: email,
               password: Password(''),
               isSubmitting: false,
@@ -150,7 +153,7 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
         } else {
           // New user - go to registration
           emit(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: email,
               password: Password(''),
               name: Name(''),
@@ -181,13 +184,13 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
 
       if (_controller.shouldLoginSucceed) {
         _controller.isUserLoggedIn = true;
-        emit(AuthState.authenticated(IntegrationTestData.user));
+        emit(Authenticated(IntegrationTestData.user));
       } else {
         emit(
           currentState.copyWith(
             isSubmitting: false,
             error: ErrorModel.fromFailure(
-              const AuthFailure.unauthorized(
+              const UnauthorizedFailure(
                 message: 'Invalid credentials',
               ),
             ),
@@ -209,13 +212,13 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
 
       if (_controller.shouldRegisterSucceed) {
         _controller.isUserLoggedIn = true;
-        emit(AuthState.authenticated(IntegrationTestData.user));
+        emit(Authenticated(IntegrationTestData.user));
       } else {
         emit(
           currentState.copyWith(
             isSubmitting: false,
             error: ErrorModel.fromFailure(
-              const AuthFailure.emailAlreadyInUse(),
+              const EmailAlreadyInUseFailure(),
             ),
           ),
         );
@@ -228,6 +231,6 @@ class FakeAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
     Emitter<AuthState> emit,
   ) {
     _controller.isUserLoggedIn = false;
-    emit(const AuthState.unauthenticated());
+    emit(const Unauthenticated());
   }
 }

@@ -90,9 +90,9 @@ void main() {
   });
 
   group('AuthBloc', () {
-    test('initial state is AuthState.empty', () {
-      expect(bloc.state, isA<Initial>());
-      expect(bloc.state.mapOrNull(initial: (s) => s.isSubmitting), false);
+    test('initial state is AuthInitial.empty', () {
+      expect(bloc.state, isA<AuthInitial>());
+      expect((bloc.state as AuthInitial).isSubmitting, false);
     });
 
     group('AuthWatchStarted', () {
@@ -101,12 +101,12 @@ void main() {
         build: () {
           when(() => mockWatchAuthChanges()).thenAnswer(
             (_) => Stream.value(
-              const Left(AuthFailure.unauthorized(message: 'Stream Error')),
+              const Left(UnauthorizedFailure(message: 'Stream Error')),
             ),
           );
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.watchStarted()),
+        act: (bloc) => bloc.add(const AuthWatchStarted()),
         expect: () => <AuthState>[], // No state change, but side effect
         verify: (_) {
           verify(
@@ -124,9 +124,9 @@ void main() {
           );
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.watchStarted()),
+        act: (bloc) => bloc.add(const AuthWatchStarted()),
         expect: () => [
-          AuthState.authenticated(TestData.user()),
+          Authenticated(TestData.user()),
         ],
         verify: (_) {
           verify(() => mockWatchAuthChanges()).called(1);
@@ -145,7 +145,7 @@ void main() {
           when(() => mockLogout()).thenAnswer((_) async => const Right(unit));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.sessionWatchStarted()),
+        act: (bloc) => bloc.add(const AuthSessionWatchStarted()),
         expect: () => [
           // sessionExpired handler will emit Unauthenticated
           isA<Unauthenticated>(),
@@ -167,9 +167,9 @@ void main() {
           ).thenAnswer((_) async => Right(tUser));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.getCurrentUser()),
+        act: (bloc) => bloc.add(const AuthGetCurrentUser()),
         expect: () => <AuthState>[
-          AuthState.authenticated(tUser),
+          Authenticated(tUser),
         ],
         verify: (_) {
           verify(() => mockGetCurrentUser()).called(1);
@@ -188,9 +188,9 @@ void main() {
           ).thenAnswer((_) async => const Right(null));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.getCurrentUser()),
+        act: (bloc) => bloc.add(const AuthGetCurrentUser()),
         expect: () => [
-          isA<Initial>(),
+          isA<AuthInitial>(),
         ],
         verify: (_) {
           verify(() => mockGetCurrentUser()).called(1);
@@ -203,13 +203,13 @@ void main() {
         'emits [empty] and logs warning when failure occurs',
         build: () {
           when(() => mockGetCurrentUser()).thenAnswer(
-            (_) async => const Left(AuthFailure.unauthorized(message: 'Error')),
+            (_) async => const Left(UnauthorizedFailure(message: 'Error')),
           );
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.getCurrentUser()),
+        act: (bloc) => bloc.add(const AuthGetCurrentUser()),
         expect: () => [
-          isA<Initial>(),
+          isA<AuthInitial>(),
         ],
         verify: (_) {
           verify(() => mockGetCurrentUser()).called(1);
@@ -224,9 +224,9 @@ void main() {
       blocTest<AuthBloc, AuthState>(
         'updates email and resets error/validation in initial state',
         build: () => bloc,
-        act: (bloc) => bloc.add(const AuthEvent.emailChanged(tEmailStr)),
+        act: (bloc) => bloc.add(const AuthEmailChanged(tEmailStr)),
         expect: () => [
-          isA<Initial>().having(
+          isA<AuthInitial>().having(
             (s) => s.email.getOrCrash(),
             'email',
             tEmailStr,
@@ -240,14 +240,14 @@ void main() {
 
       blocTest<AuthBloc, AuthState>(
         'updates password in loginRequired state',
-        seed: () => AuthState.loginRequired(
+        seed: () => LoginRequired(
           email: EmailAddress(TestData.email),
           password: Password(''),
           isSubmitting: false,
           validation: FieldValidationState.initial(),
         ),
         build: () => bloc,
-        act: (bloc) => bloc.add(const AuthEvent.passwordChanged(tPasswordStr)),
+        act: (bloc) => bloc.add(const AuthPasswordChanged(tPasswordStr)),
         expect: () => [
           isA<LoginRequired>().having(
             (s) => s.password.getOrCrash(),
@@ -270,11 +270,19 @@ void main() {
           return bloc;
         },
         act: (bloc) => bloc
-          ..add(const AuthEvent.emailChanged(tEmailStr))
-          ..add(const AuthEvent.emailSubmitted()),
+          ..add(const AuthEmailChanged(tEmailStr))
+          ..add(const AuthEmailSubmitted()),
         expect: () => [
-          isA<Initial>().having((s) => s.isSubmitting, 'isSubmitting', false),
-          isA<Initial>().having((s) => s.isSubmitting, 'isSubmitting', true),
+          isA<AuthInitial>().having(
+            (s) => s.isSubmitting,
+            'isSubmitting',
+            false,
+          ),
+          isA<AuthInitial>().having(
+            (s) => s.isSubmitting,
+            'isSubmitting',
+            true,
+          ),
           isA<LoginRequired>().having(
             (s) => s.email.getOrCrash(),
             'email',
@@ -295,11 +303,19 @@ void main() {
           return bloc;
         },
         act: (bloc) => bloc
-          ..add(const AuthEvent.emailChanged(tEmailStr))
-          ..add(const AuthEvent.emailSubmitted()),
+          ..add(const AuthEmailChanged(tEmailStr))
+          ..add(const AuthEmailSubmitted()),
         expect: () => [
-          isA<Initial>().having((s) => s.isSubmitting, 'isSubmitting', false),
-          isA<Initial>().having((s) => s.isSubmitting, 'isSubmitting', true),
+          isA<AuthInitial>().having(
+            (s) => s.isSubmitting,
+            'isSubmitting',
+            false,
+          ),
+          isA<AuthInitial>().having(
+            (s) => s.isSubmitting,
+            'isSubmitting',
+            true,
+          ),
           isA<RegistrationRequired>().having(
             (s) => s.email.getOrCrash(),
             'email',
@@ -312,7 +328,7 @@ void main() {
     group('AuthLoginSubmitted', () {
       blocTest<AuthBloc, AuthState>(
         'emits [isSubmitting, authenticated] on success',
-        seed: () => AuthState.loginRequired(
+        seed: () => LoginRequired(
           email: TestData.emailAddress(),
           password: TestData.passwordVO(),
           isSubmitting: false,
@@ -324,7 +340,7 @@ void main() {
           ).thenAnswer((_) async => Right(TestData.user()));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.loginSubmitted()),
+        act: (bloc) => bloc.add(const AuthLoginSubmitted()),
         expect: () => [
           isA<LoginRequired>().having(
             (s) => s.isSubmitting,
@@ -341,7 +357,7 @@ void main() {
 
       blocTest<AuthBloc, AuthState>(
         'emits [isSubmitting, error] on failure',
-        seed: () => AuthState.loginRequired(
+        seed: () => LoginRequired(
           email: TestData.emailAddress(),
           password: TestData.passwordVO(),
           isSubmitting: false,
@@ -349,11 +365,11 @@ void main() {
         ),
         build: () {
           when(() => mockLogin(any())).thenAnswer(
-            (_) async => const Left(AuthFailure.unauthorized(message: 'Error')),
+            (_) async => const Left(UnauthorizedFailure(message: 'Error')),
           );
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.loginSubmitted()),
+        act: (bloc) => bloc.add(const AuthLoginSubmitted()),
         expect: () => [
           isA<LoginRequired>().having(
             (s) => s.isSubmitting,
@@ -370,7 +386,7 @@ void main() {
     group('AuthRegisterSubmitted', () {
       blocTest<AuthBloc, AuthState>(
         'emits [isSubmitting, authenticated] on success',
-        seed: () => AuthState.registrationRequired(
+        seed: () => RegistrationRequired(
           email: TestData.emailAddress(),
           password: TestData.passwordVO(),
           name: TestData.nameVO(),
@@ -383,7 +399,7 @@ void main() {
           ).thenAnswer((_) async => Right(TestData.user()));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.registerSubmitted()),
+        act: (bloc) => bloc.add(const AuthRegisterSubmitted()),
         expect: () => [
           isA<RegistrationRequired>().having(
             (s) => s.isSubmitting,
@@ -402,9 +418,9 @@ void main() {
           when(() => mockLogout()).thenAnswer((_) async => const Right(unit));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.logoutRequested()),
+        act: (bloc) => bloc.add(const AuthLogoutRequested()),
         expect: () => [
-          isA<Initial>(),
+          isA<AuthInitial>(),
         ],
         verify: (_) {
           verify(() => mockLogout()).called(1);
@@ -419,7 +435,7 @@ void main() {
           when(() => mockLogout()).thenAnswer((_) async => const Right(unit));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.sessionExpired()),
+        act: (bloc) => bloc.add(const AuthSessionExpired()),
         expect: () => [
           isA<Unauthenticated>(),
         ],
@@ -436,15 +452,15 @@ void main() {
         'emits [validation updated] when email is invalid',
         build: () => bloc,
         act: (bloc) => bloc
-          ..add(const AuthEvent.emailChanged('invalid-email'))
-          ..add(const AuthEvent.emailSubmitted()),
+          ..add(const AuthEmailChanged('invalid-email'))
+          ..add(const AuthEmailSubmitted()),
         expect: () => [
-          isA<Initial>().having(
+          isA<AuthInitial>().having(
             (s) => s.email.isValid,
             'email.isValid',
             false,
           ),
-          isA<Initial>().having(
+          isA<AuthInitial>().having(
             (s) => s.validation.emailTouched,
             'emailTouched',
             true,
@@ -461,17 +477,25 @@ void main() {
           when(
             () => mockCheckUserExists(any()),
           ).thenAnswer(
-            (_) async => const Left(AuthFailure.unauthorized(message: 'Error')),
+            (_) async => const Left(UnauthorizedFailure(message: 'Error')),
           );
           return bloc;
         },
         act: (bloc) => bloc
-          ..add(const AuthEvent.emailChanged(tEmailStr))
-          ..add(const AuthEvent.emailSubmitted()),
+          ..add(const AuthEmailChanged(tEmailStr))
+          ..add(const AuthEmailSubmitted()),
         expect: () => [
-          isA<Initial>().having((s) => s.isSubmitting, 'isSubmitting', false),
-          isA<Initial>().having((s) => s.isSubmitting, 'isSubmitting', true),
-          isA<Initial>()
+          isA<AuthInitial>().having(
+            (s) => s.isSubmitting,
+            'isSubmitting',
+            false,
+          ),
+          isA<AuthInitial>().having(
+            (s) => s.isSubmitting,
+            'isSubmitting',
+            true,
+          ),
+          isA<AuthInitial>()
               .having((s) => s.isSubmitting, 'isSubmitting', false)
               .having((s) => s.error, 'error', isNotNull),
         ],
@@ -481,14 +505,14 @@ void main() {
     group('AuthLoginSubmitted', () {
       blocTest<AuthBloc, AuthState>(
         'emits [validation updated] when credentials are invalid',
-        seed: () => AuthState.loginRequired(
+        seed: () => LoginRequired(
           email: TestData.emailAddress(),
           password: Password('short'), // Invalid password
           isSubmitting: false,
           validation: FieldValidationState.initial(),
         ),
         build: () => bloc,
-        act: (bloc) => bloc.add(const AuthEvent.loginSubmitted()),
+        act: (bloc) => bloc.add(const AuthLoginSubmitted()),
         expect: () => [
           isA<LoginRequired>().having(
             (s) => s.validation == FieldValidationState.allTouched(),
@@ -505,7 +529,7 @@ void main() {
     group('AuthRegisterSubmitted', () {
       blocTest<AuthBloc, AuthState>(
         'emits [validation updated] when credentials are invalid',
-        seed: () => AuthState.registrationRequired(
+        seed: () => RegistrationRequired(
           email: TestData.emailAddress(),
           password: Password('short'), // Invalid
           name: TestData.nameVO(),
@@ -513,7 +537,7 @@ void main() {
           validation: FieldValidationState.initial(),
         ),
         build: () => bloc,
-        act: (bloc) => bloc.add(const AuthEvent.registerSubmitted()),
+        act: (bloc) => bloc.add(const AuthRegisterSubmitted()),
         expect: () => [
           isA<RegistrationRequired>().having(
             (s) => s.validation == FieldValidationState.allTouched(),
@@ -528,7 +552,7 @@ void main() {
 
       blocTest<AuthBloc, AuthState>(
         'emits [isSubmitting, error] on failure',
-        seed: () => AuthState.registrationRequired(
+        seed: () => RegistrationRequired(
           email: TestData.emailAddress(),
           password: TestData.passwordVO(),
           name: TestData.nameVO(),
@@ -537,11 +561,11 @@ void main() {
         ),
         build: () {
           when(() => mockRegister(any())).thenAnswer(
-            (_) async => const Left(AuthFailure.emailAlreadyInUse()),
+            (_) async => const Left(EmailAlreadyInUseFailure()),
           );
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.registerSubmitted()),
+        act: (bloc) => bloc.add(const AuthRegisterSubmitted()),
         expect: () => [
           isA<RegistrationRequired>().having(
             (s) => s.isSubmitting,
@@ -557,12 +581,12 @@ void main() {
 
     group('Field Focus Events', () {
       test('AuthEmailUnfocused marks email as touched', () {
-        bloc.add(const AuthEvent.emailUnfocused());
+        bloc.add(const AuthEmailUnfocused());
         unawaited(
           expectLater(
             bloc.stream,
             emits(
-              isA<Initial>().having(
+              isA<AuthInitial>().having(
                 (s) => s.validation.emailTouched,
                 'emailTouched',
                 true,
@@ -577,14 +601,14 @@ void main() {
         // Testing in LoginRequired
         bloc
           ..emit(
-            AuthState.loginRequired(
+            LoginRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               isSubmitting: false,
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.passwordUnfocused());
+          ..add(const AuthPasswordUnfocused());
         unawaited(
           expectLater(
             bloc.stream,
@@ -603,7 +627,7 @@ void main() {
         // Need to be in RegistrationRequired
         bloc
           ..emit(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               name: TestData.nameVO(),
@@ -611,7 +635,7 @@ void main() {
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.nameUnfocused());
+          ..add(const AuthNameUnfocused());
         unawaited(
           expectLater(
             bloc.stream,
@@ -626,7 +650,7 @@ void main() {
         );
       });
       test('AuthPasswordUnfocused does nothing in Initial state', () {
-        bloc.add(const AuthEvent.passwordUnfocused());
+        bloc.add(const AuthPasswordUnfocused());
         unawaited(
           expectLater(
             bloc.stream,
@@ -637,7 +661,7 @@ void main() {
       });
 
       test('AuthNameUnfocused does nothing in Initial state', () {
-        bloc.add(const AuthEvent.nameUnfocused());
+        bloc.add(const AuthNameUnfocused());
         unawaited(
           expectLater(
             bloc.stream,
@@ -650,14 +674,14 @@ void main() {
       test('AuthEmailUnfocused marks email as touched in LoginRequired', () {
         bloc
           ..emit(
-            AuthState.loginRequired(
+            LoginRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               isSubmitting: false,
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.emailUnfocused());
+          ..add(const AuthEmailUnfocused());
         unawaited(
           expectLater(
             bloc.stream,
@@ -677,7 +701,7 @@ void main() {
         () {
           bloc
             ..emit(
-              AuthState.registrationRequired(
+              RegistrationRequired(
                 email: TestData.emailAddress(),
                 password: TestData.passwordVO(),
                 name: TestData.nameVO(),
@@ -685,7 +709,7 @@ void main() {
                 validation: FieldValidationState.initial(),
               ),
             )
-            ..add(const AuthEvent.emailUnfocused());
+            ..add(const AuthEmailUnfocused());
           unawaited(
             expectLater(
               bloc.stream,
@@ -707,15 +731,15 @@ void main() {
         '''
         emits [unauthenticated, initial] 
         when user becomes null while authenticated''',
-        seed: () => AuthState.authenticated(TestData.user()),
+        seed: () => Authenticated(TestData.user()),
         build: () {
           when(() => mockLogout()).thenAnswer((_) async => const Right(unit));
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.authUserChanged(null)),
+        act: (bloc) => bloc.add(const AuthUserChanged(null)),
         expect: () => [
           isA<Unauthenticated>(),
-          isA<Initial>(),
+          isA<AuthInitial>(),
         ],
         verify: (_) {
           verify(() => mockLogger.debug(any())).called(greaterThan(0));
@@ -725,11 +749,11 @@ void main() {
 
       blocTest<AuthBloc, AuthState>(
         'emits [authenticated] when user is not null',
-        seed: AuthState.empty,
+        seed: AuthInitial.empty,
         build: () => bloc,
-        act: (bloc) => bloc.add(AuthEvent.authUserChanged(TestData.user())),
+        act: (bloc) => bloc.add(AuthUserChanged(TestData.user())),
         expect: () => [
-          AuthState.authenticated(TestData.user()),
+          Authenticated(TestData.user()),
         ],
       );
     });
@@ -739,18 +763,18 @@ void main() {
         () {
           bloc
             ..emit(
-              AuthState.loginRequired(
+              LoginRequired(
                 email: TestData.emailAddress(),
                 password: TestData.passwordVO(),
                 isSubmitting: false,
                 validation: FieldValidationState.initial(),
               ),
             )
-            ..add(const AuthEvent.emailChanged(''));
+            ..add(const AuthEmailChanged(''));
           unawaited(
             expectLater(
               bloc.stream,
-              emits(isA<Initial>()),
+              emits(isA<AuthInitial>()),
             ),
           );
         },
@@ -761,7 +785,7 @@ void main() {
         () {
           bloc
             ..emit(
-              AuthState.registrationRequired(
+              RegistrationRequired(
                 email: TestData.emailAddress(),
                 password: TestData.passwordVO(),
                 name: TestData.nameVO(),
@@ -769,11 +793,11 @@ void main() {
                 validation: FieldValidationState.initial(),
               ),
             )
-            ..add(const AuthEvent.emailChanged(''));
+            ..add(const AuthEmailChanged(''));
           unawaited(
             expectLater(
               bloc.stream,
-              emits(isA<Initial>()),
+              emits(isA<AuthInitial>()),
             ),
           );
         },
@@ -782,7 +806,7 @@ void main() {
       test('AuthNameChanged updates name in RegistrationRequired', () {
         bloc
           ..emit(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               name: Name('Old Name'),
@@ -790,7 +814,7 @@ void main() {
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.nameChanged('New Name'));
+          ..add(const AuthNameChanged('New Name'));
         unawaited(
           expectLater(
             bloc.stream,
@@ -808,7 +832,7 @@ void main() {
       test('AuthPasswordChanged updates password in RegistrationRequired', () {
         bloc
           ..emit(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: TestData.emailAddress(),
               password: Password('OldPassword'),
               name: TestData.nameVO(),
@@ -816,7 +840,7 @@ void main() {
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.passwordChanged('P@ssword123!'));
+          ..add(const AuthPasswordChanged('P@ssword123!'));
         unawaited(
           expectLater(
             bloc.stream,
@@ -836,13 +860,13 @@ void main() {
         build: () {
           when(() => mockLogout()).thenAnswer(
             (_) async =>
-                const Left(AuthFailure.unauthorized(message: 'Logout Error')),
+                const Left(UnauthorizedFailure(message: 'Logout Error')),
           );
           return bloc;
         },
-        act: (bloc) => bloc.add(const AuthEvent.logoutRequested()),
+        act: (bloc) => bloc.add(const AuthLogoutRequested()),
         expect: () => [
-          isA<Initial>(),
+          isA<AuthInitial>(),
         ],
         verify: (_) {
           verify(
@@ -853,23 +877,23 @@ void main() {
 
       blocTest<AuthBloc, AuthState>(
         'AuthUserChanged(null) does nothing if not authenticated',
-        seed: AuthState.empty,
+        seed: AuthInitial.empty,
         build: () => bloc,
-        act: (bloc) => bloc.add(const AuthEvent.authUserChanged(null)),
+        act: (bloc) => bloc.add(const AuthUserChanged(null)),
         expect: () => <AuthState>[], // No state change
       );
 
       test('AuthEmailChanged does nothing in LoginRequired if not empty', () {
         bloc
           ..emit(
-            AuthState.loginRequired(
+            LoginRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               isSubmitting: false,
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.emailChanged('new@example.com'));
+          ..add(const AuthEmailChanged('new@example.com'));
         unawaited(
           expectLater(
             bloc.stream,
@@ -880,7 +904,7 @@ void main() {
       });
 
       test('AuthPasswordChanged does nothing in Initial state', () {
-        bloc.add(const AuthEvent.passwordChanged('pass'));
+        bloc.add(const AuthPasswordChanged('pass'));
         unawaited(
           expectLater(
             bloc.stream,
@@ -891,7 +915,7 @@ void main() {
       });
 
       test('AuthNameChanged does nothing in Initial state', () {
-        bloc.add(const AuthEvent.nameChanged('name'));
+        bloc.add(const AuthNameChanged('name'));
         unawaited(
           expectLater(
             bloc.stream,
@@ -906,14 +930,14 @@ void main() {
       test('toggles password visibility in LoginRequired', () {
         bloc
           ..emit(
-            AuthState.loginRequired(
+            LoginRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               isSubmitting: false,
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.togglePasswordVisibility());
+          ..add(const AuthTogglePasswordVisibility());
 
         unawaited(
           expectLater(
@@ -932,7 +956,7 @@ void main() {
       test('toggles password visibility in RegistrationRequired', () {
         bloc
           ..emit(
-            AuthState.registrationRequired(
+            RegistrationRequired(
               email: TestData.emailAddress(),
               password: TestData.passwordVO(),
               name: TestData.nameVO(),
@@ -940,7 +964,7 @@ void main() {
               validation: FieldValidationState.initial(),
             ),
           )
-          ..add(const AuthEvent.togglePasswordVisibility());
+          ..add(const AuthTogglePasswordVisibility());
 
         unawaited(
           expectLater(
@@ -957,7 +981,7 @@ void main() {
       });
 
       test('does nothing in Initial state', () {
-        bloc.add(const AuthEvent.togglePasswordVisibility());
+        bloc.add(const AuthTogglePasswordVisibility());
         unawaited(
           expectLater(
             bloc.stream,

@@ -15,15 +15,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc(
     this._getProfile,
     this._eventDispatcher,
-  ) : super(const ProfileState.initial()) {
+  ) : super(const ProfileInitial()) {
     on<ProfileEvent>((event, emit) async {
-      await event.when(
-        getMyProfile: () => _onStarted(emit),
-        reset: () {
-          emit(const ProfileState.initial());
-          return Future<void>.value();
-        },
-      );
+      await switch (event) {
+        GetMyProfile() => _onGetMyProfile(emit),
+        ProfileReset() => _onReset(emit),
+      };
     });
 
     _setupEventListeners();
@@ -40,20 +37,24 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final profileEvent = switch (event) {
         UserRegistered() ||
         UserLoggedIn() ||
-        UserSessionRestored() => const ProfileEvent.getMyProfile(),
-        UserLoggedOut() => const ProfileEvent.reset(),
+        UserSessionRestored() => const GetMyProfile(),
+        UserLoggedOut() => const ProfileReset(),
       };
 
       add(profileEvent);
     });
   }
 
-  Future<void> _onStarted(Emitter<ProfileState> emit) async {
-    emit(const ProfileState.loading());
+  Future<void> _onReset(Emitter<ProfileState> emit) async {
+    emit(const ProfileInitial());
+  }
+
+  Future<void> _onGetMyProfile(Emitter<ProfileState> emit) async {
+    emit(const ProfileLoading());
     final result = await _getProfile();
     result.fold(
-      (failure) => emit(ProfileState.error(ErrorModel.fromFailure(failure))),
-      (profile) => emit(ProfileState.loaded(profile)),
+      (failure) => emit(ProfileError(ErrorModel.fromFailure(failure))),
+      (profile) => emit(ProfileLoaded(profile)),
     );
   }
 

@@ -65,12 +65,12 @@ class RefreshToken extends ValueObject<String> {
     String? input,
   ) {
     if (input == null || input.isEmpty) {
-      return left([const TokenFailure.empty()]);
+      return left([const TokenEmpty()]);
     }
 
     if (input.length < minLength) {
       return left([
-        TokenFailure.tooShort(
+        TokenTooShort(
           minLength: minLength,
           actualLength: input.length,
         ),

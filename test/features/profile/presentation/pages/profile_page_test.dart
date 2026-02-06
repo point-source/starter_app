@@ -36,7 +36,7 @@ void main() {
 
   group('ProfilePage', () {
     testWidgets('renders without errors', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpAppWithBloc(
         const ProfilePage(),
@@ -49,7 +49,7 @@ void main() {
     });
 
     testWidgets('displays app bar with title', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpAppWithBloc(
         const ProfilePage(),
@@ -60,7 +60,7 @@ void main() {
     });
 
     testWidgets('shows LoginButton when unauthenticated', (tester) async {
-      when(() => mockAuthBloc.state).thenReturn(AuthState.empty());
+      when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
       await tester.pumpAppWithBloc(
         const ProfilePage(),
@@ -72,10 +72,10 @@ void main() {
 
     testWidgets('shows welcome message when authenticated', (tester) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
       when(
         () => mockProfileBloc.state,
-      ).thenReturn(ProfileState.loaded(TestData.userProfile()));
+      ).thenReturn(ProfileLoaded(TestData.userProfile()));
 
       await tester.pumpAppWithBloc(
         const ProfilePage(),
@@ -98,10 +98,10 @@ void main() {
       tester,
     ) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
       when(
         () => mockProfileBloc.state,
-      ).thenReturn(const ProfileState.initial());
+      ).thenReturn(const ProfileInitial());
 
       await tester.pumpAppWithBloc(
         const ProfilePage(),
@@ -118,10 +118,10 @@ void main() {
       tester,
     ) async {
       final user = TestData.user();
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
       when(
         () => mockProfileBloc.state,
-      ).thenReturn(const ProfileState.loading());
+      ).thenReturn(const ProfileLoading());
 
       await tester.pumpAppWithBloc(
         const ProfilePage(),
@@ -139,12 +139,12 @@ void main() {
     ) async {
       final user = TestData.user();
       final errorModel = ErrorModel.fromFailure(
-        const InfrastructureFailure.server(message: 'Test error'),
+        const ServerFailure(message: 'Test error'),
       );
-      when(() => mockAuthBloc.state).thenReturn(AuthState.authenticated(user));
+      when(() => mockAuthBloc.state).thenReturn(Authenticated(user));
       when(
         () => mockProfileBloc.state,
-      ).thenReturn(ProfileState.error(errorModel));
+      ).thenReturn(ProfileError(errorModel));
 
       final mockFailureMessageService = MockFailureMessageService();
       when(

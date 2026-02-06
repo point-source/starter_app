@@ -59,7 +59,7 @@ void main() {
           message: 'Auth error',
           statusCode: 401,
         );
-        const customFailure = InfrastructureFailure.network(
+        const customFailure = NetworkFailure(
           message: 'Custom mapped failure',
         );
 

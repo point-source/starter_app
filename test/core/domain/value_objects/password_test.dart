@@ -362,13 +362,13 @@ void main() {
       });
 
       test('missingUppercase failure is correct type', () {
-        const failure = PasswordFailure.missingUppercase();
+        const failure = PasswordMissingUppercase();
 
         expect(failure, isA<PasswordMissingUppercase>());
       });
 
       test('missingDigit failure is correct type', () {
-        const failure = PasswordFailure.missingDigit();
+        const failure = PasswordMissingDigit();
 
         expect(failure, isA<PasswordMissingDigit>());
       });

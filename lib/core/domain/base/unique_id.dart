@@ -37,10 +37,15 @@ import 'package:uuid/uuid.dart';
 /// // Validate untrusted input
 /// final result = UniqueId.fromUntrusted(userInput);
 /// result.fold(
-///   (failures) => failures.first.when(
-///     empty: () => print('ID is required'),
-///     invalidFormat: () => print('ID must be a valid UUID'),
-///   ),
+///   (failures) {
+///     final failure = failures.first;
+///     switch (failure) {
+///       case UniqueIdEmpty():
+///         print('ID is required');
+///       case UniqueIdInvalidFormat():
+///         print('ID must be a valid UUID');
+///     }
+///   },
 ///   (id) => print('Valid ID: $id'),
 /// );
 /// ```
@@ -89,12 +94,12 @@ final class UniqueId {
     String? input,
   ) {
     if (input == null || input.trim().isEmpty) {
-      return left([const UniqueIdFailure.empty()]);
+      return left([const UniqueIdEmpty()]);
     }
 
     final trimmed = input.trim();
     if (!_uuidRegex.hasMatch(trimmed)) {
-      return left([const UniqueIdFailure.invalidFormat()]);
+      return left([const UniqueIdInvalidFormat()]);
     }
 
     return right(UniqueId._(trimmed));

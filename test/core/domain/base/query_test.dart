@@ -64,7 +64,7 @@ void main() {
     });
 
     test('handles failure result', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final query = TestQuery((params) async => left(failure));
       final result = await query.call('test');
 
@@ -122,7 +122,7 @@ void main() {
     });
 
     test('handles failure result', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final query = TestQueryNoParams(() async => left(failure));
       final result = await query.call();
 
@@ -164,7 +164,7 @@ void main() {
     });
 
     test('handles failure result in stream', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final query = TestStreamQuery(
         (params) => Stream.value(left(failure)),
       );
@@ -228,7 +228,7 @@ void main() {
     });
 
     test('handles failure result in stream', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final query = TestStreamQueryNoParams(
         () => Stream.value(left(failure)),
       );

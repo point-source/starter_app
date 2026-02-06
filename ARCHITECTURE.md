@@ -222,7 +222,7 @@ lib/
 
 ## 🛡 Security & Best Practices
 
--   **Type Safety:** `strict-mode` enabled. `freezed` for unions/data classes. `ValueObjects` for validation.
+-   **Type Safety:** `strict-mode` enabled. Dart 3 sealed classes for unions. `dart_mappable` for DTOs. `ValueObjects` for validation.
 -   **State Management:** `flutter_bloc` for predictable state transitions.
 -   **Dependency Injection:** `injectable` + `get_it` for decoupling.
 -   **Testing:**

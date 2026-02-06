@@ -23,7 +23,7 @@ void main() {
     group('canHandle', () {
       test('returns true for EmailFailure', () {
         // Arrange
-        const failure = EmailFailure.empty();
+        const failure = EmailEmpty();
 
         // Act & Assert
         expect(mapper.canHandle(failure), isTrue);
@@ -31,10 +31,10 @@ void main() {
 
       test('returns true for all EmailFailure variants', () {
         // Arrange
-        const failures = [
-          EmailFailure.empty(),
-          EmailFailure.tooLong(maxLength: 254, actualLength: 300),
-          EmailFailure.invalidFormat(failedValue: 'invalid'),
+        const failures = <EmailFailure>[
+          EmailEmpty(),
+          EmailTooLong(maxLength: 254, actualLength: 300),
+          EmailInvalidFormat(failedValue: 'invalid'),
         ];
 
         // Act & Assert
@@ -45,7 +45,7 @@ void main() {
 
       test('returns false for non-EmailFailure', () {
         // Arrange
-        const failure = InfrastructureFailure.network(message: 'test');
+        const failure = NetworkFailure(message: 'test');
 
         // Act & Assert
         expect(mapper.canHandle(failure), isFalse);
@@ -58,7 +58,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = EmailFailure.empty();
+              const failure = EmailEmpty();
 
               // Act
               final message = mapper.map(context, failure);
@@ -77,7 +77,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = EmailFailure.tooLong(
+              const failure = EmailTooLong(
                 maxLength: 254,
                 actualLength: 300,
               );
@@ -101,7 +101,7 @@ void main() {
           Builder(
             builder: (context) {
               // Arrange
-              const failure = EmailFailure.invalidFormat(
+              const failure = EmailInvalidFormat(
                 failedValue: 'invalid',
               );
 

@@ -24,10 +24,10 @@ final class ProfilePage extends StatelessWidget {
       body: Center(
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
-            return authState.maybeMap(
-              authenticated: (_) => const _ProfileView(),
-              orElse: () => const LoginButton(),
-            );
+            return switch (authState) {
+              Authenticated() => const _ProfileView(),
+              _ => const LoginButton(),
+            };
           },
         ),
       ),
@@ -42,18 +42,20 @@ final class _ProfileView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        return state.map(
-          initial: (_) => const SizedBox.shrink(),
-          loading: (_) => const CircularProgressIndicator(),
-          error: (s) {
-            final service = context.read<FailureMessageService>();
-            return Text(
-              s.error.getMessage(context, service),
-              textAlign: TextAlign.center,
-            );
-          },
-          loaded: (s) => ProfileContent(profile: s.profile),
-        );
+        return switch (state) {
+          ProfileInitial() => const SizedBox.shrink(),
+          ProfileLoading() => const CircularProgressIndicator(),
+          ProfileError() => Text(
+            state.error.getMessage(
+              context,
+              context.read<FailureMessageService>(),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          ProfileLoaded(profile: final profile) => ProfileContent(
+            profile: profile,
+          ),
+        };
       },
     );
   }

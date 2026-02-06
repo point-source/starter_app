@@ -64,7 +64,7 @@ void main() {
     });
 
     test('handles failure result', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final command = TestCommand((params) async => left(failure));
       final result = await command.call('test');
 
@@ -113,7 +113,7 @@ void main() {
     });
 
     test('handles failure result', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final command = TestCommandNoParams(() async => left(failure));
       final result = await command.call();
 
@@ -155,7 +155,7 @@ void main() {
     });
 
     test('handles failure result in stream', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final command = TestStreamCommand(
         (params) => Stream.value(left(failure)),
       );
@@ -219,7 +219,7 @@ void main() {
     });
 
     test('handles failure result in stream', () async {
-      const failure = InfrastructureFailure.server(message: 'Test error');
+      const failure = ServerFailure(message: 'Test error');
       final command = TestStreamCommandNoParams(
         () => Stream.value(left(failure)),
       );

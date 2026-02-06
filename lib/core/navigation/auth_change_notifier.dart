@@ -55,8 +55,7 @@ class AuthChangeNotifier extends ChangeNotifier {
   AuthState get state => _authBloc.state;
 
   /// Whether the user is currently authenticated.
-  bool get isAuthenticated =>
-      state.mapOrNull(authenticated: (_) => true) ?? false;
+  bool get isAuthenticated => state is Authenticated;
 
   @override
   void dispose() {

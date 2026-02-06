@@ -68,15 +68,22 @@ enum PasswordStrength implements Comparable<PasswordStrength> {
 ///   // Shows specific failures: PasswordTooShort, PasswordMissingUppercase, etc.
 ///   final failures = password.getFailuresOrNull();
 ///   for (final failure in failures!) {
-///     failure.when(
-///       empty: () => print('Password is required'),
-///       tooShort: (min, actual) => print('Too short: $actual < $min'),
-///       tooLong: (max, actual) => print('Too long'),
-///       missingUppercase: () => print('Need uppercase'),
-///       missingLowercase: () => print('Need lowercase'),
-///       missingDigit: () => print('Need digit'),
-///       missingSpecialCharacter: () => print('Need special char'),
-///     );
+///     switch (failure) {
+///       case PasswordEmpty():
+///         print('Password is required');
+///       case PasswordTooShort(:final minLength, :final actualLength):
+///         print('Too short: $actualLength < $minLength');
+///       case PasswordTooLong(:final maxLength, :final actualLength):
+///         print('Too long');
+///       case PasswordMissingUppercase():
+///         print('Need uppercase');
+///       case PasswordMissingLowercase():
+///         print('Need lowercase');
+///       case PasswordMissingDigit():
+///         print('Need digit');
+///       case PasswordMissingSpecialCharacter():
+///         print('Need special char');
+///     }
 ///   }
 /// }
 ///
@@ -103,7 +110,7 @@ final class Password extends ValueObject<String> {
 
   /// Constant empty password.
   static const empty = Password._(
-    Left([PasswordFailure.empty()]),
+    Left([PasswordEmpty()]),
   );
 
   @override
@@ -125,7 +132,7 @@ final class Password extends ValueObject<String> {
   static final RegExp _digitRegex = RegExp('[0-9]');
 
   /// Regex for special character requirement.
-  static final RegExp _specialCharRegex = RegExp(r'[!@#$%^&*(),.?":{}<>]');
+  static final RegExp _specialCharRegex = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
 
   /// Validates password strength and format.
   ///
@@ -137,7 +144,7 @@ final class Password extends ValueObject<String> {
   ) {
     // Early return for empty (no point checking other rules)
     if (input == null || input.isEmpty) {
-      return left([const PasswordFailure.empty()]);
+      return left([const PasswordEmpty()]);
     }
 
     final failures = <PasswordFailure>[];
@@ -145,7 +152,7 @@ final class Password extends ValueObject<String> {
     // Check length constraints
     if (input.length < minLength) {
       failures.add(
-        PasswordFailure.tooShort(
+        PasswordTooShort(
           minLength: minLength,
           actualLength: input.length,
         ),
@@ -154,7 +161,7 @@ final class Password extends ValueObject<String> {
 
     if (input.length > maxLength) {
       failures.add(
-        PasswordFailure.tooLong(
+        PasswordTooLong(
           maxLength: maxLength,
           actualLength: input.length,
         ),
@@ -163,19 +170,19 @@ final class Password extends ValueObject<String> {
 
     // Check character requirements with specific failure types
     if (!_uppercaseRegex.hasMatch(input)) {
-      failures.add(const PasswordFailure.missingUppercase());
+      failures.add(const PasswordMissingUppercase());
     }
 
     if (!_lowercaseRegex.hasMatch(input)) {
-      failures.add(const PasswordFailure.missingLowercase());
+      failures.add(const PasswordMissingLowercase());
     }
 
     if (!_digitRegex.hasMatch(input)) {
-      failures.add(const PasswordFailure.missingDigit());
+      failures.add(const PasswordMissingDigit());
     }
 
     if (!_specialCharRegex.hasMatch(input)) {
-      failures.add(const PasswordFailure.missingSpecialCharacter());
+      failures.add(const PasswordMissingSpecialCharacter());
     }
 
     // Return all failures or success
