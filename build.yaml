@@ -6,9 +6,3 @@ targets:
         options:
           auto_register: true
           # Generate import for all @injectable classes
-
-      freezed:freezed:
-        enabled: true
-
-      json_serializable:
-        enabled: true
