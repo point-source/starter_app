@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:chopper/chopper.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
@@ -198,7 +199,7 @@ void main() {
         );
       });
 
-      test('throws FormatException on JSON parsing error', () async {
+      test('throws MapperException on JSON parsing error', () async {
         // Given - response with invalid JSON structure
         final response = createTestResponse({'invalid': 'structure'});
         when(
@@ -208,7 +209,7 @@ void main() {
         // When/Then
         expect(
           () => dataSource.register(tRegisterRequest),
-          throwsA(isA<FormatException>()),
+          throwsA(isA<MapperException>()),
         );
       });
     });
@@ -326,7 +327,7 @@ void main() {
         );
       });
 
-      test('throws FormatException on JSON parsing error', () async {
+      test('throws MapperException on JSON parsing error', () async {
         // Given
         final response = createTestResponse({'bad': 'data'});
         when(
@@ -336,7 +337,7 @@ void main() {
         // When/Then
         expect(
           () => dataSource.getCurrentUser(),
-          throwsA(isA<FormatException>()),
+          throwsA(isA<MapperException>()),
         );
       });
     });
