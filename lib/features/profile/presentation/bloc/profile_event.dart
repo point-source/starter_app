@@ -1,16 +1,18 @@
-import 'package:equatable/equatable.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 
-sealed class ProfileEvent extends Equatable {
+part 'profile_event.mapper.dart';
+
+@MappableClass()
+sealed class ProfileEvent with ProfileEventMappable {
   const ProfileEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
-final class GetMyProfile extends ProfileEvent {
+@MappableClass()
+final class GetMyProfile extends ProfileEvent with GetMyProfileMappable {
   const GetMyProfile();
 }
 
-final class ProfileReset extends ProfileEvent {
+@MappableClass()
+final class ProfileReset extends ProfileEvent with ProfileResetMappable {
   const ProfileReset();
 }

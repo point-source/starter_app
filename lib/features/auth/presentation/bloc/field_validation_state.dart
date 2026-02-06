@@ -1,5 +1,7 @@
-import 'package:equatable/equatable.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
+
+part 'field_validation_state.mapper.dart';
 
 /// Tracks which form fields have been interacted with (touched/blurred).
 ///
@@ -12,7 +14,8 @@ import 'package:flutter/foundation.dart';
 /// The actual validation logic lives in ValueObjects (EmailAddress, Password).
 /// This class only tracks UI interaction state.
 @immutable
-class FieldValidationState extends Equatable {
+@MappableClass()
+class FieldValidationState with FieldValidationStateMappable {
   const FieldValidationState({
     this.emailTouched = false,
     this.passwordTouched = false,
@@ -30,19 +33,4 @@ class FieldValidationState extends Equatable {
   final bool emailTouched;
   final bool passwordTouched;
   final bool nameTouched;
-
-  FieldValidationState copyWith({
-    bool? emailTouched,
-    bool? passwordTouched,
-    bool? nameTouched,
-  }) {
-    return FieldValidationState(
-      emailTouched: emailTouched ?? this.emailTouched,
-      passwordTouched: passwordTouched ?? this.passwordTouched,
-      nameTouched: nameTouched ?? this.nameTouched,
-    );
-  }
-
-  @override
-  List<Object?> get props => [emailTouched, passwordTouched, nameTouched];
 }

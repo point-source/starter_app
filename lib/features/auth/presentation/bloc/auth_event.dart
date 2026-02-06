@@ -1,89 +1,104 @@
-import 'package:equatable/equatable.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/features/auth/domain/entities/user.dart';
 
-sealed class AuthEvent extends Equatable {
-  const AuthEvent();
+part 'auth_event.mapper.dart';
 
-  @override
-  List<Object?> get props => [];
+@MappableClass()
+sealed class AuthEvent with AuthEventMappable {
+  const AuthEvent();
 }
 
-final class AuthEmailChanged extends AuthEvent {
+@MappableClass()
+final class AuthEmailChanged extends AuthEvent with AuthEmailChangedMappable {
   const AuthEmailChanged(this.email);
   final String email;
-
-  @override
-  List<Object?> get props => [email];
 }
 
-final class AuthPasswordChanged extends AuthEvent {
+@MappableClass()
+final class AuthPasswordChanged extends AuthEvent
+    with AuthPasswordChangedMappable {
   const AuthPasswordChanged(this.password);
   final String password;
-
-  @override
-  List<Object?> get props => [password];
 }
 
-final class AuthNameChanged extends AuthEvent {
+@MappableClass()
+final class AuthNameChanged extends AuthEvent with AuthNameChangedMappable {
   const AuthNameChanged(this.name);
   final String name;
-
-  @override
-  List<Object?> get props => [name];
 }
 
-final class AuthTogglePasswordVisibility extends AuthEvent {
+@MappableClass()
+final class AuthTogglePasswordVisibility extends AuthEvent
+    with AuthTogglePasswordVisibilityMappable {
   const AuthTogglePasswordVisibility();
 }
 
-final class AuthEmailUnfocused extends AuthEvent {
+@MappableClass()
+final class AuthEmailUnfocused extends AuthEvent
+    with AuthEmailUnfocusedMappable {
   const AuthEmailUnfocused();
 }
 
-final class AuthPasswordUnfocused extends AuthEvent {
+@MappableClass()
+final class AuthPasswordUnfocused extends AuthEvent
+    with AuthPasswordUnfocusedMappable {
   const AuthPasswordUnfocused();
 }
 
-final class AuthNameUnfocused extends AuthEvent {
+@MappableClass()
+final class AuthNameUnfocused extends AuthEvent with AuthNameUnfocusedMappable {
   const AuthNameUnfocused();
 }
 
-final class AuthEmailSubmitted extends AuthEvent {
+@MappableClass()
+final class AuthEmailSubmitted extends AuthEvent
+    with AuthEmailSubmittedMappable {
   const AuthEmailSubmitted();
 }
 
-final class AuthLoginSubmitted extends AuthEvent {
+@MappableClass()
+final class AuthLoginSubmitted extends AuthEvent
+    with AuthLoginSubmittedMappable {
   const AuthLoginSubmitted();
 }
 
-final class AuthRegisterSubmitted extends AuthEvent {
+@MappableClass()
+final class AuthRegisterSubmitted extends AuthEvent
+    with AuthRegisterSubmittedMappable {
   const AuthRegisterSubmitted();
 }
 
-final class AuthLogoutRequested extends AuthEvent {
+@MappableClass()
+final class AuthLogoutRequested extends AuthEvent
+    with AuthLogoutRequestedMappable {
   const AuthLogoutRequested();
 }
 
-final class AuthUserChanged extends AuthEvent {
+@MappableClass()
+final class AuthUserChanged extends AuthEvent with AuthUserChangedMappable {
   const AuthUserChanged(this.user);
   final User? user;
-
-  @override
-  List<Object?> get props => [user];
 }
 
-final class AuthWatchStarted extends AuthEvent {
+@MappableClass()
+final class AuthWatchStarted extends AuthEvent with AuthWatchStartedMappable {
   const AuthWatchStarted();
 }
 
-final class AuthGetCurrentUser extends AuthEvent {
+@MappableClass()
+final class AuthGetCurrentUser extends AuthEvent
+    with AuthGetCurrentUserMappable {
   const AuthGetCurrentUser();
 }
 
-final class AuthSessionWatchStarted extends AuthEvent {
+@MappableClass()
+final class AuthSessionWatchStarted extends AuthEvent
+    with AuthSessionWatchStartedMappable {
   const AuthSessionWatchStarted();
 }
 
-final class AuthSessionExpired extends AuthEvent {
+@MappableClass()
+final class AuthSessionExpired extends AuthEvent
+    with AuthSessionExpiredMappable {
   const AuthSessionExpired();
 }

@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/domain/value_objects/name.dart';
 import 'package:starter_app/core/domain/value_objects/password.dart';
@@ -6,14 +6,15 @@ import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/features/auth/domain/entities/user.dart';
 import 'package:starter_app/features/auth/presentation/bloc/field_validation_state.dart';
 
-sealed class AuthState extends Equatable {
-  const AuthState();
+part 'auth_state.mapper.dart';
 
-  @override
-  List<Object?> get props => [];
+@MappableClass()
+sealed class AuthState with AuthStateMappable {
+  const AuthState();
 }
 
-final class AuthInitial extends AuthState {
+@MappableClass()
+final class AuthInitial extends AuthState with AuthInitialMappable {
   const AuthInitial({
     required this.email,
     required this.isSubmitting,
@@ -31,30 +32,16 @@ final class AuthInitial extends AuthState {
   final bool isSubmitting;
   final FieldValidationState validation;
   final ErrorModel? error;
-
-  @override
-  List<Object?> get props => [email, isSubmitting, validation, error];
-
-  AuthInitial copyWith({
-    EmailAddress? email,
-    bool? isSubmitting,
-    FieldValidationState? validation,
-    ErrorModel? error,
-  }) {
-    return AuthInitial(
-      email: email ?? this.email,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      validation: validation ?? this.validation,
-      error: error ?? this.error,
-    );
-  }
 }
 
-final class Unauthenticated extends AuthState {
+@MappableClass()
+final class Unauthenticated extends AuthState with UnauthenticatedMappable {
   const Unauthenticated();
 }
 
-final class RegistrationRequired extends AuthState {
+@MappableClass()
+final class RegistrationRequired extends AuthState
+    with RegistrationRequiredMappable {
   const RegistrationRequired({
     required this.email,
     required this.password,
@@ -72,40 +59,10 @@ final class RegistrationRequired extends AuthState {
   final FieldValidationState validation;
   final bool passwordVisible;
   final ErrorModel? error;
-
-  @override
-  List<Object?> get props => [
-    email,
-    password,
-    name,
-    isSubmitting,
-    validation,
-    passwordVisible,
-    error,
-  ];
-
-  RegistrationRequired copyWith({
-    EmailAddress? email,
-    Password? password,
-    Name? name,
-    bool? isSubmitting,
-    FieldValidationState? validation,
-    bool? passwordVisible,
-    ErrorModel? error,
-  }) {
-    return RegistrationRequired(
-      email: email ?? this.email,
-      password: password ?? this.password,
-      name: name ?? this.name,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      validation: validation ?? this.validation,
-      passwordVisible: passwordVisible ?? this.passwordVisible,
-      error: error ?? this.error,
-    );
-  }
 }
 
-final class LoginRequired extends AuthState {
+@MappableClass()
+final class LoginRequired extends AuthState with LoginRequiredMappable {
   const LoginRequired({
     required this.email,
     required this.password,
@@ -121,40 +78,10 @@ final class LoginRequired extends AuthState {
   final FieldValidationState validation;
   final bool passwordVisible;
   final ErrorModel? error;
-
-  @override
-  List<Object?> get props => [
-    email,
-    password,
-    isSubmitting,
-    validation,
-    passwordVisible,
-    error,
-  ];
-
-  LoginRequired copyWith({
-    EmailAddress? email,
-    Password? password,
-    bool? isSubmitting,
-    FieldValidationState? validation,
-    bool? passwordVisible,
-    ErrorModel? error,
-  }) {
-    return LoginRequired(
-      email: email ?? this.email,
-      password: password ?? this.password,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      validation: validation ?? this.validation,
-      passwordVisible: passwordVisible ?? this.passwordVisible,
-      error: error ?? this.error,
-    );
-  }
 }
 
-final class Authenticated extends AuthState {
+@MappableClass()
+final class Authenticated extends AuthState with AuthenticatedMappable {
   const Authenticated(this.user);
   final User user;
-
-  @override
-  List<Object?> get props => [user];
 }
