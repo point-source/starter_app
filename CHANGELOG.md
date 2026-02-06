@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AI architecture rules in `docs/architecture-rules/` (23 rule files)
 - Buy Me a Coffee support section in README
 - Social media launch templates in `social/`
+- **Phase 2**: `dart_mappable` for DTO serialization (replaces freezed JSON)
+- **Phase 2**: `fast_immutable_collections` for IList/IMap support
 
 ### Changed
 - Updated Flutter SDK to 3.38.9
@@ -24,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced iOS launch screen with default Flutter template
 - Updated macOS entitlements for keychain access
 - Test count increased to 2,282 tests
+- **Phase 2**: Migrated DTOs to `dart_mappable` (10 files)
+- **Phase 2**: Migrated failures to Dart 3 sealed classes (8 files)
+- **Phase 2**: Replaced freezed pattern matching (`.when()`, `.maybeWhen()`) with Dart 3 switch expressions
 
 ---
 

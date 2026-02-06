@@ -32,16 +32,16 @@
 
 ## Phase 2: Data Classes (dart_mappable + sealed classes)
 
-- [ ] Add `dart_mappable`, `dart_mappable_builder`, `fast_immutable_collections` (latest)
-- [ ] Migrate DTOs (10 files in `infrastructure/models/`)
-- [ ] Migrate Failures to Dart 3 sealed classes (8 files)
-- [ ] Delete all `*.freezed.dart` files
+- [x] Add `dart_mappable`, `dart_mappable_builder`, `fast_immutable_collections` (latest)
+- [x] Migrate DTOs (10 files in `infrastructure/models/`)
+- [x] Migrate Failures to Dart 3 sealed classes (8 files)
+- [x] Delete all `*.freezed.dart` files
 - [ ] Remove `freezed` and `freezed_annotation` dependencies
-- [ ] Run build_runner and verify
-- [ ] Run `flutter test test/features/auth/infrastructure/`
-- [ ] Run `flutter test test/core/domain/`
-- [ ] Run `flutter test test/core/error/`
-- [ ] Coverage >= baseline
+- [x] Run build_runner and verify
+- [x] Run `flutter test test/features/auth/infrastructure/`
+- [x] Run `flutter test test/core/domain/`
+- [x] Run `flutter test test/core/error/`
+- [x] Coverage >= baseline
 - [ ] Commit, push, create PR
 
 ---
