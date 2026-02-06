@@ -8,8 +8,7 @@ import 'package:starter_app/core/logging/models/log_level.dart';
 ///
 /// Usage:
 /// ```dart
-/// @injectable
-/// class MyService {
+/// /// class MyService {
 ///   final AppLogger _logger;
 ///
 ///   MyService(this._logger);

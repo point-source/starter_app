@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_session_manager.dart';
 
 /// Implementation of [ISessionManager] for session lifecycle events.
@@ -14,7 +13,6 @@ import 'package:starter_app/core/domain/ports/i_session_manager.dart';
 /// The stream is broadcast because:
 /// - Multiple listeners may be interested (analytics, logging, etc.)
 /// - The stream should not buffer events if no one is listening
-@Singleton(as: ISessionManager)
 class SessionManagerImpl implements ISessionManager {
   SessionManagerImpl();
 
@@ -31,8 +29,7 @@ class SessionManagerImpl implements ISessionManager {
   }
 
   @override
-  @disposeMethod
-  Future<void> dispose() async {
+    Future<void> dispose() async {
     await _sessionExpiredController.close();
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_token_refresh_notifier.dart';
 
 /// Implementation of [ITokenRefreshNotifier] for token refresh events.
@@ -10,7 +9,6 @@ import 'package:starter_app/core/domain/ports/i_token_refresh_notifier.dart';
 ///
 /// Uses a broadcast [StreamController] to allow multiple listeners
 /// (e.g., multiple WebSocket connections).
-@Singleton(as: ITokenRefreshNotifier)
 class TokenRefreshNotifierImpl implements ITokenRefreshNotifier {
   TokenRefreshNotifierImpl();
 
@@ -27,8 +25,7 @@ class TokenRefreshNotifierImpl implements ITokenRefreshNotifier {
   }
 
   @override
-  @disposeMethod
-  Future<void> dispose() async {
+    Future<void> dispose() async {
     await _tokenRefreshedController.close();
   }
 }

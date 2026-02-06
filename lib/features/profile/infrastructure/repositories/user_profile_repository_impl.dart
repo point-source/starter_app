@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/error/exception_handler.dart';
 import 'package:starter_app/core/infrastructure/base_repository.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -11,7 +10,6 @@ import 'package:starter_app/features/profile/infrastructure/mappers/profile_exce
 /// Implementation of [IUserProfileRepository].
 ///
 /// Handles error mapping using [ProfileExceptionMapper] via [BaseRepository].
-@LazySingleton(as: IUserProfileRepository)
 class UserProfileRepositoryImpl extends BaseRepository
     implements IUserProfileRepository {
   UserProfileRepositoryImpl(

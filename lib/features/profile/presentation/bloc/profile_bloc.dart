@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/base/domain_event.dart';
 import 'package:starter_app/core/domain/base/event_dispatcher.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
@@ -10,7 +9,6 @@ import 'package:starter_app/features/profile/application/usecases/get_profile.da
 import 'package:starter_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_state.dart';
 
-@injectable
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc(
     this._getProfile,

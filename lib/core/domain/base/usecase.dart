@@ -18,8 +18,7 @@ import 'package:starter_app/core/types/types.dart';
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class GetUser extends UseCase<UserId, User> {
+/// /// class GetUser extends UseCase<UserId, User> {
 ///   GetUser(this._repository);
 ///   final IUserRepository _repository;
 ///
@@ -30,8 +29,7 @@ import 'package:starter_app/core/types/types.dart';
 ///
 /// **Recommended:** Use [Query] for read operations:
 /// ```dart
-/// @injectable
-/// class GetUser extends Query<UserId, User> {
+/// /// class GetUser extends Query<UserId, User> {
 ///   const GetUser(this._repository);
 ///   final IUserRepository _repository;
 ///
@@ -58,8 +56,7 @@ abstract class UseCase<Params, Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class Logout extends UseCaseNoParams<Unit> {
+/// /// class Logout extends UseCaseNoParams<Unit> {
 ///   Logout(this._repository);
 ///   final IAuthRepository _repository;
 ///
@@ -70,8 +67,7 @@ abstract class UseCase<Params, Output> {
 ///
 /// **Recommended:** Use [CommandNoParams] for write operations:
 /// ```dart
-/// @injectable
-/// class Logout extends CommandNoParams<Unit> {
+/// /// class Logout extends CommandNoParams<Unit> {
 ///   const Logout(this._repository);
 ///   final IAuthRepository _repository;
 ///
@@ -100,8 +96,7 @@ abstract class UseCaseNoParams<Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class WatchUserOrders extends StreamUseCase<UserId, List<Order>> {
+/// /// class WatchUserOrders extends StreamUseCase<UserId, List<Order>> {
 ///   WatchUserOrders(this._repository);
 ///   final IOrderRepository _repository;
 ///
@@ -114,8 +109,7 @@ abstract class UseCaseNoParams<Output> {
 ///
 /// **Recommended:** Use [StreamQuery] for read operations:
 /// ```dart
-/// @injectable
-/// class WatchUserOrders extends StreamQuery<UserId, List<Order>> {
+/// /// class WatchUserOrders extends StreamQuery<UserId, List<Order>> {
 ///   const WatchUserOrders(this._repository);
 ///   final IOrderRepository _repository;
 ///
@@ -145,8 +139,7 @@ abstract class StreamUseCase<Params, Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class WatchAuthChanges extends StreamUseCaseNoParams<User?> {
+/// /// class WatchAuthChanges extends StreamUseCaseNoParams<User?> {
 ///   WatchAuthChanges(this._repository);
 ///   final IAuthRepository _repository;
 ///
@@ -157,8 +150,7 @@ abstract class StreamUseCase<Params, Output> {
 ///
 /// **Recommended:** Use [StreamQueryNoParams] for read operations:
 /// ```dart
-/// @injectable
-/// class WatchAuthChanges extends StreamQueryNoParams<User?> {
+/// /// class WatchAuthChanges extends StreamQueryNoParams<User?> {
 ///   const WatchAuthChanges(this._repository);
 ///   final IAuthRepository _repository;
 ///

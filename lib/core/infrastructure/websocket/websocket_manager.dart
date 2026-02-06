@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/ports/i_websocket_connection.dart';
 import 'package:starter_app/core/domain/ports/i_websocket_manager.dart';
@@ -35,7 +34,6 @@ import 'package:starter_app/core/logging/i_app_logger.dart';
 /// authConnection.messages.listen((msg) => print('Auth: $msg'));
 /// notifConnection.messages.listen((msg) => print('Notif: $msg'));
 /// ```
-@LazySingleton(as: IWebSocketManager)
 class WebSocketManager implements IWebSocketManager {
   WebSocketManager(
     @Named('websocketBaseUrl') this._baseUrl,

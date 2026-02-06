@@ -17,8 +17,7 @@ import 'package:starter_app/core/types/types.dart';
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class GetUser extends Query<UserId, User> {
+/// /// class GetUser extends Query<UserId, User> {
 ///   const GetUser(this._repository);
 ///   final IUserRepository _repository;
 ///
@@ -45,8 +44,7 @@ abstract class Query<Params, Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class GetCurrentUser extends QueryNoParams<User?> {
+/// /// class GetCurrentUser extends QueryNoParams<User?> {
 ///   const GetCurrentUser(this._repository);
 ///   final IAuthRepository _repository;
 ///
@@ -74,8 +72,7 @@ abstract class QueryNoParams<Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class WatchUserOrders extends StreamQuery<UserId, List<Order>> {
+/// /// class WatchUserOrders extends StreamQuery<UserId, List<Order>> {
 ///   WatchUserOrders(this._repository);
 ///   final IOrderRepository _repository;
 ///
@@ -100,8 +97,7 @@ abstract class StreamQuery<Params, Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class WatchAuthChanges extends StreamQueryNoParams<User?> {
+/// /// class WatchAuthChanges extends StreamQueryNoParams<User?> {
 ///   WatchAuthChanges(this._repository);
 ///   final IAuthRepository _repository;
 ///

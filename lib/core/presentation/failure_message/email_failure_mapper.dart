@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/value_objects/email_failure.dart';
 import 'package:starter_app/core/error/failures/failure.dart';
 import 'package:starter_app/core/l10n/l10n_extensions.dart';
@@ -9,12 +8,8 @@ import 'package:starter_app/core/presentation/failure_message/failure_message_ma
 ///
 /// Handles [EmailFailure] types with specific messages for each validation
 /// error (empty, too long, invalid format).
-///
-/// Registered automatically via [FailureMessageMapper] constructor.
-@singleton
 class EmailFailureMapper extends FailureMessageMapper {
-  /// Creates this mapper. Registration is automatic via super constructor.
-  EmailFailureMapper(super.registry);
+  const EmailFailureMapper();
 
   @override
   bool canHandle(Failure failure) => failure is EmailFailure;

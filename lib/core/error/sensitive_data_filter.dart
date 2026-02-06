@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_data_filter.dart';
 
 /// Implementation of [IDataFilter] for filtering sensitive data.
@@ -11,7 +10,6 @@ import 'package:starter_app/core/domain/ports/i_data_filter.dart';
 /// - api_key, apikey, secret, credential
 /// - credit_card, creditcard, ssn, social_security
 /// - pin, cvv, card_number, cardnumber
-@LazySingleton(as: IDataFilter)
 class SensitiveDataFilter implements IDataFilter {
   /// Creates a SensitiveDataFilter.
   const SensitiveDataFilter();

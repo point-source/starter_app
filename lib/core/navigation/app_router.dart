@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:injectable/injectable.dart';
 // Export generated routes
 import 'package:starter_app/core/navigation/app_router.gr.dart';
 import 'package:starter_app/core/navigation/auth_change_notifier.dart';
@@ -7,7 +6,6 @@ import 'package:starter_app/core/navigation/auth_guard.dart';
 
 export 'package:starter_app/core/navigation/app_router.gr.dart';
 
-@lazySingleton
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
   AppRouter(

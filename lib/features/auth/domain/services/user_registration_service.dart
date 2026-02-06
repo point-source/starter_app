@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/base/domain_service.dart';
 import 'package:starter_app/core/domain/base/event_dispatcher.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -16,7 +15,6 @@ import 'package:starter_app/features/auth/domain/repositories/i_auth_repository.
 /// **Strict DDD:** This logic involves
 ///  cross-cutting concerns (registration + events),
 /// so it belongs in a Domain Service, not an Entity or Use Case.
-@injectable
 class UserRegistrationService extends DomainService {
   UserRegistrationService(
     this._authRepository,

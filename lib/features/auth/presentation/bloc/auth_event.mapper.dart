@@ -1,8 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
 // ignore_for_file: type=lint
-// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -85,13 +83,13 @@ class AuthEmailChangedMapper extends ClassMapperBase<AuthEmailChanged> {
   final String id = 'AuthEmailChanged';
 
   static String _$email(AuthEmailChanged v) => v.email;
-  static const Field<AuthEmailChanged, String> _f$email = Field(
-    'email',
-    _$email,
-  );
+  static const Field<AuthEmailChanged, String> _f$email =
+      Field('email', _$email);
 
   @override
-  final MappableFields<AuthEmailChanged> fields = const {#email: _f$email};
+  final MappableFields<AuthEmailChanged> fields = const {
+    #email: _f$email,
+  };
 
   static AuthEmailChanged _instantiate(DecodingData data) {
     return AuthEmailChanged(data.dec(_f$email));
@@ -121,40 +119,33 @@ mixin AuthEmailChangedMappable {
   }
 
   AuthEmailChangedCopyWith<AuthEmailChanged, AuthEmailChanged, AuthEmailChanged>
-  get copyWith =>
-      _AuthEmailChangedCopyWithImpl<AuthEmailChanged, AuthEmailChanged>(
-        this as AuthEmailChanged,
-        $identity,
-        $identity,
-      );
+      get copyWith =>
+          _AuthEmailChangedCopyWithImpl<AuthEmailChanged, AuthEmailChanged>(
+              this as AuthEmailChanged, $identity, $identity);
   @override
   String toString() {
-    return AuthEmailChangedMapper.ensureInitialized().stringifyValue(
-      this as AuthEmailChanged,
-    );
+    return AuthEmailChangedMapper.ensureInitialized()
+        .stringifyValue(this as AuthEmailChanged);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthEmailChangedMapper.ensureInitialized().equalsValue(
-      this as AuthEmailChanged,
-      other,
-    );
+    return AuthEmailChangedMapper.ensureInitialized()
+        .equalsValue(this as AuthEmailChanged, other);
   }
 
   @override
   int get hashCode {
-    return AuthEmailChangedMapper.ensureInitialized().hashValue(
-      this as AuthEmailChanged,
-    );
+    return AuthEmailChangedMapper.ensureInitialized()
+        .hashValue(this as AuthEmailChanged);
   }
 }
 
 extension AuthEmailChangedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthEmailChanged, $Out> {
   AuthEmailChangedCopyWith<$R, AuthEmailChanged, $Out>
-  get $asAuthEmailChanged =>
-      $base.as((v, t, t2) => _AuthEmailChangedCopyWithImpl<$R, $Out>(v, t, t2));
+      get $asAuthEmailChanged => $base
+          .as((v, t, t2) => _AuthEmailChangedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AuthEmailChangedCopyWith<$R, $In extends AuthEmailChanged, $Out>
@@ -162,8 +153,7 @@ abstract class AuthEmailChangedCopyWith<$R, $In extends AuthEmailChanged, $Out>
   @override
   $R call({String? email});
   AuthEmailChangedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthEmailChangedCopyWithImpl<$R, $Out>
@@ -183,8 +173,8 @@ class _AuthEmailChangedCopyWithImpl<$R, $Out>
 
   @override
   AuthEmailChangedCopyWith<$R2, AuthEmailChanged, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthEmailChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthEmailChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthPasswordChangedMapper extends ClassMapperBase<AuthPasswordChanged> {
@@ -203,10 +193,8 @@ class AuthPasswordChangedMapper extends ClassMapperBase<AuthPasswordChanged> {
   final String id = 'AuthPasswordChanged';
 
   static String _$password(AuthPasswordChanged v) => v.password;
-  static const Field<AuthPasswordChanged, String> _f$password = Field(
-    'password',
-    _$password,
-  );
+  static const Field<AuthPasswordChanged, String> _f$password =
+      Field('password', _$password);
 
   @override
   final MappableFields<AuthPasswordChanged> fields = const {
@@ -240,58 +228,42 @@ mixin AuthPasswordChangedMappable {
         .encodeMap<AuthPasswordChanged>(this as AuthPasswordChanged);
   }
 
-  AuthPasswordChangedCopyWith<
-    AuthPasswordChanged,
-    AuthPasswordChanged,
-    AuthPasswordChanged
-  >
-  get copyWith =>
-      _AuthPasswordChangedCopyWithImpl<
-        AuthPasswordChanged,
-        AuthPasswordChanged
-      >(this as AuthPasswordChanged, $identity, $identity);
+  AuthPasswordChangedCopyWith<AuthPasswordChanged, AuthPasswordChanged,
+      AuthPasswordChanged> get copyWith => _AuthPasswordChangedCopyWithImpl<
+          AuthPasswordChanged, AuthPasswordChanged>(
+      this as AuthPasswordChanged, $identity, $identity);
   @override
   String toString() {
-    return AuthPasswordChangedMapper.ensureInitialized().stringifyValue(
-      this as AuthPasswordChanged,
-    );
+    return AuthPasswordChangedMapper.ensureInitialized()
+        .stringifyValue(this as AuthPasswordChanged);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthPasswordChangedMapper.ensureInitialized().equalsValue(
-      this as AuthPasswordChanged,
-      other,
-    );
+    return AuthPasswordChangedMapper.ensureInitialized()
+        .equalsValue(this as AuthPasswordChanged, other);
   }
 
   @override
   int get hashCode {
-    return AuthPasswordChangedMapper.ensureInitialized().hashValue(
-      this as AuthPasswordChanged,
-    );
+    return AuthPasswordChangedMapper.ensureInitialized()
+        .hashValue(this as AuthPasswordChanged);
   }
 }
 
 extension AuthPasswordChangedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthPasswordChanged, $Out> {
   AuthPasswordChangedCopyWith<$R, AuthPasswordChanged, $Out>
-  get $asAuthPasswordChanged => $base.as(
-    (v, t, t2) => _AuthPasswordChangedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthPasswordChanged => $base.as(
+          (v, t, t2) => _AuthPasswordChangedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthPasswordChangedCopyWith<
-  $R,
-  $In extends AuthPasswordChanged,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthPasswordChangedCopyWith<$R, $In extends AuthPasswordChanged,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call({String? password});
   AuthPasswordChangedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthPasswordChangedCopyWithImpl<$R, $Out>
@@ -311,8 +283,8 @@ class _AuthPasswordChangedCopyWithImpl<$R, $Out>
 
   @override
   AuthPasswordChangedCopyWith<$R2, AuthPasswordChanged, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _AuthPasswordChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _AuthPasswordChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthNameChangedMapper extends ClassMapperBase<AuthNameChanged> {
@@ -334,7 +306,9 @@ class AuthNameChangedMapper extends ClassMapperBase<AuthNameChanged> {
   static const Field<AuthNameChanged, String> _f$name = Field('name', _$name);
 
   @override
-  final MappableFields<AuthNameChanged> fields = const {#name: _f$name};
+  final MappableFields<AuthNameChanged> fields = const {
+    #name: _f$name,
+  };
 
   static AuthNameChanged _instantiate(DecodingData data) {
     return AuthNameChanged(data.dec(_f$name));
@@ -359,38 +333,30 @@ mixin AuthNameChangedMappable {
   }
 
   Map<String, dynamic> toMap() {
-    return AuthNameChangedMapper.ensureInitialized().encodeMap<AuthNameChanged>(
-      this as AuthNameChanged,
-    );
+    return AuthNameChangedMapper.ensureInitialized()
+        .encodeMap<AuthNameChanged>(this as AuthNameChanged);
   }
 
   AuthNameChangedCopyWith<AuthNameChanged, AuthNameChanged, AuthNameChanged>
-  get copyWith =>
-      _AuthNameChangedCopyWithImpl<AuthNameChanged, AuthNameChanged>(
-        this as AuthNameChanged,
-        $identity,
-        $identity,
-      );
+      get copyWith =>
+          _AuthNameChangedCopyWithImpl<AuthNameChanged, AuthNameChanged>(
+              this as AuthNameChanged, $identity, $identity);
   @override
   String toString() {
-    return AuthNameChangedMapper.ensureInitialized().stringifyValue(
-      this as AuthNameChanged,
-    );
+    return AuthNameChangedMapper.ensureInitialized()
+        .stringifyValue(this as AuthNameChanged);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthNameChangedMapper.ensureInitialized().equalsValue(
-      this as AuthNameChanged,
-      other,
-    );
+    return AuthNameChangedMapper.ensureInitialized()
+        .equalsValue(this as AuthNameChanged, other);
   }
 
   @override
   int get hashCode {
-    return AuthNameChangedMapper.ensureInitialized().hashValue(
-      this as AuthNameChanged,
-    );
+    return AuthNameChangedMapper.ensureInitialized()
+        .hashValue(this as AuthNameChanged);
   }
 }
 
@@ -405,8 +371,7 @@ abstract class AuthNameChangedCopyWith<$R, $In extends AuthNameChanged, $Out>
   @override
   $R call({String? name});
   AuthNameChangedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthNameChangedCopyWithImpl<$R, $Out>
@@ -426,8 +391,8 @@ class _AuthNameChangedCopyWithImpl<$R, $Out>
 
   @override
   AuthNameChangedCopyWith<$R2, AuthNameChanged, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthNameChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthNameChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthTogglePasswordVisibilityMapper
@@ -437,9 +402,8 @@ class AuthTogglePasswordVisibilityMapper
   static AuthTogglePasswordVisibilityMapper? _instance;
   static AuthTogglePasswordVisibilityMapper ensureInitialized() {
     if (_instance == null) {
-      MapperContainer.globals.use(
-        _instance = AuthTogglePasswordVisibilityMapper._(),
-      );
+      MapperContainer.globals
+          .use(_instance = AuthTogglePasswordVisibilityMapper._());
       AuthEventMapper.ensureInitialized();
     }
     return _instance!;
@@ -471,27 +435,20 @@ mixin AuthTogglePasswordVisibilityMappable {
   String toJson() {
     return AuthTogglePasswordVisibilityMapper.ensureInitialized()
         .encodeJson<AuthTogglePasswordVisibility>(
-          this as AuthTogglePasswordVisibility,
-        );
+            this as AuthTogglePasswordVisibility);
   }
 
   Map<String, dynamic> toMap() {
     return AuthTogglePasswordVisibilityMapper.ensureInitialized()
         .encodeMap<AuthTogglePasswordVisibility>(
-          this as AuthTogglePasswordVisibility,
-        );
+            this as AuthTogglePasswordVisibility);
   }
 
-  AuthTogglePasswordVisibilityCopyWith<
-    AuthTogglePasswordVisibility,
-    AuthTogglePasswordVisibility,
-    AuthTogglePasswordVisibility
-  >
-  get copyWith =>
-      _AuthTogglePasswordVisibilityCopyWithImpl<
-        AuthTogglePasswordVisibility,
-        AuthTogglePasswordVisibility
-      >(this as AuthTogglePasswordVisibility, $identity, $identity);
+  AuthTogglePasswordVisibilityCopyWith<AuthTogglePasswordVisibility,
+          AuthTogglePasswordVisibility, AuthTogglePasswordVisibility>
+      get copyWith => _AuthTogglePasswordVisibilityCopyWithImpl<
+              AuthTogglePasswordVisibility, AuthTogglePasswordVisibility>(
+          this as AuthTogglePasswordVisibility, $identity, $identity);
   @override
   String toString() {
     return AuthTogglePasswordVisibilityMapper.ensureInitialized()
@@ -500,54 +457,41 @@ mixin AuthTogglePasswordVisibilityMappable {
 
   @override
   bool operator ==(Object other) {
-    return AuthTogglePasswordVisibilityMapper.ensureInitialized().equalsValue(
-      this as AuthTogglePasswordVisibility,
-      other,
-    );
+    return AuthTogglePasswordVisibilityMapper.ensureInitialized()
+        .equalsValue(this as AuthTogglePasswordVisibility, other);
   }
 
   @override
   int get hashCode {
-    return AuthTogglePasswordVisibilityMapper.ensureInitialized().hashValue(
-      this as AuthTogglePasswordVisibility,
-    );
+    return AuthTogglePasswordVisibilityMapper.ensureInitialized()
+        .hashValue(this as AuthTogglePasswordVisibility);
   }
 }
 
 extension AuthTogglePasswordVisibilityValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthTogglePasswordVisibility, $Out> {
   AuthTogglePasswordVisibilityCopyWith<$R, AuthTogglePasswordVisibility, $Out>
-  get $asAuthTogglePasswordVisibility => $base.as(
-    (v, t, t2) => _AuthTogglePasswordVisibilityCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthTogglePasswordVisibility => $base.as((v, t, t2) =>
+          _AuthTogglePasswordVisibilityCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AuthTogglePasswordVisibilityCopyWith<
-  $R,
-  $In extends AuthTogglePasswordVisibility,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+    $R,
+    $In extends AuthTogglePasswordVisibility,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthTogglePasswordVisibilityCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthTogglePasswordVisibilityCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, AuthTogglePasswordVisibility, $Out>
     implements
-        AuthTogglePasswordVisibilityCopyWith<
-          $R,
-          AuthTogglePasswordVisibility,
-          $Out
-        > {
+        AuthTogglePasswordVisibilityCopyWith<$R, AuthTogglePasswordVisibility,
+            $Out> {
   _AuthTogglePasswordVisibilityCopyWithImpl(
-    super.value,
-    super.then,
-    super.then2,
-  );
+      super.value, super.then, super.then2);
 
   @override
   late final ClassMapperBase<AuthTogglePasswordVisibility> $mapper =
@@ -560,8 +504,9 @@ class _AuthTogglePasswordVisibilityCopyWithImpl<$R, $Out>
 
   @override
   AuthTogglePasswordVisibilityCopyWith<$R2, AuthTogglePasswordVisibility, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _AuthTogglePasswordVisibilityCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _AuthTogglePasswordVisibilityCopyWithImpl<$R2, $Out2>(
+              $value, $cast, t);
 }
 
 class AuthEmailUnfocusedMapper extends ClassMapperBase<AuthEmailUnfocused> {
@@ -609,59 +554,42 @@ mixin AuthEmailUnfocusedMappable {
         .encodeMap<AuthEmailUnfocused>(this as AuthEmailUnfocused);
   }
 
-  AuthEmailUnfocusedCopyWith<
-    AuthEmailUnfocused,
-    AuthEmailUnfocused,
-    AuthEmailUnfocused
-  >
-  get copyWith =>
-      _AuthEmailUnfocusedCopyWithImpl<AuthEmailUnfocused, AuthEmailUnfocused>(
-        this as AuthEmailUnfocused,
-        $identity,
-        $identity,
-      );
+  AuthEmailUnfocusedCopyWith<AuthEmailUnfocused, AuthEmailUnfocused,
+          AuthEmailUnfocused>
+      get copyWith => _AuthEmailUnfocusedCopyWithImpl<AuthEmailUnfocused,
+          AuthEmailUnfocused>(this as AuthEmailUnfocused, $identity, $identity);
   @override
   String toString() {
-    return AuthEmailUnfocusedMapper.ensureInitialized().stringifyValue(
-      this as AuthEmailUnfocused,
-    );
+    return AuthEmailUnfocusedMapper.ensureInitialized()
+        .stringifyValue(this as AuthEmailUnfocused);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthEmailUnfocusedMapper.ensureInitialized().equalsValue(
-      this as AuthEmailUnfocused,
-      other,
-    );
+    return AuthEmailUnfocusedMapper.ensureInitialized()
+        .equalsValue(this as AuthEmailUnfocused, other);
   }
 
   @override
   int get hashCode {
-    return AuthEmailUnfocusedMapper.ensureInitialized().hashValue(
-      this as AuthEmailUnfocused,
-    );
+    return AuthEmailUnfocusedMapper.ensureInitialized()
+        .hashValue(this as AuthEmailUnfocused);
   }
 }
 
 extension AuthEmailUnfocusedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthEmailUnfocused, $Out> {
   AuthEmailUnfocusedCopyWith<$R, AuthEmailUnfocused, $Out>
-  get $asAuthEmailUnfocused => $base.as(
-    (v, t, t2) => _AuthEmailUnfocusedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthEmailUnfocused => $base.as(
+          (v, t, t2) => _AuthEmailUnfocusedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthEmailUnfocusedCopyWith<
-  $R,
-  $In extends AuthEmailUnfocused,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthEmailUnfocusedCopyWith<$R, $In extends AuthEmailUnfocused,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthEmailUnfocusedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthEmailUnfocusedCopyWithImpl<$R, $Out>
@@ -679,8 +607,8 @@ class _AuthEmailUnfocusedCopyWithImpl<$R, $Out>
 
   @override
   AuthEmailUnfocusedCopyWith<$R2, AuthEmailUnfocused, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthEmailUnfocusedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthEmailUnfocusedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthPasswordUnfocusedMapper
@@ -729,58 +657,44 @@ mixin AuthPasswordUnfocusedMappable {
         .encodeMap<AuthPasswordUnfocused>(this as AuthPasswordUnfocused);
   }
 
-  AuthPasswordUnfocusedCopyWith<
-    AuthPasswordUnfocused,
-    AuthPasswordUnfocused,
-    AuthPasswordUnfocused
-  >
-  get copyWith =>
-      _AuthPasswordUnfocusedCopyWithImpl<
-        AuthPasswordUnfocused,
-        AuthPasswordUnfocused
-      >(this as AuthPasswordUnfocused, $identity, $identity);
+  AuthPasswordUnfocusedCopyWith<AuthPasswordUnfocused, AuthPasswordUnfocused,
+      AuthPasswordUnfocused> get copyWith => _AuthPasswordUnfocusedCopyWithImpl<
+          AuthPasswordUnfocused, AuthPasswordUnfocused>(
+      this as AuthPasswordUnfocused, $identity, $identity);
   @override
   String toString() {
-    return AuthPasswordUnfocusedMapper.ensureInitialized().stringifyValue(
-      this as AuthPasswordUnfocused,
-    );
+    return AuthPasswordUnfocusedMapper.ensureInitialized()
+        .stringifyValue(this as AuthPasswordUnfocused);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthPasswordUnfocusedMapper.ensureInitialized().equalsValue(
-      this as AuthPasswordUnfocused,
-      other,
-    );
+    return AuthPasswordUnfocusedMapper.ensureInitialized()
+        .equalsValue(this as AuthPasswordUnfocused, other);
   }
 
   @override
   int get hashCode {
-    return AuthPasswordUnfocusedMapper.ensureInitialized().hashValue(
-      this as AuthPasswordUnfocused,
-    );
+    return AuthPasswordUnfocusedMapper.ensureInitialized()
+        .hashValue(this as AuthPasswordUnfocused);
   }
 }
 
 extension AuthPasswordUnfocusedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthPasswordUnfocused, $Out> {
   AuthPasswordUnfocusedCopyWith<$R, AuthPasswordUnfocused, $Out>
-  get $asAuthPasswordUnfocused => $base.as(
-    (v, t, t2) => _AuthPasswordUnfocusedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthPasswordUnfocused => $base.as(
+          (v, t, t2) => _AuthPasswordUnfocusedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AuthPasswordUnfocusedCopyWith<
-  $R,
-  $In extends AuthPasswordUnfocused,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+    $R,
+    $In extends AuthPasswordUnfocused,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthPasswordUnfocusedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthPasswordUnfocusedCopyWithImpl<$R, $Out>
@@ -798,8 +712,8 @@ class _AuthPasswordUnfocusedCopyWithImpl<$R, $Out>
 
   @override
   AuthPasswordUnfocusedCopyWith<$R2, AuthPasswordUnfocused, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _AuthPasswordUnfocusedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _AuthPasswordUnfocusedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthNameUnfocusedMapper extends ClassMapperBase<AuthNameUnfocused> {
@@ -847,59 +761,43 @@ mixin AuthNameUnfocusedMappable {
         .encodeMap<AuthNameUnfocused>(this as AuthNameUnfocused);
   }
 
-  AuthNameUnfocusedCopyWith<
-    AuthNameUnfocused,
-    AuthNameUnfocused,
-    AuthNameUnfocused
-  >
-  get copyWith =>
-      _AuthNameUnfocusedCopyWithImpl<AuthNameUnfocused, AuthNameUnfocused>(
-        this as AuthNameUnfocused,
-        $identity,
-        $identity,
-      );
+  AuthNameUnfocusedCopyWith<AuthNameUnfocused, AuthNameUnfocused,
+          AuthNameUnfocused>
+      get copyWith =>
+          _AuthNameUnfocusedCopyWithImpl<AuthNameUnfocused, AuthNameUnfocused>(
+              this as AuthNameUnfocused, $identity, $identity);
   @override
   String toString() {
-    return AuthNameUnfocusedMapper.ensureInitialized().stringifyValue(
-      this as AuthNameUnfocused,
-    );
+    return AuthNameUnfocusedMapper.ensureInitialized()
+        .stringifyValue(this as AuthNameUnfocused);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthNameUnfocusedMapper.ensureInitialized().equalsValue(
-      this as AuthNameUnfocused,
-      other,
-    );
+    return AuthNameUnfocusedMapper.ensureInitialized()
+        .equalsValue(this as AuthNameUnfocused, other);
   }
 
   @override
   int get hashCode {
-    return AuthNameUnfocusedMapper.ensureInitialized().hashValue(
-      this as AuthNameUnfocused,
-    );
+    return AuthNameUnfocusedMapper.ensureInitialized()
+        .hashValue(this as AuthNameUnfocused);
   }
 }
 
 extension AuthNameUnfocusedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthNameUnfocused, $Out> {
   AuthNameUnfocusedCopyWith<$R, AuthNameUnfocused, $Out>
-  get $asAuthNameUnfocused => $base.as(
-    (v, t, t2) => _AuthNameUnfocusedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthNameUnfocused => $base
+          .as((v, t, t2) => _AuthNameUnfocusedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthNameUnfocusedCopyWith<
-  $R,
-  $In extends AuthNameUnfocused,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthNameUnfocusedCopyWith<$R, $In extends AuthNameUnfocused,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthNameUnfocusedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthNameUnfocusedCopyWithImpl<$R, $Out>
@@ -917,8 +815,8 @@ class _AuthNameUnfocusedCopyWithImpl<$R, $Out>
 
   @override
   AuthNameUnfocusedCopyWith<$R2, AuthNameUnfocused, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthNameUnfocusedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthNameUnfocusedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthEmailSubmittedMapper extends ClassMapperBase<AuthEmailSubmitted> {
@@ -966,59 +864,42 @@ mixin AuthEmailSubmittedMappable {
         .encodeMap<AuthEmailSubmitted>(this as AuthEmailSubmitted);
   }
 
-  AuthEmailSubmittedCopyWith<
-    AuthEmailSubmitted,
-    AuthEmailSubmitted,
-    AuthEmailSubmitted
-  >
-  get copyWith =>
-      _AuthEmailSubmittedCopyWithImpl<AuthEmailSubmitted, AuthEmailSubmitted>(
-        this as AuthEmailSubmitted,
-        $identity,
-        $identity,
-      );
+  AuthEmailSubmittedCopyWith<AuthEmailSubmitted, AuthEmailSubmitted,
+          AuthEmailSubmitted>
+      get copyWith => _AuthEmailSubmittedCopyWithImpl<AuthEmailSubmitted,
+          AuthEmailSubmitted>(this as AuthEmailSubmitted, $identity, $identity);
   @override
   String toString() {
-    return AuthEmailSubmittedMapper.ensureInitialized().stringifyValue(
-      this as AuthEmailSubmitted,
-    );
+    return AuthEmailSubmittedMapper.ensureInitialized()
+        .stringifyValue(this as AuthEmailSubmitted);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthEmailSubmittedMapper.ensureInitialized().equalsValue(
-      this as AuthEmailSubmitted,
-      other,
-    );
+    return AuthEmailSubmittedMapper.ensureInitialized()
+        .equalsValue(this as AuthEmailSubmitted, other);
   }
 
   @override
   int get hashCode {
-    return AuthEmailSubmittedMapper.ensureInitialized().hashValue(
-      this as AuthEmailSubmitted,
-    );
+    return AuthEmailSubmittedMapper.ensureInitialized()
+        .hashValue(this as AuthEmailSubmitted);
   }
 }
 
 extension AuthEmailSubmittedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthEmailSubmitted, $Out> {
   AuthEmailSubmittedCopyWith<$R, AuthEmailSubmitted, $Out>
-  get $asAuthEmailSubmitted => $base.as(
-    (v, t, t2) => _AuthEmailSubmittedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthEmailSubmitted => $base.as(
+          (v, t, t2) => _AuthEmailSubmittedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthEmailSubmittedCopyWith<
-  $R,
-  $In extends AuthEmailSubmitted,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthEmailSubmittedCopyWith<$R, $In extends AuthEmailSubmitted,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthEmailSubmittedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthEmailSubmittedCopyWithImpl<$R, $Out>
@@ -1036,8 +917,8 @@ class _AuthEmailSubmittedCopyWithImpl<$R, $Out>
 
   @override
   AuthEmailSubmittedCopyWith<$R2, AuthEmailSubmitted, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthEmailSubmittedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthEmailSubmittedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthLoginSubmittedMapper extends ClassMapperBase<AuthLoginSubmitted> {
@@ -1085,59 +966,42 @@ mixin AuthLoginSubmittedMappable {
         .encodeMap<AuthLoginSubmitted>(this as AuthLoginSubmitted);
   }
 
-  AuthLoginSubmittedCopyWith<
-    AuthLoginSubmitted,
-    AuthLoginSubmitted,
-    AuthLoginSubmitted
-  >
-  get copyWith =>
-      _AuthLoginSubmittedCopyWithImpl<AuthLoginSubmitted, AuthLoginSubmitted>(
-        this as AuthLoginSubmitted,
-        $identity,
-        $identity,
-      );
+  AuthLoginSubmittedCopyWith<AuthLoginSubmitted, AuthLoginSubmitted,
+          AuthLoginSubmitted>
+      get copyWith => _AuthLoginSubmittedCopyWithImpl<AuthLoginSubmitted,
+          AuthLoginSubmitted>(this as AuthLoginSubmitted, $identity, $identity);
   @override
   String toString() {
-    return AuthLoginSubmittedMapper.ensureInitialized().stringifyValue(
-      this as AuthLoginSubmitted,
-    );
+    return AuthLoginSubmittedMapper.ensureInitialized()
+        .stringifyValue(this as AuthLoginSubmitted);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthLoginSubmittedMapper.ensureInitialized().equalsValue(
-      this as AuthLoginSubmitted,
-      other,
-    );
+    return AuthLoginSubmittedMapper.ensureInitialized()
+        .equalsValue(this as AuthLoginSubmitted, other);
   }
 
   @override
   int get hashCode {
-    return AuthLoginSubmittedMapper.ensureInitialized().hashValue(
-      this as AuthLoginSubmitted,
-    );
+    return AuthLoginSubmittedMapper.ensureInitialized()
+        .hashValue(this as AuthLoginSubmitted);
   }
 }
 
 extension AuthLoginSubmittedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthLoginSubmitted, $Out> {
   AuthLoginSubmittedCopyWith<$R, AuthLoginSubmitted, $Out>
-  get $asAuthLoginSubmitted => $base.as(
-    (v, t, t2) => _AuthLoginSubmittedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthLoginSubmitted => $base.as(
+          (v, t, t2) => _AuthLoginSubmittedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthLoginSubmittedCopyWith<
-  $R,
-  $In extends AuthLoginSubmitted,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthLoginSubmittedCopyWith<$R, $In extends AuthLoginSubmitted,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthLoginSubmittedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthLoginSubmittedCopyWithImpl<$R, $Out>
@@ -1155,8 +1019,8 @@ class _AuthLoginSubmittedCopyWithImpl<$R, $Out>
 
   @override
   AuthLoginSubmittedCopyWith<$R2, AuthLoginSubmitted, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthLoginSubmittedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthLoginSubmittedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthRegisterSubmittedMapper
@@ -1205,58 +1069,44 @@ mixin AuthRegisterSubmittedMappable {
         .encodeMap<AuthRegisterSubmitted>(this as AuthRegisterSubmitted);
   }
 
-  AuthRegisterSubmittedCopyWith<
-    AuthRegisterSubmitted,
-    AuthRegisterSubmitted,
-    AuthRegisterSubmitted
-  >
-  get copyWith =>
-      _AuthRegisterSubmittedCopyWithImpl<
-        AuthRegisterSubmitted,
-        AuthRegisterSubmitted
-      >(this as AuthRegisterSubmitted, $identity, $identity);
+  AuthRegisterSubmittedCopyWith<AuthRegisterSubmitted, AuthRegisterSubmitted,
+      AuthRegisterSubmitted> get copyWith => _AuthRegisterSubmittedCopyWithImpl<
+          AuthRegisterSubmitted, AuthRegisterSubmitted>(
+      this as AuthRegisterSubmitted, $identity, $identity);
   @override
   String toString() {
-    return AuthRegisterSubmittedMapper.ensureInitialized().stringifyValue(
-      this as AuthRegisterSubmitted,
-    );
+    return AuthRegisterSubmittedMapper.ensureInitialized()
+        .stringifyValue(this as AuthRegisterSubmitted);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthRegisterSubmittedMapper.ensureInitialized().equalsValue(
-      this as AuthRegisterSubmitted,
-      other,
-    );
+    return AuthRegisterSubmittedMapper.ensureInitialized()
+        .equalsValue(this as AuthRegisterSubmitted, other);
   }
 
   @override
   int get hashCode {
-    return AuthRegisterSubmittedMapper.ensureInitialized().hashValue(
-      this as AuthRegisterSubmitted,
-    );
+    return AuthRegisterSubmittedMapper.ensureInitialized()
+        .hashValue(this as AuthRegisterSubmitted);
   }
 }
 
 extension AuthRegisterSubmittedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthRegisterSubmitted, $Out> {
   AuthRegisterSubmittedCopyWith<$R, AuthRegisterSubmitted, $Out>
-  get $asAuthRegisterSubmitted => $base.as(
-    (v, t, t2) => _AuthRegisterSubmittedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthRegisterSubmitted => $base.as(
+          (v, t, t2) => _AuthRegisterSubmittedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AuthRegisterSubmittedCopyWith<
-  $R,
-  $In extends AuthRegisterSubmitted,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+    $R,
+    $In extends AuthRegisterSubmitted,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthRegisterSubmittedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthRegisterSubmittedCopyWithImpl<$R, $Out>
@@ -1274,8 +1124,8 @@ class _AuthRegisterSubmittedCopyWithImpl<$R, $Out>
 
   @override
   AuthRegisterSubmittedCopyWith<$R2, AuthRegisterSubmitted, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _AuthRegisterSubmittedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _AuthRegisterSubmittedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthLogoutRequestedMapper extends ClassMapperBase<AuthLogoutRequested> {
@@ -1323,58 +1173,42 @@ mixin AuthLogoutRequestedMappable {
         .encodeMap<AuthLogoutRequested>(this as AuthLogoutRequested);
   }
 
-  AuthLogoutRequestedCopyWith<
-    AuthLogoutRequested,
-    AuthLogoutRequested,
-    AuthLogoutRequested
-  >
-  get copyWith =>
-      _AuthLogoutRequestedCopyWithImpl<
-        AuthLogoutRequested,
-        AuthLogoutRequested
-      >(this as AuthLogoutRequested, $identity, $identity);
+  AuthLogoutRequestedCopyWith<AuthLogoutRequested, AuthLogoutRequested,
+      AuthLogoutRequested> get copyWith => _AuthLogoutRequestedCopyWithImpl<
+          AuthLogoutRequested, AuthLogoutRequested>(
+      this as AuthLogoutRequested, $identity, $identity);
   @override
   String toString() {
-    return AuthLogoutRequestedMapper.ensureInitialized().stringifyValue(
-      this as AuthLogoutRequested,
-    );
+    return AuthLogoutRequestedMapper.ensureInitialized()
+        .stringifyValue(this as AuthLogoutRequested);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthLogoutRequestedMapper.ensureInitialized().equalsValue(
-      this as AuthLogoutRequested,
-      other,
-    );
+    return AuthLogoutRequestedMapper.ensureInitialized()
+        .equalsValue(this as AuthLogoutRequested, other);
   }
 
   @override
   int get hashCode {
-    return AuthLogoutRequestedMapper.ensureInitialized().hashValue(
-      this as AuthLogoutRequested,
-    );
+    return AuthLogoutRequestedMapper.ensureInitialized()
+        .hashValue(this as AuthLogoutRequested);
   }
 }
 
 extension AuthLogoutRequestedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthLogoutRequested, $Out> {
   AuthLogoutRequestedCopyWith<$R, AuthLogoutRequested, $Out>
-  get $asAuthLogoutRequested => $base.as(
-    (v, t, t2) => _AuthLogoutRequestedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthLogoutRequested => $base.as(
+          (v, t, t2) => _AuthLogoutRequestedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthLogoutRequestedCopyWith<
-  $R,
-  $In extends AuthLogoutRequested,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthLogoutRequestedCopyWith<$R, $In extends AuthLogoutRequested,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthLogoutRequestedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthLogoutRequestedCopyWithImpl<$R, $Out>
@@ -1392,8 +1226,8 @@ class _AuthLogoutRequestedCopyWithImpl<$R, $Out>
 
   @override
   AuthLogoutRequestedCopyWith<$R2, AuthLogoutRequested, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _AuthLogoutRequestedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _AuthLogoutRequestedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthUserChangedMapper extends ClassMapperBase<AuthUserChanged> {
@@ -1415,7 +1249,9 @@ class AuthUserChangedMapper extends ClassMapperBase<AuthUserChanged> {
   static const Field<AuthUserChanged, User> _f$user = Field('user', _$user);
 
   @override
-  final MappableFields<AuthUserChanged> fields = const {#user: _f$user};
+  final MappableFields<AuthUserChanged> fields = const {
+    #user: _f$user,
+  };
 
   static AuthUserChanged _instantiate(DecodingData data) {
     return AuthUserChanged(data.dec(_f$user));
@@ -1440,38 +1276,30 @@ mixin AuthUserChangedMappable {
   }
 
   Map<String, dynamic> toMap() {
-    return AuthUserChangedMapper.ensureInitialized().encodeMap<AuthUserChanged>(
-      this as AuthUserChanged,
-    );
+    return AuthUserChangedMapper.ensureInitialized()
+        .encodeMap<AuthUserChanged>(this as AuthUserChanged);
   }
 
   AuthUserChangedCopyWith<AuthUserChanged, AuthUserChanged, AuthUserChanged>
-  get copyWith =>
-      _AuthUserChangedCopyWithImpl<AuthUserChanged, AuthUserChanged>(
-        this as AuthUserChanged,
-        $identity,
-        $identity,
-      );
+      get copyWith =>
+          _AuthUserChangedCopyWithImpl<AuthUserChanged, AuthUserChanged>(
+              this as AuthUserChanged, $identity, $identity);
   @override
   String toString() {
-    return AuthUserChangedMapper.ensureInitialized().stringifyValue(
-      this as AuthUserChanged,
-    );
+    return AuthUserChangedMapper.ensureInitialized()
+        .stringifyValue(this as AuthUserChanged);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthUserChangedMapper.ensureInitialized().equalsValue(
-      this as AuthUserChanged,
-      other,
-    );
+    return AuthUserChangedMapper.ensureInitialized()
+        .equalsValue(this as AuthUserChanged, other);
   }
 
   @override
   int get hashCode {
-    return AuthUserChangedMapper.ensureInitialized().hashValue(
-      this as AuthUserChanged,
-    );
+    return AuthUserChangedMapper.ensureInitialized()
+        .hashValue(this as AuthUserChanged);
   }
 }
 
@@ -1486,8 +1314,7 @@ abstract class AuthUserChangedCopyWith<$R, $In extends AuthUserChanged, $Out>
   @override
   $R call({User? user});
   AuthUserChangedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthUserChangedCopyWithImpl<$R, $Out>
@@ -1507,8 +1334,8 @@ class _AuthUserChangedCopyWithImpl<$R, $Out>
 
   @override
   AuthUserChangedCopyWith<$R2, AuthUserChanged, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthUserChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthUserChangedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthWatchStartedMapper extends ClassMapperBase<AuthWatchStarted> {
@@ -1557,40 +1384,33 @@ mixin AuthWatchStartedMappable {
   }
 
   AuthWatchStartedCopyWith<AuthWatchStarted, AuthWatchStarted, AuthWatchStarted>
-  get copyWith =>
-      _AuthWatchStartedCopyWithImpl<AuthWatchStarted, AuthWatchStarted>(
-        this as AuthWatchStarted,
-        $identity,
-        $identity,
-      );
+      get copyWith =>
+          _AuthWatchStartedCopyWithImpl<AuthWatchStarted, AuthWatchStarted>(
+              this as AuthWatchStarted, $identity, $identity);
   @override
   String toString() {
-    return AuthWatchStartedMapper.ensureInitialized().stringifyValue(
-      this as AuthWatchStarted,
-    );
+    return AuthWatchStartedMapper.ensureInitialized()
+        .stringifyValue(this as AuthWatchStarted);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthWatchStartedMapper.ensureInitialized().equalsValue(
-      this as AuthWatchStarted,
-      other,
-    );
+    return AuthWatchStartedMapper.ensureInitialized()
+        .equalsValue(this as AuthWatchStarted, other);
   }
 
   @override
   int get hashCode {
-    return AuthWatchStartedMapper.ensureInitialized().hashValue(
-      this as AuthWatchStarted,
-    );
+    return AuthWatchStartedMapper.ensureInitialized()
+        .hashValue(this as AuthWatchStarted);
   }
 }
 
 extension AuthWatchStartedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthWatchStarted, $Out> {
   AuthWatchStartedCopyWith<$R, AuthWatchStarted, $Out>
-  get $asAuthWatchStarted =>
-      $base.as((v, t, t2) => _AuthWatchStartedCopyWithImpl<$R, $Out>(v, t, t2));
+      get $asAuthWatchStarted => $base
+          .as((v, t, t2) => _AuthWatchStartedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AuthWatchStartedCopyWith<$R, $In extends AuthWatchStarted, $Out>
@@ -1598,8 +1418,7 @@ abstract class AuthWatchStartedCopyWith<$R, $In extends AuthWatchStarted, $Out>
   @override
   $R call();
   AuthWatchStartedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthWatchStartedCopyWithImpl<$R, $Out>
@@ -1617,8 +1436,8 @@ class _AuthWatchStartedCopyWithImpl<$R, $Out>
 
   @override
   AuthWatchStartedCopyWith<$R2, AuthWatchStarted, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthWatchStartedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthWatchStartedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthGetCurrentUserMapper extends ClassMapperBase<AuthGetCurrentUser> {
@@ -1666,59 +1485,42 @@ mixin AuthGetCurrentUserMappable {
         .encodeMap<AuthGetCurrentUser>(this as AuthGetCurrentUser);
   }
 
-  AuthGetCurrentUserCopyWith<
-    AuthGetCurrentUser,
-    AuthGetCurrentUser,
-    AuthGetCurrentUser
-  >
-  get copyWith =>
-      _AuthGetCurrentUserCopyWithImpl<AuthGetCurrentUser, AuthGetCurrentUser>(
-        this as AuthGetCurrentUser,
-        $identity,
-        $identity,
-      );
+  AuthGetCurrentUserCopyWith<AuthGetCurrentUser, AuthGetCurrentUser,
+          AuthGetCurrentUser>
+      get copyWith => _AuthGetCurrentUserCopyWithImpl<AuthGetCurrentUser,
+          AuthGetCurrentUser>(this as AuthGetCurrentUser, $identity, $identity);
   @override
   String toString() {
-    return AuthGetCurrentUserMapper.ensureInitialized().stringifyValue(
-      this as AuthGetCurrentUser,
-    );
+    return AuthGetCurrentUserMapper.ensureInitialized()
+        .stringifyValue(this as AuthGetCurrentUser);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthGetCurrentUserMapper.ensureInitialized().equalsValue(
-      this as AuthGetCurrentUser,
-      other,
-    );
+    return AuthGetCurrentUserMapper.ensureInitialized()
+        .equalsValue(this as AuthGetCurrentUser, other);
   }
 
   @override
   int get hashCode {
-    return AuthGetCurrentUserMapper.ensureInitialized().hashValue(
-      this as AuthGetCurrentUser,
-    );
+    return AuthGetCurrentUserMapper.ensureInitialized()
+        .hashValue(this as AuthGetCurrentUser);
   }
 }
 
 extension AuthGetCurrentUserValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthGetCurrentUser, $Out> {
   AuthGetCurrentUserCopyWith<$R, AuthGetCurrentUser, $Out>
-  get $asAuthGetCurrentUser => $base.as(
-    (v, t, t2) => _AuthGetCurrentUserCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthGetCurrentUser => $base.as(
+          (v, t, t2) => _AuthGetCurrentUserCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthGetCurrentUserCopyWith<
-  $R,
-  $In extends AuthGetCurrentUser,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthGetCurrentUserCopyWith<$R, $In extends AuthGetCurrentUser,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthGetCurrentUserCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthGetCurrentUserCopyWithImpl<$R, $Out>
@@ -1736,8 +1538,8 @@ class _AuthGetCurrentUserCopyWithImpl<$R, $Out>
 
   @override
   AuthGetCurrentUserCopyWith<$R2, AuthGetCurrentUser, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthGetCurrentUserCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthGetCurrentUserCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthSessionWatchStartedMapper
@@ -1747,9 +1549,8 @@ class AuthSessionWatchStartedMapper
   static AuthSessionWatchStartedMapper? _instance;
   static AuthSessionWatchStartedMapper ensureInitialized() {
     if (_instance == null) {
-      MapperContainer.globals.use(
-        _instance = AuthSessionWatchStartedMapper._(),
-      );
+      MapperContainer.globals
+          .use(_instance = AuthSessionWatchStartedMapper._());
       AuthEventMapper.ensureInitialized();
     }
     return _instance!;
@@ -1788,58 +1589,45 @@ mixin AuthSessionWatchStartedMappable {
         .encodeMap<AuthSessionWatchStarted>(this as AuthSessionWatchStarted);
   }
 
-  AuthSessionWatchStartedCopyWith<
-    AuthSessionWatchStarted,
-    AuthSessionWatchStarted,
-    AuthSessionWatchStarted
-  >
-  get copyWith =>
-      _AuthSessionWatchStartedCopyWithImpl<
-        AuthSessionWatchStarted,
-        AuthSessionWatchStarted
-      >(this as AuthSessionWatchStarted, $identity, $identity);
+  AuthSessionWatchStartedCopyWith<AuthSessionWatchStarted,
+          AuthSessionWatchStarted, AuthSessionWatchStarted>
+      get copyWith => _AuthSessionWatchStartedCopyWithImpl<
+              AuthSessionWatchStarted, AuthSessionWatchStarted>(
+          this as AuthSessionWatchStarted, $identity, $identity);
   @override
   String toString() {
-    return AuthSessionWatchStartedMapper.ensureInitialized().stringifyValue(
-      this as AuthSessionWatchStarted,
-    );
+    return AuthSessionWatchStartedMapper.ensureInitialized()
+        .stringifyValue(this as AuthSessionWatchStarted);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthSessionWatchStartedMapper.ensureInitialized().equalsValue(
-      this as AuthSessionWatchStarted,
-      other,
-    );
+    return AuthSessionWatchStartedMapper.ensureInitialized()
+        .equalsValue(this as AuthSessionWatchStarted, other);
   }
 
   @override
   int get hashCode {
-    return AuthSessionWatchStartedMapper.ensureInitialized().hashValue(
-      this as AuthSessionWatchStarted,
-    );
+    return AuthSessionWatchStartedMapper.ensureInitialized()
+        .hashValue(this as AuthSessionWatchStarted);
   }
 }
 
 extension AuthSessionWatchStartedValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthSessionWatchStarted, $Out> {
   AuthSessionWatchStartedCopyWith<$R, AuthSessionWatchStarted, $Out>
-  get $asAuthSessionWatchStarted => $base.as(
-    (v, t, t2) => _AuthSessionWatchStartedCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthSessionWatchStarted => $base.as((v, t, t2) =>
+          _AuthSessionWatchStartedCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class AuthSessionWatchStartedCopyWith<
-  $R,
-  $In extends AuthSessionWatchStarted,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+    $R,
+    $In extends AuthSessionWatchStarted,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthSessionWatchStartedCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthSessionWatchStartedCopyWithImpl<$R, $Out>
@@ -1858,8 +1646,8 @@ class _AuthSessionWatchStartedCopyWithImpl<$R, $Out>
 
   @override
   AuthSessionWatchStartedCopyWith<$R2, AuthSessionWatchStarted, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _AuthSessionWatchStartedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _AuthSessionWatchStartedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class AuthSessionExpiredMapper extends ClassMapperBase<AuthSessionExpired> {
@@ -1907,59 +1695,42 @@ mixin AuthSessionExpiredMappable {
         .encodeMap<AuthSessionExpired>(this as AuthSessionExpired);
   }
 
-  AuthSessionExpiredCopyWith<
-    AuthSessionExpired,
-    AuthSessionExpired,
-    AuthSessionExpired
-  >
-  get copyWith =>
-      _AuthSessionExpiredCopyWithImpl<AuthSessionExpired, AuthSessionExpired>(
-        this as AuthSessionExpired,
-        $identity,
-        $identity,
-      );
+  AuthSessionExpiredCopyWith<AuthSessionExpired, AuthSessionExpired,
+          AuthSessionExpired>
+      get copyWith => _AuthSessionExpiredCopyWithImpl<AuthSessionExpired,
+          AuthSessionExpired>(this as AuthSessionExpired, $identity, $identity);
   @override
   String toString() {
-    return AuthSessionExpiredMapper.ensureInitialized().stringifyValue(
-      this as AuthSessionExpired,
-    );
+    return AuthSessionExpiredMapper.ensureInitialized()
+        .stringifyValue(this as AuthSessionExpired);
   }
 
   @override
   bool operator ==(Object other) {
-    return AuthSessionExpiredMapper.ensureInitialized().equalsValue(
-      this as AuthSessionExpired,
-      other,
-    );
+    return AuthSessionExpiredMapper.ensureInitialized()
+        .equalsValue(this as AuthSessionExpired, other);
   }
 
   @override
   int get hashCode {
-    return AuthSessionExpiredMapper.ensureInitialized().hashValue(
-      this as AuthSessionExpired,
-    );
+    return AuthSessionExpiredMapper.ensureInitialized()
+        .hashValue(this as AuthSessionExpired);
   }
 }
 
 extension AuthSessionExpiredValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AuthSessionExpired, $Out> {
   AuthSessionExpiredCopyWith<$R, AuthSessionExpired, $Out>
-  get $asAuthSessionExpired => $base.as(
-    (v, t, t2) => _AuthSessionExpiredCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asAuthSessionExpired => $base.as(
+          (v, t, t2) => _AuthSessionExpiredCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class AuthSessionExpiredCopyWith<
-  $R,
-  $In extends AuthSessionExpired,
-  $Out
->
-    implements AuthEventCopyWith<$R, $In, $Out> {
+abstract class AuthSessionExpiredCopyWith<$R, $In extends AuthSessionExpired,
+    $Out> implements AuthEventCopyWith<$R, $In, $Out> {
   @override
   $R call();
   AuthSessionExpiredCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _AuthSessionExpiredCopyWithImpl<$R, $Out>
@@ -1977,7 +1748,6 @@ class _AuthSessionExpiredCopyWithImpl<$R, $Out>
 
   @override
   AuthSessionExpiredCopyWith<$R2, AuthSessionExpired, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _AuthSessionExpiredCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _AuthSessionExpiredCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
-

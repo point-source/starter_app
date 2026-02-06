@@ -1,25 +1,29 @@
-import 'package:starter_app/app/app.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:starter_app/app/view/app.dart';
 import 'package:starter_app/bootstrap.dart';
 import 'package:starter_app/core/application/application_environment.dart';
-import 'package:starter_app/core/di/injection.dart';
+import 'package:starter_app/core/di/providers/storage_providers.dart';
 
-/// Entry point for staging environment.
-///
-/// Run with:
-/// ```bash
-/// flutter run --dart-define-from-file=config/staging.json
-/// ```
-///
-/// Configuration:
-/// - Environment: staging
-/// - Sentry: Enabled (staging project)
-/// - API URL: From config file
-/// - Console Logging: Enabled (in debug mode)
-/// - Sentry Sample Rate: 100% (capture everything)
 void main() async {
-  await bootstrap<App>(
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final sharedPrefs = await SharedPreferences.getInstance();
+  final hydratedStorage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorageDirectory.web
+        : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+  );
+
+  await bootstrap(
     environment: AppEnvironment.staging,
-    onConfigure: configureDependencies,
-    onResolve: getIt.get,
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPrefs),
+      hydratedStorageProvider.overrideWithValue(hydratedStorage),
+    ],
+    builder: () => const App(),
   );
 }

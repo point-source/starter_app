@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_error_reporter.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
 
@@ -19,7 +18,6 @@ import 'package:starter_app/core/logging/i_app_logger.dart';
 /// Both are called for all errors to ensure:
 /// - Developers see errors in console during development
 /// - Errors are tracked in Sentry for staging/production
-@lazySingleton
 class AppErrorHandlingService {
   AppErrorHandlingService(this._logger, this._errorReporter);
 

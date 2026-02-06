@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/command.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -35,7 +34,6 @@ import 'package:starter_app/features/auth/domain/value_objects/refresh_token.dar
 ///   );
 /// }
 /// ```
-@injectable
 class RefreshTokenUseCase extends Command<RefreshToken, AuthToken> {
   const RefreshTokenUseCase(this._repository);
 

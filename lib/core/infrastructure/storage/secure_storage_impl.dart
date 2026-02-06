@@ -1,5 +1,4 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_secure_storage.dart';
 
 /// Implementation of [ISecureStorage]
@@ -16,7 +15,6 @@ import 'package:starter_app/core/domain/ports/i_secure_storage.dart';
 ///
 /// This class is registered as a lazy singleton, so a single instance
 /// is used throughout the application.
-@LazySingleton(as: ISecureStorage)
 class SecureStorageImpl implements ISecureStorage {
   const SecureStorageImpl(this._storage);
 

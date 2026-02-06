@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/command.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -29,7 +28,6 @@ import 'package:starter_app/features/auth/domain/repositories/i_auth_repository.
 ///   (_) => emit(AuthState.unauthenticated()),
 /// );
 /// ```
-@injectable
 class Logout extends CommandNoParams<Unit> {
   const Logout(this._repository);
 

@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/ports/i_secure_storage.dart';
 import 'package:starter_app/core/domain/ports/i_token_storage.dart';
@@ -18,7 +17,6 @@ import 'package:starter_app/core/domain/ports/i_token_storage.dart';
 /// Provides secure storage for:
 /// - Access tokens (JWT for API authentication)
 /// - Refresh tokens (for obtaining new access tokens)
-@LazySingleton(as: ITokenStorage)
 class TokenStorageImpl implements ITokenStorage {
   const TokenStorageImpl(this._secureStorage);
 

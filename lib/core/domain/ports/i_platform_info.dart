@@ -9,8 +9,7 @@
 ///
 /// Usage:
 /// ```dart
-/// @injectable
-/// class MyService {
+/// /// class MyService {
 ///   MyService(this._platformInfo);
 ///   final IPlatformInfo _platformInfo;
 ///

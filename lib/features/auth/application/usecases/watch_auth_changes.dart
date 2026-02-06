@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/query.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -29,7 +28,6 @@ import 'package:starter_app/features/auth/domain/repositories/i_auth_repository.
 ///   );
 /// });
 /// ```
-@injectable
 class WatchAuthChanges extends StreamQueryNoParams<User?> {
   const WatchAuthChanges(this._repository);
 

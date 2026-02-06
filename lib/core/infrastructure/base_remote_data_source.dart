@@ -14,8 +14,7 @@ import 'package:flutter/foundation.dart';
 ///
 /// Usage:
 /// ```dart
-/// @LazySingleton(as: IAuthRemoteDataSource)
-/// class AuthRemoteDataSourceImpl extends BaseRemoteDataSource
+/// /// class AuthRemoteDataSourceImpl extends BaseRemoteDataSource
 ///     implements IAuthRemoteDataSource {
 ///   AuthRemoteDataSourceImpl(this._apiService);
 ///   final AuthApiService _apiService;

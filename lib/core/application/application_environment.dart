@@ -37,8 +37,7 @@ enum AppEnvironment {
   ///
   /// Example:
   /// ```dart
-  /// @LazySingleton(env: [AppEnvironment.devEnv])
-  /// AppLogger provideDevLogger() => ConsoleLogger();
+  ///   /// AppLogger provideDevLogger() => ConsoleLogger();
   /// ```
   static const String devEnv = 'development';
   static const String stagingEnv = 'staging';

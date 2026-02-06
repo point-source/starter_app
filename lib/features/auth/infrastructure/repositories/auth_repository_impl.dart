@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_token_storage.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/error/exception_handler.dart';
@@ -21,7 +20,6 @@ import 'package:starter_app/features/auth/infrastructure/models/check_user_exist
 import 'package:starter_app/features/auth/infrastructure/models/login_request_model.dart';
 import 'package:starter_app/features/auth/infrastructure/models/register_request_model.dart';
 
-@LazySingleton(as: IAuthRepository)
 final class AuthRepositoryImpl extends BaseRepository
     implements IAuthRepository {
   AuthRepositoryImpl(

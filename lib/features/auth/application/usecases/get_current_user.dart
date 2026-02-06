@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/event_dispatcher.dart';
 import 'package:starter_app/core/domain/base/query.dart';
@@ -29,7 +28,6 @@ import 'package:starter_app/features/auth/domain/repositories/i_auth_repository.
 ///     : emit(AuthState.unauthenticated()),
 /// );
 /// ```
-@injectable
 class GetCurrentUser extends QueryNoParams<User?> {
   const GetCurrentUser(this._repository, this._eventDispatcher);
 

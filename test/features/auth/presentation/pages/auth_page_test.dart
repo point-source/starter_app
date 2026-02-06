@@ -2,8 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/domain/value_objects/name.dart';
@@ -11,8 +11,10 @@ import 'package:starter_app/core/domain/value_objects/password.dart';
 import 'package:starter_app/core/error/failures/infrastructure_failures.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
 import 'package:starter_app/core/navigation/app_router.gr.dart';
+import 'package:starter_app/core/presentation/di/presentation_providers.dart';
 import 'package:starter_app/core/presentation/models/error_model.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
+import 'package:starter_app/features/auth/di/auth_providers.dart';
 import 'package:starter_app/features/auth/domain/failure/auth_failure.dart';
 import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -52,17 +54,6 @@ void main() {
   setUp(() async {
     mockAuthBloc = MockAuthBloc();
     mockFailureMessageService = MockFailureMessageService();
-
-    // Register GetIt dependencies
-    final getIt = GetIt.instance;
-    if (getIt.isRegistered<FailureMessageService>()) {
-      await getIt.unregister<FailureMessageService>();
-    }
-    getIt.registerSingleton<FailureMessageService>(mockFailureMessageService);
-  });
-
-  tearDown(() async {
-    await GetIt.instance.reset();
   });
 
   group('AuthPage', () {
@@ -77,11 +68,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.byType(AuthPage), findsOneWidget);
@@ -92,11 +85,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Should find text field for email input
@@ -107,11 +102,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.byType(ElevatedButton), findsOneWidget);
@@ -121,11 +118,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.byType(TextButton), findsOneWidget);
@@ -146,11 +145,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.byType(AuthPage), findsOneWidget);
@@ -169,11 +170,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.textContaining(TestData.email), findsOneWidget);
@@ -190,11 +193,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Should have "Use different email" button
@@ -217,11 +222,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.byType(AuthPage), findsOneWidget);
@@ -241,11 +248,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.textContaining(TestData.email), findsOneWidget);
@@ -263,11 +272,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -306,11 +317,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
         await tester.pump(); // Trigger listener
 
@@ -341,11 +354,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
         await tester.pumpAndSettle();
         await tester.tap(find.text('Retry'), warnIfMissed: false);
@@ -383,11 +398,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
         await tester.pumpAndSettle();
         await tester.tap(find.text('Retry'), warnIfMissed: false);
@@ -427,11 +444,13 @@ void main() {
           );
 
           await tester.pumpAppWithBloc(
-            RepositoryProvider<FailureMessageService>.value(
-              value: mockFailureMessageService,
-              child: const AuthPage(),
-            ),
+            const AuthPage(),
             providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+            overrides: [
+              failureMessageServiceProvider
+                  .overrideWithValue(mockFailureMessageService),
+              authBlocProvider.overrideWithValue(mockAuthBloc),
+            ],
           );
           await tester.pumpAndSettle();
 
@@ -448,11 +467,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.enterText(find.byType(TextFormField), 'test@example.com');
@@ -470,11 +491,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.tap(find.text('Continue'));
@@ -491,11 +514,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Find the TextFormField and verify it exists
@@ -506,23 +531,9 @@ void main() {
         await tester.tap(textFieldFinder);
         await tester.pump();
 
-        // Simulate editing complete by explicitly
-        // calling the onEditingComplete callback
-        // This is more reliable than trying to simulate focus loss
-        // But verifying if the widget exposes it is hard.
-        // Let's rely on enterText and then submit (action done)
-        // which usually triggers onSubmitted
-        // For onEditingComplete, typically standard testing
-        // might not trigger it unless specifically wired
-        // However, we see in code: onEditingComplete: ...
-        // We can simulate it by finding the TextField
-        // widget and calling the callback if possible,
-        // or just accept we tested onSubmitted.
-        // Actually onEditingComplete is often called or onSubmitted.
-        // Let's just verify onEditingComplete with a focused
-        // text field that loses focus?
-        // Flutter test focus handling can be tricky.
-        // Let's skip direct onEditingComplete check if problematic and stick to onSubmitted/onChanged.
+        // Simulate editing complete
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pump();
       });
 
       // Login Form Interactions
@@ -537,11 +548,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.enterText(find.byType(TextFormField), 'password');
@@ -563,11 +576,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.tap(find.text('Login'));
@@ -589,11 +604,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.tap(find.text('Use a different email'));
@@ -615,11 +632,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Two text fields: Name and Password. Helper to find by label/hint or order.
@@ -644,11 +663,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.tap(find.text('Register'));
@@ -679,11 +700,13 @@ void main() {
         ).thenReturn('Name is required');
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         expect(find.text('Name is required'), findsOneWidget);
@@ -703,11 +726,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.tap(find.text('Use a different email'));
@@ -723,11 +748,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Find the text field and trigger editing complete
@@ -750,11 +777,13 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Enter text and submit
@@ -781,11 +810,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Trigger editing complete
@@ -812,11 +843,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         await tester.enterText(find.byType(TextFormField), 'password123');
@@ -839,11 +872,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // PasswordTextField uses visibility_outlined when obscured (default)
@@ -868,11 +903,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // First text field is the name field
@@ -902,11 +939,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Should not find the error text when name is valid
@@ -927,11 +966,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Second text field is the password field
@@ -956,11 +997,13 @@ void main() {
           );
 
           await tester.pumpAppWithBloc(
-            RepositoryProvider<FailureMessageService>.value(
-              value: mockFailureMessageService,
-              child: const AuthPage(),
-            ),
+            const AuthPage(),
             providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+            overrides: [
+              failureMessageServiceProvider
+                  .overrideWithValue(mockFailureMessageService),
+              authBlocProvider.overrideWithValue(mockAuthBloc),
+            ],
           );
 
           // Tap on second text field (password) and trigger editing complete
@@ -989,11 +1032,13 @@ void main() {
           );
 
           await tester.pumpAppWithBloc(
-            RepositoryProvider<FailureMessageService>.value(
-              value: mockFailureMessageService,
-              child: const AuthPage(),
-            ),
+            const AuthPage(),
             providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+            overrides: [
+              failureMessageServiceProvider
+                  .overrideWithValue(mockFailureMessageService),
+              authBlocProvider.overrideWithValue(mockAuthBloc),
+            ],
           );
 
           await tester.tap(find.byIcon(Icons.visibility_outlined));
@@ -1024,28 +1069,32 @@ void main() {
         );
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: StackRouterScope(
-              controller: mockRouter,
-              stateHash: 0,
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-                ],
-                child: RepositoryProvider<FailureMessageService>.value(
-                  value: mockFailureMessageService,
+          ProviderScope(
+            overrides: [
+              failureMessageServiceProvider
+                  .overrideWithValue(mockFailureMessageService),
+              authBlocProvider.overrideWithValue(mockAuthBloc),
+            ],
+            child: MaterialApp(
+              home: StackRouterScope(
+                controller: mockRouter,
+                stateHash: 0,
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AuthBloc>.value(value: mockAuthBloc),
+                  ],
                   child: const AuthPage(),
                 ),
               ),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                AuthLocalizations.delegate,
+                DashboardLocalizations.delegate,
+                ProfileLocalizations.delegate,
+                SettingsLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
             ),
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              AuthLocalizations.delegate,
-              DashboardLocalizations.delegate,
-              ProfileLocalizations.delegate,
-              SettingsLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
           ),
         );
 
@@ -1068,28 +1117,32 @@ void main() {
         when(() => mockAuthBloc.state).thenReturn(AuthInitial.empty());
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: StackRouterScope(
-              controller: mockRouter,
-              stateHash: 0,
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-                ],
-                child: RepositoryProvider<FailureMessageService>.value(
-                  value: mockFailureMessageService,
+          ProviderScope(
+            overrides: [
+              failureMessageServiceProvider
+                  .overrideWithValue(mockFailureMessageService),
+              authBlocProvider.overrideWithValue(mockAuthBloc),
+            ],
+            child: MaterialApp(
+              home: StackRouterScope(
+                controller: mockRouter,
+                stateHash: 0,
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AuthBloc>.value(value: mockAuthBloc),
+                  ],
                   child: const AuthPage(),
                 ),
               ),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                AuthLocalizations.delegate,
+                DashboardLocalizations.delegate,
+                ProfileLocalizations.delegate,
+                SettingsLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
             ),
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              AuthLocalizations.delegate,
-              DashboardLocalizations.delegate,
-              ProfileLocalizations.delegate,
-              SettingsLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
           ),
         );
         // Advance past Sentry timer
@@ -1118,11 +1171,13 @@ void main() {
         );
 
         await tester.pumpAppWithBloc(
-          RepositoryProvider<FailureMessageService>.value(
-            value: mockFailureMessageService,
-            child: const AuthPage(),
-          ),
+          const AuthPage(),
           providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+          overrides: [
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+          ],
         );
 
         // Don't pump and settle as it will navigate away
@@ -1154,11 +1209,13 @@ void main() {
           );
 
           await tester.pumpAppWithBloc(
-            RepositoryProvider<FailureMessageService>.value(
-              value: mockFailureMessageService,
-              child: const AuthPage(),
-            ),
+            const AuthPage(),
             providers: [BlocProvider<AuthBloc>.value(value: mockAuthBloc)],
+            overrides: [
+              failureMessageServiceProvider
+                  .overrideWithValue(mockFailureMessageService),
+              authBlocProvider.overrideWithValue(mockAuthBloc),
+            ],
           );
           await tester.pump();
 

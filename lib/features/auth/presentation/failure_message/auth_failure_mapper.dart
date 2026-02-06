@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/error/failures/failure.dart';
 import 'package:starter_app/core/presentation/failure_message/failure_message_mapper.dart';
 import 'package:starter_app/features/auth/domain/failure/auth_failure.dart';
@@ -8,14 +7,10 @@ import 'package:starter_app/features/auth/l10n/l10n_extensions.dart';
 
 /// Maps auth failures to user-friendly localized messages.
 ///
-/// Registration is automatic via the base class constructor.
-///
 /// Named differently from [AuthExceptionMapper] in infrastructure layer
 /// to avoid naming conflicts.
-@singleton
 class AuthFailureMessageMapper extends FailureMessageMapper {
-  /// Creates this mapper. Registration is automatic via super constructor.
-  AuthFailureMessageMapper(super.registry);
+  const AuthFailureMessageMapper();
 
   @override
   bool canHandle(Failure failure) => failure is AuthFailure;

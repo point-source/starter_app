@@ -32,8 +32,7 @@ enum SeverityLevel {
 ///
 /// **Example:**
 /// ```dart
-/// @injectable
-/// class AuthService {
+/// /// class AuthService {
 ///   final IErrorReporter _errorReporter;
 ///
 ///   AuthService(this._errorReporter);

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
 import 'package:starter_app/core/domain/value_objects/name.dart';
 import 'package:starter_app/core/domain/value_objects/password.dart';
@@ -23,7 +22,6 @@ import 'package:starter_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:starter_app/features/auth/presentation/bloc/field_validation_state.dart';
 
-@injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
     this._checkUserExists,
