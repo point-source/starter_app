@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:starter_app/core/application/application_environment.dart';
 import 'package:starter_app/core/domain/ports/i_error_reporter.dart';
@@ -20,7 +19,6 @@ import 'package:starter_app/core/logging/i_app_logger.dart';
 ///   (keeps infrastructure decoupled)
 ///
 /// Sentry must be initialized before [IErrorReporter] methods work.
-@lazySingleton
 class AppMonitoringService {
   AppMonitoringService(
     this._logger,

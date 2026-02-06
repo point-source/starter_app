@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/command.dart';
 import 'package:starter_app/core/domain/base/event_dispatcher.dart';
@@ -36,7 +35,6 @@ import 'package:starter_app/features/auth/domain/repositories/i_auth_repository.
 ///   (user) => emit(AuthState.authenticated(user)),
 /// );
 /// ```
-@injectable
 class Login extends Command<AuthCredentials, User> {
   const Login(this._repository, this._eventDispatcher);
 

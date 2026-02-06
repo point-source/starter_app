@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/base/domain_event.dart';
 
 /// Interface for dispatching domain events.
@@ -28,7 +27,6 @@ abstract interface class IEventDispatcher {
 /// Implementation of [IEventDispatcher] using a broadcast StreamController.
 ///
 /// This acts as a simple in-memory Event Bus.
-@LazySingleton(as: IEventDispatcher)
 class EventDispatcher implements IEventDispatcher {
   final _controller = StreamController<DomainEvent>.broadcast();
 
@@ -48,8 +46,7 @@ class EventDispatcher implements IEventDispatcher {
   }
 
   @override
-  @disposeMethod
-  Future<void> dispose() async {
+    Future<void> dispose() async {
     await _controller.close();
   }
 }

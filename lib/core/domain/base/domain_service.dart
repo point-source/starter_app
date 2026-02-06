@@ -31,8 +31,7 @@ import 'package:starter_app/core/domain/base/base.dart'
 ///
 /// **Usage:**
 /// ```dart
-/// @injectable
-/// class PaymentDomainService extends DomainService {
+/// /// class PaymentDomainService extends DomainService {
 ///   const PaymentDomainService(this._repository);
 ///   final IPaymentRepository _repository;
 ///

@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/feature_flags/feature_flag.dart';
 import 'package:starter_app/core/feature_flags/i_feature_flag_service.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
@@ -25,7 +24,6 @@ import 'package:starter_app/core/logging/i_app_logger.dart';
 /// // Set override for development
 /// service.setOverride(FeatureFlag.experimentalFeatures, value: true);
 /// ```
-@LazySingleton(as: IFeatureFlagService)
 final class FeatureFlagService implements IFeatureFlagService {
   /// Creates a [FeatureFlagService] with the given logger.
   FeatureFlagService(this._logger);

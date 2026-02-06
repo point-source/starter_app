@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:injectable/injectable.dart';
-import 'package:starter_app/core/domain/ports/i_navigation_tracking_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:starter_app/core/application/di/application_providers.dart';
+import 'package:starter_app/core/di/providers/bloc_providers.dart';
+import 'package:starter_app/core/di/providers/logging_providers.dart';
+import 'package:starter_app/core/di/providers/navigation_providers.dart';
 import 'package:starter_app/core/l10n/arb/app_localizations.dart';
-import 'package:starter_app/core/logging/i_app_logger.dart';
-import 'package:starter_app/core/navigation/app_router.dart';
-import 'package:starter_app/core/navigation/auth_change_notifier.dart';
 import 'package:starter_app/core/presentation/bloc/bloc.dart';
-import 'package:starter_app/core/presentation/services/failure_message_service.dart';
-import 'package:starter_app/core/theme/app_theme.dart';
-import 'package:starter_app/core/theme/app_theme_extension.dart';
+import 'package:starter_app/core/presentation/di/presentation_providers.dart';
+import 'package:starter_app/core/types/types.dart';
+import 'package:starter_app/features/auth/di/auth_providers.dart';
 import 'package:starter_app/features/auth/l10n/auth_localizations.dart';
-import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:starter_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:starter_app/features/dashboard/l10n/dashboard_localizations.dart';
 import 'package:starter_app/features/orders/l10n/orders_localizations.dart';
+import 'package:starter_app/features/profile/di/profile_providers.dart';
 import 'package:starter_app/features/profile/l10n/profile_localizations.dart';
-import 'package:starter_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 
 /// Root application widget.
@@ -34,34 +32,24 @@ import 'package:starter_app/features/settings/l10n/settings_localizations.dart';
 /// Auth-based redirects (logout, session expiry, protected routes) are handled
 /// by [AppRouter] via AutoRoute guards and [AuthChangeNotifier].
 ///
-/// All dependencies are resolved from GetIt DI container.
-@injectable
-final class App extends StatelessWidget {
-  const App({
-    required this.appRouter,
-    required this.logger,
-    required this.themeCubit,
-    required this.localeCubit,
-    required this.authBloc,
-    required this.profileBloc,
-    required this.failureMessageService,
-    required this.appTheme,
-    required this.navigationTrackingService,
-    @factoryParam super.key,
-  });
-
-  final AppRouter appRouter;
-  final IAppLogger logger;
-  final ThemeCubit themeCubit;
-  final LocaleCubit localeCubit;
-  final AuthBloc authBloc;
-  final ProfileBloc profileBloc;
-  final FailureMessageService failureMessageService;
-  final AppTheme appTheme;
-  final INavigationTrackingService navigationTrackingService;
+/// All dependencies are resolved via Riverpod.
+final class App extends ConsumerWidget {
+  const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Resolve dependencies
+    final logger = ref.watch(appLoggerProvider);
+    final failureMessageService = ref.watch(failureMessageServiceProvider);
+    final themeCubit = ref.watch(themeCubitProvider);
+    final localeCubit = ref.watch(localeCubitProvider);
+    final authBloc = ref.watch(authBlocProvider);
+    final profileBloc = ref.watch(profileBlocProvider);
+    final appRouter = ref.watch(appRouterProvider);
+    final appTheme = ref.watch(appThemeProvider);
+    final navigationTrackingService =
+        ref.watch(navigationTrackingServiceProvider);
+
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider.value(value: logger),
@@ -69,14 +57,10 @@ final class App extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => themeCubit),
-          BlocProvider(create: (context) => localeCubit),
-          BlocProvider(
-            create: (context) => authBloc..add(const AuthGetCurrentUser()),
-          ),
-          BlocProvider(
-            create: (context) => profileBloc,
-          ),
+          BlocProvider.value(value: themeCubit),
+          BlocProvider.value(value: localeCubit),
+          BlocProvider.value(value: authBloc),
+          BlocProvider.value(value: profileBloc),
         ],
         child: BlocBuilder<ThemeCubit, AppThemeMode>(
           builder: (context, appThemeMode) {

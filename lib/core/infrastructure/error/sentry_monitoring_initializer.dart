@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:starter_app/core/application/application_environment.dart';
 import 'package:starter_app/core/domain/ports/i_error_reporter.dart';
@@ -10,7 +9,6 @@ import 'package:starter_app/core/domain/ports/i_monitoring_initializer.dart';
 /// any [IErrorReporter] methods can work.
 ///
 /// This is in infrastructure layer because it directly uses `sentry_flutter`.
-@LazySingleton(as: IMonitoringInitializer)
 class SentryMonitoringInitializer implements IMonitoringInitializer {
   const SentryMonitoringInitializer();
 

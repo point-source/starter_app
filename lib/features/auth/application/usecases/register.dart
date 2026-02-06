@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/command.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -11,7 +10,6 @@ import 'package:starter_app/features/auth/domain/services/user_registration_serv
 /// Orchestrates the registration process using [UserRegistrationService].
 /// Credentials must include name for registration
 /// (use [AuthCredentials.isValidForRegistration]).
-@injectable
 class Register extends Command<AuthCredentials, User> {
   const Register(this._registrationService);
 

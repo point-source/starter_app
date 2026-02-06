@@ -1,21 +1,28 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:starter_app/app/app.dart';
+import 'package:starter_app/core/application/di/application_providers.dart';
+import 'package:starter_app/core/di/providers/bloc_providers.dart';
+import 'package:starter_app/core/di/providers/logging_providers.dart';
+import 'package:starter_app/core/di/providers/navigation_providers.dart';
 import 'package:starter_app/core/domain/ports/i_navigation_tracking_service.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
 import 'package:starter_app/core/navigation/app_router.dart';
 import 'package:starter_app/core/navigation/auth_change_notifier.dart';
 import 'package:starter_app/core/presentation/bloc/locale_cubit.dart';
 import 'package:starter_app/core/presentation/bloc/theme_cubit.dart';
+import 'package:starter_app/core/presentation/di/presentation_providers.dart';
 import 'package:starter_app/core/presentation/services/failure_message_service.dart';
 import 'package:starter_app/core/theme/app_theme.dart';
+import 'package:starter_app/features/auth/di/auth_providers.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:starter_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:starter_app/features/profile/di/profile_providers.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:starter_app/features/profile/presentation/bloc/profile_state.dart';
@@ -90,44 +97,25 @@ void main() {
       when(() => mockLocaleCubit.state).thenReturn(AppLocale.en);
       when(() => mockAppTheme.lightTheme).thenReturn(ThemeData.light());
       when(() => mockAppTheme.darkTheme).thenReturn(ThemeData.dark());
-
-      // Setup GetIt
-      GetIt.instance
-        ..reset()
-        ..registerLazySingleton<AppRouter>(() => appRouter)
-        ..registerLazySingleton<FailureMessageService>(
-          () => mockFailureMessageService,
-        )
-        ..registerLazySingleton<IAppLogger>(() => mockAppLogger)
-        ..registerLazySingleton<INavigationTrackingService>(
-          () => mockNavigationTrackingService,
-        );
-    });
-
-    tearDown(() async {
-      await GetIt.instance.reset();
     });
 
     testWidgets('renders MaterialApp.router', (tester) async {
       await tester.pumpWidget(
-        MultiBlocProvider(
-          providers: [
-            BlocProvider<AuthBloc>.value(value: mockAuthBloc),
-            BlocProvider<ProfileBloc>.value(value: mockProfileBloc),
-            BlocProvider<ThemeCubit>.value(value: mockThemeCubit),
-            BlocProvider<LocaleCubit>.value(value: mockLocaleCubit),
+        ProviderScope(
+          overrides: [
+            appLoggerProvider.overrideWithValue(mockAppLogger),
+            failureMessageServiceProvider
+                .overrideWithValue(mockFailureMessageService),
+            themeCubitProvider.overrideWithValue(mockThemeCubit),
+            localeCubitProvider.overrideWithValue(mockLocaleCubit),
+            authBlocProvider.overrideWithValue(mockAuthBloc),
+            profileBlocProvider.overrideWithValue(mockProfileBloc),
+            appRouterProvider.overrideWithValue(appRouter),
+            appThemeProvider.overrideWithValue(mockAppTheme),
+            navigationTrackingServiceProvider
+                .overrideWithValue(mockNavigationTrackingService),
           ],
-          child: App(
-            appRouter: appRouter,
-            logger: mockAppLogger,
-            themeCubit: mockThemeCubit,
-            localeCubit: mockLocaleCubit,
-            authBloc: mockAuthBloc,
-            profileBloc: mockProfileBloc,
-            failureMessageService: mockFailureMessageService,
-            appTheme: mockAppTheme,
-            navigationTrackingService: mockNavigationTrackingService,
-          ),
+          child: const App(),
         ),
       );
 

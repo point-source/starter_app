@@ -1,8 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
 // ignore_for_file: type=lint
-// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -28,7 +26,10 @@ class UserModelMapper extends ClassMapperBase<UserModel> {
   static const Field<UserModel, String> _f$email = Field('email', _$email);
 
   @override
-  final MappableFields<UserModel> fields = const {#id: _f$id, #email: _f$email};
+  final MappableFields<UserModel> fields = const {
+    #id: _f$id,
+    #email: _f$email,
+  };
 
   static UserModel _instantiate(DecodingData data) {
     return UserModel(id: data.dec(_f$id), email: data.dec(_f$email));
@@ -48,36 +49,28 @@ class UserModelMapper extends ClassMapperBase<UserModel> {
 
 mixin UserModelMappable {
   String toJson() {
-    return UserModelMapper.ensureInitialized().encodeJson<UserModel>(
-      this as UserModel,
-    );
+    return UserModelMapper.ensureInitialized()
+        .encodeJson<UserModel>(this as UserModel);
   }
 
   Map<String, dynamic> toMap() {
-    return UserModelMapper.ensureInitialized().encodeMap<UserModel>(
-      this as UserModel,
-    );
+    return UserModelMapper.ensureInitialized()
+        .encodeMap<UserModel>(this as UserModel);
   }
 
   UserModelCopyWith<UserModel, UserModel, UserModel> get copyWith =>
       _UserModelCopyWithImpl<UserModel, UserModel>(
-        this as UserModel,
-        $identity,
-        $identity,
-      );
+          this as UserModel, $identity, $identity);
   @override
   String toString() {
-    return UserModelMapper.ensureInitialized().stringifyValue(
-      this as UserModel,
-    );
+    return UserModelMapper.ensureInitialized()
+        .stringifyValue(this as UserModel);
   }
 
   @override
   bool operator ==(Object other) {
-    return UserModelMapper.ensureInitialized().equalsValue(
-      this as UserModel,
-      other,
-    );
+    return UserModelMapper.ensureInitialized()
+        .equalsValue(this as UserModel, other);
   }
 
   @override
@@ -106,21 +99,15 @@ class _UserModelCopyWithImpl<$R, $Out>
   late final ClassMapperBase<UserModel> $mapper =
       UserModelMapper.ensureInitialized();
   @override
-  $R call({String? id, String? email}) => $apply(
-    FieldCopyWithData({
-      if (id != null) #id: id,
-      if (email != null) #email: email,
-    }),
-  );
+  $R call({String? id, String? email}) => $apply(FieldCopyWithData(
+      {if (id != null) #id: id, if (email != null) #email: email}));
   @override
   UserModel $make(CopyWithData data) => UserModel(
-    id: data.get(#id, or: $value.id),
-    email: data.get(#email, or: $value.email),
-  );
+      id: data.get(#id, or: $value.id),
+      email: data.get(#email, or: $value.email));
 
   @override
   UserModelCopyWith<$R2, UserModel, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _UserModelCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _UserModelCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
-

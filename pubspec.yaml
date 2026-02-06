@@ -4,11 +4,11 @@ version: 1.0.0+1
 publish_to: none
 
 environment:
-  sdk: ^3.10.8
-  flutter: ^3.38.9
+  sdk: ">=3.10.7 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
-  auto_route: ^11.1.0
+  auto_route: ^10.3.0
   bloc_concurrency: ^0.3.0
   chopper: ^8.5.0
   dart_mappable: ^4.6.1
@@ -19,16 +19,16 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
+  flutter_riverpod: ^2.6.1
   flutter_secure_storage: ^10.0.0
   fpdart: ^1.2.0
-  get_it: ^9.2.0
   http: ^1.6.0
   hydrated_bloc: ^10.1.1
-  injectable: ^2.7.1+2
   intl: ^0.20.2
   logging: ^1.3.0
   meta: ^1.16.0
   path_provider: ^2.1.5
+  riverpod_annotation: ^2.6.1
   sentry_flutter: ^9.9.2
   shared_preferences: ^2.5.4
   synchronized: ^3.4.0
@@ -38,19 +38,18 @@ dependencies:
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
-  auto_route_generator: ^10.4.0
-  bloc_lint: ^0.3.5
+  auto_route_generator: ^10.0.0
   bloc_test: ^10.0.0
-  build_runner: ^2.10.4
-  chopper_generator: ^8.5.0
-  dart_mappable_builder: ^4.6.4
+  build_runner: any
+  chopper_generator: any
+  dart_mappable_builder: any
   flutter_test:
     sdk: flutter
   glados: ^1.1.7
-  injectable_generator: ^2.9.1
   integration_test:
     sdk: flutter
   mocktail: ^1.0.4
+  riverpod_generator: ^2.6.3
   very_good_analysis: ^10.0.0
 
 flutter:

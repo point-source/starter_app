@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/presentation/failure_message/failure_message_mapper.dart';
 
 /// Registry for failure message mappers.
@@ -15,14 +14,12 @@ import 'package:starter_app/core/presentation/failure_message/failure_message_ma
 /// ## Usage
 /// ```dart
 /// // In a mapper - register itself when created
-/// @injectable
-/// class PaymentFailureMapper extends FailureMessageMapper {
+/// /// class PaymentFailureMapper extends FailureMessageMapper {
 ///   PaymentFailureMapper(FailureMapperRegistry registry) {
 ///     registry.register(this);
 ///   }
 /// }
 /// ```
-@singleton
 class FailureMapperRegistry {
   final List<FailureMessageMapper> _mappers = [];
 

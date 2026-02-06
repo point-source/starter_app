@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/error/failures/failure.dart';
 import 'package:starter_app/core/l10n/l10n_extensions.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
@@ -25,7 +24,6 @@ import 'package:starter_app/core/presentation/failure_message/failure_message_ma
 ///   },
 /// )
 /// ```
-@lazySingleton
 class FailureMessageService {
   /// Creates a failure message service with the mapper registry.
   ///

@@ -8,8 +8,7 @@
 ///
 /// Example feature mapper:
 /// ```dart
-/// @injectable
-/// class ProfileFailureMapper extends FailureMessageMapper {
+/// /// class ProfileFailureMapper extends FailureMessageMapper {
 ///   @override
 ///   bool canHandle(Failure failure) => failure is ProfileFailure;
 ///
@@ -26,8 +25,7 @@
 ///
 /// Mappers are injected into BLoCs to create ErrorViewModels:
 /// ```dart
-/// @injectable
-/// class ProfileBloc {
+/// /// class ProfileBloc {
 ///   ProfileBloc(this._mappers);
 ///   final List<FailureMessageMapper> _mappers;
 ///

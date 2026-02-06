@@ -14,8 +14,7 @@ import 'package:starter_app/core/infrastructure/base_repository.dart';
 ///
 /// Example implementation:
 /// ```dart
-/// @injectable
-/// class AuthExceptionMapper implements IExceptionMapper {
+/// /// class AuthExceptionMapper implements IExceptionMapper {
 ///   const AuthExceptionMapper();
 ///
 ///   @override
@@ -41,8 +40,7 @@ import 'package:starter_app/core/infrastructure/base_repository.dart';
 ///
 /// Usage in repository:
 /// ```dart
-/// @LazySingleton(as: IAuthRepository)
-/// class AuthRepositoryImpl extends BaseRepository
+/// /// class AuthRepositoryImpl extends BaseRepository
 ///     implements IAuthRepository {
 ///   AuthRepositoryImpl(
 ///     this._remoteDataSource,

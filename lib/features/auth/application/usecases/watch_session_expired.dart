@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/base/query.dart';
 import 'package:starter_app/core/domain/ports/i_session_manager.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -34,7 +33,6 @@ import 'package:starter_app/core/types/types.dart';
 ///   ),
 /// );
 /// ```
-@injectable
 class WatchSessionExpired extends StreamQueryNoParams<void> {
   const WatchSessionExpired(this._sessionManager);
 

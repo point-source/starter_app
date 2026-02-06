@@ -18,8 +18,7 @@ import 'package:starter_app/core/types/types.dart';
 ///
 /// Usage:
 /// ```dart
-/// @LazySingleton(as: IProductRepository)
-/// class ProductRepositoryImpl extends BaseRepository
+/// /// class ProductRepositoryImpl extends BaseRepository
 ///     implements IProductRepository {
 ///   ProductRepositoryImpl(
 ///     this._remoteDataSource,

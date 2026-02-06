@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/application/app_error_handling_service.dart';
 import 'package:starter_app/core/application/app_monitoring_service.dart';
 import 'package:starter_app/core/application/app_navigation_logging_service.dart';
@@ -17,7 +16,6 @@ import 'package:starter_app/core/domain/ports/i_certificate_service.dart';
 /// - Error handling setup (via [AppErrorHandlingService])
 /// - Navigation logging setup (via [AppNavigationLoggingService])
 /// - Security setup (via [ICertificateService])
-@singleton
 class BootstrapService {
   BootstrapService(
     this._storage,

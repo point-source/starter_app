@@ -1,8 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
 // ignore_for_file: type=lint
-// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -93,43 +91,35 @@ class ProfileInitialMapper extends ClassMapperBase<ProfileInitial> {
 
 mixin ProfileInitialMappable {
   String toJson() {
-    return ProfileInitialMapper.ensureInitialized().encodeJson<ProfileInitial>(
-      this as ProfileInitial,
-    );
+    return ProfileInitialMapper.ensureInitialized()
+        .encodeJson<ProfileInitial>(this as ProfileInitial);
   }
 
   Map<String, dynamic> toMap() {
-    return ProfileInitialMapper.ensureInitialized().encodeMap<ProfileInitial>(
-      this as ProfileInitial,
-    );
+    return ProfileInitialMapper.ensureInitialized()
+        .encodeMap<ProfileInitial>(this as ProfileInitial);
   }
 
   ProfileInitialCopyWith<ProfileInitial, ProfileInitial, ProfileInitial>
-  get copyWith => _ProfileInitialCopyWithImpl<ProfileInitial, ProfileInitial>(
-    this as ProfileInitial,
-    $identity,
-    $identity,
-  );
+      get copyWith =>
+          _ProfileInitialCopyWithImpl<ProfileInitial, ProfileInitial>(
+              this as ProfileInitial, $identity, $identity);
   @override
   String toString() {
-    return ProfileInitialMapper.ensureInitialized().stringifyValue(
-      this as ProfileInitial,
-    );
+    return ProfileInitialMapper.ensureInitialized()
+        .stringifyValue(this as ProfileInitial);
   }
 
   @override
   bool operator ==(Object other) {
-    return ProfileInitialMapper.ensureInitialized().equalsValue(
-      this as ProfileInitial,
-      other,
-    );
+    return ProfileInitialMapper.ensureInitialized()
+        .equalsValue(this as ProfileInitial, other);
   }
 
   @override
   int get hashCode {
-    return ProfileInitialMapper.ensureInitialized().hashValue(
-      this as ProfileInitial,
-    );
+    return ProfileInitialMapper.ensureInitialized()
+        .hashValue(this as ProfileInitial);
   }
 }
 
@@ -144,8 +134,7 @@ abstract class ProfileInitialCopyWith<$R, $In extends ProfileInitial, $Out>
   @override
   $R call();
   ProfileInitialCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _ProfileInitialCopyWithImpl<$R, $Out>
@@ -163,8 +152,8 @@ class _ProfileInitialCopyWithImpl<$R, $Out>
 
   @override
   ProfileInitialCopyWith<$R2, ProfileInitial, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _ProfileInitialCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _ProfileInitialCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class ProfileLoadingMapper extends ClassMapperBase<ProfileLoading> {
@@ -203,43 +192,35 @@ class ProfileLoadingMapper extends ClassMapperBase<ProfileLoading> {
 
 mixin ProfileLoadingMappable {
   String toJson() {
-    return ProfileLoadingMapper.ensureInitialized().encodeJson<ProfileLoading>(
-      this as ProfileLoading,
-    );
+    return ProfileLoadingMapper.ensureInitialized()
+        .encodeJson<ProfileLoading>(this as ProfileLoading);
   }
 
   Map<String, dynamic> toMap() {
-    return ProfileLoadingMapper.ensureInitialized().encodeMap<ProfileLoading>(
-      this as ProfileLoading,
-    );
+    return ProfileLoadingMapper.ensureInitialized()
+        .encodeMap<ProfileLoading>(this as ProfileLoading);
   }
 
   ProfileLoadingCopyWith<ProfileLoading, ProfileLoading, ProfileLoading>
-  get copyWith => _ProfileLoadingCopyWithImpl<ProfileLoading, ProfileLoading>(
-    this as ProfileLoading,
-    $identity,
-    $identity,
-  );
+      get copyWith =>
+          _ProfileLoadingCopyWithImpl<ProfileLoading, ProfileLoading>(
+              this as ProfileLoading, $identity, $identity);
   @override
   String toString() {
-    return ProfileLoadingMapper.ensureInitialized().stringifyValue(
-      this as ProfileLoading,
-    );
+    return ProfileLoadingMapper.ensureInitialized()
+        .stringifyValue(this as ProfileLoading);
   }
 
   @override
   bool operator ==(Object other) {
-    return ProfileLoadingMapper.ensureInitialized().equalsValue(
-      this as ProfileLoading,
-      other,
-    );
+    return ProfileLoadingMapper.ensureInitialized()
+        .equalsValue(this as ProfileLoading, other);
   }
 
   @override
   int get hashCode {
-    return ProfileLoadingMapper.ensureInitialized().hashValue(
-      this as ProfileLoading,
-    );
+    return ProfileLoadingMapper.ensureInitialized()
+        .hashValue(this as ProfileLoading);
   }
 }
 
@@ -254,8 +235,7 @@ abstract class ProfileLoadingCopyWith<$R, $In extends ProfileLoading, $Out>
   @override
   $R call();
   ProfileLoadingCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _ProfileLoadingCopyWithImpl<$R, $Out>
@@ -273,8 +253,8 @@ class _ProfileLoadingCopyWithImpl<$R, $Out>
 
   @override
   ProfileLoadingCopyWith<$R2, ProfileLoading, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _ProfileLoadingCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _ProfileLoadingCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class ProfileLoadedMapper extends ClassMapperBase<ProfileLoaded> {
@@ -293,13 +273,13 @@ class ProfileLoadedMapper extends ClassMapperBase<ProfileLoaded> {
   final String id = 'ProfileLoaded';
 
   static UserProfile _$profile(ProfileLoaded v) => v.profile;
-  static const Field<ProfileLoaded, UserProfile> _f$profile = Field(
-    'profile',
-    _$profile,
-  );
+  static const Field<ProfileLoaded, UserProfile> _f$profile =
+      Field('profile', _$profile);
 
   @override
-  final MappableFields<ProfileLoaded> fields = const {#profile: _f$profile};
+  final MappableFields<ProfileLoaded> fields = const {
+    #profile: _f$profile,
+  };
 
   static ProfileLoaded _instantiate(DecodingData data) {
     return ProfileLoaded(data.dec(_f$profile));
@@ -319,43 +299,34 @@ class ProfileLoadedMapper extends ClassMapperBase<ProfileLoaded> {
 
 mixin ProfileLoadedMappable {
   String toJson() {
-    return ProfileLoadedMapper.ensureInitialized().encodeJson<ProfileLoaded>(
-      this as ProfileLoaded,
-    );
+    return ProfileLoadedMapper.ensureInitialized()
+        .encodeJson<ProfileLoaded>(this as ProfileLoaded);
   }
 
   Map<String, dynamic> toMap() {
-    return ProfileLoadedMapper.ensureInitialized().encodeMap<ProfileLoaded>(
-      this as ProfileLoaded,
-    );
+    return ProfileLoadedMapper.ensureInitialized()
+        .encodeMap<ProfileLoaded>(this as ProfileLoaded);
   }
 
   ProfileLoadedCopyWith<ProfileLoaded, ProfileLoaded, ProfileLoaded>
-  get copyWith => _ProfileLoadedCopyWithImpl<ProfileLoaded, ProfileLoaded>(
-    this as ProfileLoaded,
-    $identity,
-    $identity,
-  );
+      get copyWith => _ProfileLoadedCopyWithImpl<ProfileLoaded, ProfileLoaded>(
+          this as ProfileLoaded, $identity, $identity);
   @override
   String toString() {
-    return ProfileLoadedMapper.ensureInitialized().stringifyValue(
-      this as ProfileLoaded,
-    );
+    return ProfileLoadedMapper.ensureInitialized()
+        .stringifyValue(this as ProfileLoaded);
   }
 
   @override
   bool operator ==(Object other) {
-    return ProfileLoadedMapper.ensureInitialized().equalsValue(
-      this as ProfileLoaded,
-      other,
-    );
+    return ProfileLoadedMapper.ensureInitialized()
+        .equalsValue(this as ProfileLoaded, other);
   }
 
   @override
   int get hashCode {
-    return ProfileLoadedMapper.ensureInitialized().hashValue(
-      this as ProfileLoaded,
-    );
+    return ProfileLoadedMapper.ensureInitialized()
+        .hashValue(this as ProfileLoaded);
   }
 }
 
@@ -389,8 +360,8 @@ class _ProfileLoadedCopyWithImpl<$R, $Out>
 
   @override
   ProfileLoadedCopyWith<$R2, ProfileLoaded, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _ProfileLoadedCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _ProfileLoadedCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class ProfileErrorMapper extends ClassMapperBase<ProfileError> {
@@ -410,13 +381,13 @@ class ProfileErrorMapper extends ClassMapperBase<ProfileError> {
   final String id = 'ProfileError';
 
   static ErrorModel _$error(ProfileError v) => v.error;
-  static const Field<ProfileError, ErrorModel> _f$error = Field(
-    'error',
-    _$error,
-  );
+  static const Field<ProfileError, ErrorModel> _f$error =
+      Field('error', _$error);
 
   @override
-  final MappableFields<ProfileError> fields = const {#error: _f$error};
+  final MappableFields<ProfileError> fields = const {
+    #error: _f$error,
+  };
 
   static ProfileError _instantiate(DecodingData data) {
     return ProfileError(data.dec(_f$error));
@@ -436,43 +407,34 @@ class ProfileErrorMapper extends ClassMapperBase<ProfileError> {
 
 mixin ProfileErrorMappable {
   String toJson() {
-    return ProfileErrorMapper.ensureInitialized().encodeJson<ProfileError>(
-      this as ProfileError,
-    );
+    return ProfileErrorMapper.ensureInitialized()
+        .encodeJson<ProfileError>(this as ProfileError);
   }
 
   Map<String, dynamic> toMap() {
-    return ProfileErrorMapper.ensureInitialized().encodeMap<ProfileError>(
-      this as ProfileError,
-    );
+    return ProfileErrorMapper.ensureInitialized()
+        .encodeMap<ProfileError>(this as ProfileError);
   }
 
   ProfileErrorCopyWith<ProfileError, ProfileError, ProfileError> get copyWith =>
       _ProfileErrorCopyWithImpl<ProfileError, ProfileError>(
-        this as ProfileError,
-        $identity,
-        $identity,
-      );
+          this as ProfileError, $identity, $identity);
   @override
   String toString() {
-    return ProfileErrorMapper.ensureInitialized().stringifyValue(
-      this as ProfileError,
-    );
+    return ProfileErrorMapper.ensureInitialized()
+        .stringifyValue(this as ProfileError);
   }
 
   @override
   bool operator ==(Object other) {
-    return ProfileErrorMapper.ensureInitialized().equalsValue(
-      this as ProfileError,
-      other,
-    );
+    return ProfileErrorMapper.ensureInitialized()
+        .equalsValue(this as ProfileError, other);
   }
 
   @override
   int get hashCode {
-    return ProfileErrorMapper.ensureInitialized().hashValue(
-      this as ProfileError,
-    );
+    return ProfileErrorMapper.ensureInitialized()
+        .hashValue(this as ProfileError);
   }
 }
 
@@ -510,7 +472,6 @@ class _ProfileErrorCopyWithImpl<$R, $Out>
 
   @override
   ProfileErrorCopyWith<$R2, ProfileError, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _ProfileErrorCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _ProfileErrorCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
-

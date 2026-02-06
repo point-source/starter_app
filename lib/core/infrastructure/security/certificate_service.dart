@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_certificate_service.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
 
@@ -7,7 +6,6 @@ import 'package:starter_app/core/logging/i_app_logger.dart';
 ///
 /// This service loads certificates from assets during bootstrap so they are
 /// available synchronously when creating the HTTP client.
-@Singleton(as: ICertificateService)
 class CertificateService implements ICertificateService {
   CertificateService(this._logger);
 

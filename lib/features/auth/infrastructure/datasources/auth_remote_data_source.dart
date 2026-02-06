@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/api/extensions/response_extensions.dart';
 import 'package:starter_app/core/infrastructure/base_remote_data_source.dart';
 import 'package:starter_app/features/auth/infrastructure/datasources/auth_api_service.dart';
@@ -37,7 +36,6 @@ abstract class IAuthRemoteDataSource {
 /// non-successful responses by throwing a `ServerException`. Therefore,
 /// the methods here do not need to check `response.isSuccessful` and can
 /// assume a successful response if no exception is thrown.
-@LazySingleton(as: IAuthRemoteDataSource)
 class AuthRemoteDataSourceImpl extends BaseRemoteDataSource
     implements IAuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this._apiService);

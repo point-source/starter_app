@@ -1,7 +1,6 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/constants/ui/border_radius_constants.dart';
 import 'package:starter_app/core/constants/ui/navigation_constants.dart';
 import 'package:starter_app/core/theme/color_palette.dart';
@@ -13,7 +12,6 @@ import 'package:starter_app/core/theme/theme_extensions.dart';
 /// Provides centralized theme management with light and dark theme support.
 /// Follows Material Design 3 guidelines and integrates with the app's
 /// color palette and typography system.
-@singleton
 class AppTheme {
   const AppTheme();
 

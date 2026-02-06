@@ -1,5 +1,4 @@
 import 'package:chopper/chopper.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/features/auth/infrastructure/datasources/auth_endpoints.dart';
 
 part 'auth_api_service.chopper.dart';
@@ -19,12 +18,10 @@ part 'auth_api_service.chopper.dart';
 /// (e.g., 'https://api.example.com'), so all paths in this service
 /// must include the full API path with version.
 
-@lazySingleton
 @ChopperApi(baseUrl: AuthEndpoints.authBasePath)
 abstract class AuthApiService extends ChopperService {
   /// Create an instance of the service
-  @factoryMethod
-  static AuthApiService create(ChopperClient client) =>
+    static AuthApiService create(ChopperClient client) =>
       _$AuthApiService(client);
 
   /// Login with email and password.

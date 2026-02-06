@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/api/extensions/response_extensions.dart';
 import 'package:starter_app/core/infrastructure/base_remote_data_source.dart';
 import 'package:starter_app/features/profile/infrastructure/datasources/profile_api_service.dart';
@@ -10,7 +9,6 @@ abstract interface class IUserProfileRemoteDataSource {
 }
 
 /// Implementation using [ProfileApiService].
-@LazySingleton(as: IUserProfileRemoteDataSource)
 class UserProfileRemoteDataSourceImpl extends BaseRemoteDataSource
     implements IUserProfileRemoteDataSource {
   UserProfileRemoteDataSourceImpl(this._apiService);

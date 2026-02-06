@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_token_refresh_notifier.dart';
 import 'package:starter_app/core/domain/ports/i_token_storage.dart';
 import 'package:starter_app/core/domain/ports/i_websocket_connection.dart';
@@ -45,7 +44,6 @@ abstract class IAuthWebSocketDataSource {
 /// Listens to [ITokenRefreshNotifier] to automatically reconnect when
 /// the access token is refreshed. This ensures the WebSocket connection
 /// always uses a valid token for long-lived connections.
-@LazySingleton(as: IAuthWebSocketDataSource)
 class AuthWebSocketDataSource implements IAuthWebSocketDataSource {
   AuthWebSocketDataSource(
     this._webSocketManager,

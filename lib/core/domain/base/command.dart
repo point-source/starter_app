@@ -17,8 +17,7 @@ import 'package:starter_app/core/types/types.dart';
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class Login extends Command<AuthCredentials, User> {
+/// /// class Login extends Command<AuthCredentials, User> {
 ///   const Login(this._repository);
 ///   final IAuthRepository _repository;
 ///
@@ -47,8 +46,7 @@ abstract class Command<Params, Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class Logout extends CommandNoParams<Unit> {
+/// /// class Logout extends CommandNoParams<Unit> {
 ///   const Logout(this._repository);
 ///   final IAuthRepository _repository;
 ///
@@ -76,8 +74,7 @@ abstract class CommandNoParams<Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class WatchUserUpdates extends StreamCommand<UserId, User> {
+/// /// class WatchUserUpdates extends StreamCommand<UserId, User> {
 ///   WatchUserUpdates(this._repository);
 ///   final IUserRepository _repository;
 ///
@@ -102,8 +99,7 @@ abstract class StreamCommand<Params, Output> {
 ///
 /// Example:
 /// ```dart
-/// @injectable
-/// class WatchAuthChanges extends StreamCommandNoParams<User?> {
+/// /// class WatchAuthChanges extends StreamCommandNoParams<User?> {
 ///   WatchAuthChanges(this._repository);
 ///   final IAuthRepository _repository;
 ///

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/widgets.dart';
-import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
 import 'package:starter_app/core/domain/ports/i_navigation_tracking_service.dart';
 import 'package:starter_app/core/navigation/navigation_event.dart';
@@ -13,7 +12,6 @@ import 'package:starter_app/core/navigation/navigation_event_type.dart';
 /// This is the **single source of truth** for navigation events.
 /// It acts as an [AutoRouterObserver] to intercept navigation events
 /// directly from the AutoRoute system.
-@LazySingleton(as: INavigationTrackingService)
 class NavigationTrackingService extends AutoRouterObserver
     implements INavigationTrackingService {
   /// Creates the tracking service.
@@ -66,8 +64,7 @@ class NavigationTrackingService extends AutoRouterObserver
   }
 
   @override
-  @disposeMethod
-  Future<void> dispose() async {
+    Future<void> dispose() async {
     await _eventController.close();
   }
 

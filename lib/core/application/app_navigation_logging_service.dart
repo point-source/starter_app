@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/domain/ports/i_navigation_tracking_service.dart';
 import 'package:starter_app/core/logging/i_app_logger.dart';
 import 'package:starter_app/core/navigation/navigation_event.dart';
@@ -23,7 +22,6 @@ import 'package:starter_app/core/navigation/navigation_event.dart';
 /// ```text
 /// [Navigation] Navigation: ROUTE_CHANGE | Data: {route: profile, ...}
 /// ```
-@singleton
 class AppNavigationLoggingService {
   /// Creates the service with required dependencies.
   AppNavigationLoggingService(
@@ -58,8 +56,7 @@ class AppNavigationLoggingService {
   }
 
   /// Disposes the subscription.
-  @disposeMethod
-  Future<void> dispose() async {
+    Future<void> dispose() async {
     await _subscription?.cancel();
     _subscription = null;
   }

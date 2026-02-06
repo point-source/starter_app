@@ -1,8 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
 // ignore_for_file: type=lint
-// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -23,20 +21,14 @@ class RegisterRequestModelMapper extends ClassMapperBase<RegisterRequestModel> {
   final String id = 'RegisterRequestModel';
 
   static String _$email(RegisterRequestModel v) => v.email;
-  static const Field<RegisterRequestModel, String> _f$email = Field(
-    'email',
-    _$email,
-  );
+  static const Field<RegisterRequestModel, String> _f$email =
+      Field('email', _$email);
   static String _$password(RegisterRequestModel v) => v.password;
-  static const Field<RegisterRequestModel, String> _f$password = Field(
-    'password',
-    _$password,
-  );
+  static const Field<RegisterRequestModel, String> _f$password =
+      Field('password', _$password);
   static String _$name(RegisterRequestModel v) => v.name;
-  static const Field<RegisterRequestModel, String> _f$name = Field(
-    'name',
-    _$name,
-  );
+  static const Field<RegisterRequestModel, String> _f$name =
+      Field('name', _$name);
 
   @override
   final MappableFields<RegisterRequestModel> fields = const {
@@ -47,10 +39,9 @@ class RegisterRequestModelMapper extends ClassMapperBase<RegisterRequestModel> {
 
   static RegisterRequestModel _instantiate(DecodingData data) {
     return RegisterRequestModel(
-      email: data.dec(_f$email),
-      password: data.dec(_f$password),
-      name: data.dec(_f$name),
-    );
+        email: data.dec(_f$email),
+        password: data.dec(_f$password),
+        name: data.dec(_f$name));
   }
 
   @override
@@ -76,57 +67,43 @@ mixin RegisterRequestModelMappable {
         .encodeMap<RegisterRequestModel>(this as RegisterRequestModel);
   }
 
-  RegisterRequestModelCopyWith<
-    RegisterRequestModel,
-    RegisterRequestModel,
-    RegisterRequestModel
-  >
-  get copyWith =>
-      _RegisterRequestModelCopyWithImpl<
-        RegisterRequestModel,
-        RegisterRequestModel
-      >(this as RegisterRequestModel, $identity, $identity);
+  RegisterRequestModelCopyWith<RegisterRequestModel, RegisterRequestModel,
+      RegisterRequestModel> get copyWith => _RegisterRequestModelCopyWithImpl<
+          RegisterRequestModel, RegisterRequestModel>(
+      this as RegisterRequestModel, $identity, $identity);
   @override
   String toString() {
-    return RegisterRequestModelMapper.ensureInitialized().stringifyValue(
-      this as RegisterRequestModel,
-    );
+    return RegisterRequestModelMapper.ensureInitialized()
+        .stringifyValue(this as RegisterRequestModel);
   }
 
   @override
   bool operator ==(Object other) {
-    return RegisterRequestModelMapper.ensureInitialized().equalsValue(
-      this as RegisterRequestModel,
-      other,
-    );
+    return RegisterRequestModelMapper.ensureInitialized()
+        .equalsValue(this as RegisterRequestModel, other);
   }
 
   @override
   int get hashCode {
-    return RegisterRequestModelMapper.ensureInitialized().hashValue(
-      this as RegisterRequestModel,
-    );
+    return RegisterRequestModelMapper.ensureInitialized()
+        .hashValue(this as RegisterRequestModel);
   }
 }
 
 extension RegisterRequestModelValueCopy<$R, $Out>
     on ObjectCopyWith<$R, RegisterRequestModel, $Out> {
   RegisterRequestModelCopyWith<$R, RegisterRequestModel, $Out>
-  get $asRegisterRequestModel => $base.as(
-    (v, t, t2) => _RegisterRequestModelCopyWithImpl<$R, $Out>(v, t, t2),
-  );
+      get $asRegisterRequestModel => $base.as(
+          (v, t, t2) => _RegisterRequestModelCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
 abstract class RegisterRequestModelCopyWith<
-  $R,
-  $In extends RegisterRequestModel,
-  $Out
->
-    implements ClassCopyWith<$R, $In, $Out> {
+    $R,
+    $In extends RegisterRequestModel,
+    $Out> implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? email, String? password, String? name});
   RegisterRequestModelCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  );
+      Then<$Out2, $R2> t);
 }
 
 class _RegisterRequestModelCopyWithImpl<$R, $Out>
@@ -138,23 +115,20 @@ class _RegisterRequestModelCopyWithImpl<$R, $Out>
   late final ClassMapperBase<RegisterRequestModel> $mapper =
       RegisterRequestModelMapper.ensureInitialized();
   @override
-  $R call({String? email, String? password, String? name}) => $apply(
-    FieldCopyWithData({
-      if (email != null) #email: email,
-      if (password != null) #password: password,
-      if (name != null) #name: name,
-    }),
-  );
+  $R call({String? email, String? password, String? name}) =>
+      $apply(FieldCopyWithData({
+        if (email != null) #email: email,
+        if (password != null) #password: password,
+        if (name != null) #name: name
+      }));
   @override
   RegisterRequestModel $make(CopyWithData data) => RegisterRequestModel(
-    email: data.get(#email, or: $value.email),
-    password: data.get(#password, or: $value.password),
-    name: data.get(#name, or: $value.name),
-  );
+      email: data.get(#email, or: $value.email),
+      password: data.get(#password, or: $value.password),
+      name: data.get(#name, or: $value.name));
 
   @override
   RegisterRequestModelCopyWith<$R2, RegisterRequestModel, $Out2>
-  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _RegisterRequestModelCopyWithImpl<$R2, $Out2>($value, $cast, t);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _RegisterRequestModelCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
-

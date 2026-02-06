@@ -1,8 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// dart format off
 // ignore_for_file: type=lint
-// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -91,43 +89,34 @@ class GetMyProfileMapper extends ClassMapperBase<GetMyProfile> {
 
 mixin GetMyProfileMappable {
   String toJson() {
-    return GetMyProfileMapper.ensureInitialized().encodeJson<GetMyProfile>(
-      this as GetMyProfile,
-    );
+    return GetMyProfileMapper.ensureInitialized()
+        .encodeJson<GetMyProfile>(this as GetMyProfile);
   }
 
   Map<String, dynamic> toMap() {
-    return GetMyProfileMapper.ensureInitialized().encodeMap<GetMyProfile>(
-      this as GetMyProfile,
-    );
+    return GetMyProfileMapper.ensureInitialized()
+        .encodeMap<GetMyProfile>(this as GetMyProfile);
   }
 
   GetMyProfileCopyWith<GetMyProfile, GetMyProfile, GetMyProfile> get copyWith =>
       _GetMyProfileCopyWithImpl<GetMyProfile, GetMyProfile>(
-        this as GetMyProfile,
-        $identity,
-        $identity,
-      );
+          this as GetMyProfile, $identity, $identity);
   @override
   String toString() {
-    return GetMyProfileMapper.ensureInitialized().stringifyValue(
-      this as GetMyProfile,
-    );
+    return GetMyProfileMapper.ensureInitialized()
+        .stringifyValue(this as GetMyProfile);
   }
 
   @override
   bool operator ==(Object other) {
-    return GetMyProfileMapper.ensureInitialized().equalsValue(
-      this as GetMyProfile,
-      other,
-    );
+    return GetMyProfileMapper.ensureInitialized()
+        .equalsValue(this as GetMyProfile, other);
   }
 
   @override
   int get hashCode {
-    return GetMyProfileMapper.ensureInitialized().hashValue(
-      this as GetMyProfile,
-    );
+    return GetMyProfileMapper.ensureInitialized()
+        .hashValue(this as GetMyProfile);
   }
 }
 
@@ -159,8 +148,8 @@ class _GetMyProfileCopyWithImpl<$R, $Out>
 
   @override
   GetMyProfileCopyWith<$R2, GetMyProfile, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _GetMyProfileCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _GetMyProfileCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class ProfileResetMapper extends ClassMapperBase<ProfileReset> {
@@ -199,43 +188,34 @@ class ProfileResetMapper extends ClassMapperBase<ProfileReset> {
 
 mixin ProfileResetMappable {
   String toJson() {
-    return ProfileResetMapper.ensureInitialized().encodeJson<ProfileReset>(
-      this as ProfileReset,
-    );
+    return ProfileResetMapper.ensureInitialized()
+        .encodeJson<ProfileReset>(this as ProfileReset);
   }
 
   Map<String, dynamic> toMap() {
-    return ProfileResetMapper.ensureInitialized().encodeMap<ProfileReset>(
-      this as ProfileReset,
-    );
+    return ProfileResetMapper.ensureInitialized()
+        .encodeMap<ProfileReset>(this as ProfileReset);
   }
 
   ProfileResetCopyWith<ProfileReset, ProfileReset, ProfileReset> get copyWith =>
       _ProfileResetCopyWithImpl<ProfileReset, ProfileReset>(
-        this as ProfileReset,
-        $identity,
-        $identity,
-      );
+          this as ProfileReset, $identity, $identity);
   @override
   String toString() {
-    return ProfileResetMapper.ensureInitialized().stringifyValue(
-      this as ProfileReset,
-    );
+    return ProfileResetMapper.ensureInitialized()
+        .stringifyValue(this as ProfileReset);
   }
 
   @override
   bool operator ==(Object other) {
-    return ProfileResetMapper.ensureInitialized().equalsValue(
-      this as ProfileReset,
-      other,
-    );
+    return ProfileResetMapper.ensureInitialized()
+        .equalsValue(this as ProfileReset, other);
   }
 
   @override
   int get hashCode {
-    return ProfileResetMapper.ensureInitialized().hashValue(
-      this as ProfileReset,
-    );
+    return ProfileResetMapper.ensureInitialized()
+        .hashValue(this as ProfileReset);
   }
 }
 
@@ -267,7 +247,6 @@ class _ProfileResetCopyWithImpl<$R, $Out>
 
   @override
   ProfileResetCopyWith<$R2, ProfileReset, $Out2> $chain<$R2, $Out2>(
-    Then<$Out2, $R2> t,
-  ) => _ProfileResetCopyWithImpl<$R2, $Out2>($value, $cast, t);
+          Then<$Out2, $R2> t) =>
+      _ProfileResetCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
-

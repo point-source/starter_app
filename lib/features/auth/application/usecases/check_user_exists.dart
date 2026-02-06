@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 
 import 'package:starter_app/core/domain/base/query.dart';
 import 'package:starter_app/core/domain/value_objects/email_address.dart';
@@ -12,7 +11,6 @@ import 'package:starter_app/features/auth/domain/repositories/i_auth_repository.
 /// Part of the email-first authentication flow.
 /// This is called after the user enters their email to determine
 /// whether to show the login or registration form.
-@injectable
 class CheckUserExists extends Query<EmailAddress, bool> {
   const CheckUserExists(this._repository);
 

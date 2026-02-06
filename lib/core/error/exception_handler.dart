@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:injectable/injectable.dart';
 import 'package:starter_app/core/error/exceptions/exceptions.dart';
 import 'package:starter_app/core/error/failures/failures.dart';
 import 'package:starter_app/core/types/types.dart';
@@ -15,8 +14,7 @@ import 'package:starter_app/core/types/types.dart';
 ///
 /// Usage in repositories:
 /// ```dart
-/// @LazySingleton(as: IAuthRepository)
-/// class AuthRepositoryImpl implements IAuthRepository {
+/// /// class AuthRepositoryImpl implements IAuthRepository {
 ///   AuthRepositoryImpl(
 ///     this._remoteDataSource,
 ///     this._tokenStorage,
@@ -39,7 +37,6 @@ import 'package:starter_app/core/types/types.dart';
 ///   }
 /// }
 /// ```
-@lazySingleton
 class ExceptionHandler {
   const ExceptionHandler();
 
