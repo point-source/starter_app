@@ -11,25 +11,12 @@ part 'register_request_model.mapper.dart';
 /// Converts domain credentials and name to JSON for API requests.
 @MappableClass()
 class RegisterRequestModel with RegisterRequestModelMappable {
-  /// User email address.
-  final String email;
-
-  /// User password.
-  final String password;
-
-  /// User display name.
-  final String name;
-
   /// Creates a [RegisterRequestModel].
   const RegisterRequestModel({
     required this.email,
     required this.password,
     required this.name,
   });
-
-  /// Creates model from JSON map (rarely used).
-  static RegisterRequestModel fromJson(Json json) =>
-      RegisterRequestModelMapper.fromMap(json);
 
   /// Creates model from domain credentials.
   factory RegisterRequestModel.fromDomain(
@@ -42,4 +29,17 @@ class RegisterRequestModel with RegisterRequestModelMappable {
       name: name.getOrCrash(),
     );
   }
+
+  /// User email address.
+  final String email;
+
+  /// User password.
+  final String password;
+
+  /// User display name.
+  final String name;
+
+  /// Creates model from JSON map (rarely used).
+  static RegisterRequestModel fromJson(Json json) =>
+      RegisterRequestModelMapper.fromMap(json);
 }

@@ -21,17 +21,17 @@ part 'auth_response_model.mapper.dart';
 /// ```
 @MappableClass()
 class AuthResponseModel with AuthResponseModelMappable {
-  /// The authenticated user.
-  final UserModel user;
-
-  /// Authentication tokens.
-  final AuthTokensModel tokens;
-
   /// Creates an [AuthResponseModel].
   const AuthResponseModel({
     required this.user,
     required this.tokens,
   });
+
+  /// The authenticated user.
+  final UserModel user;
+
+  /// Authentication tokens.
+  final AuthTokensModel tokens;
 
   /// Creates model from JSON map.
   static AuthResponseModel fromJson(Json json) =>

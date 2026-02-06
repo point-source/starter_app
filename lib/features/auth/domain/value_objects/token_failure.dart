@@ -36,17 +36,17 @@ final class TokenEmpty extends TokenFailure {
 
 /// Token is too short.
 final class TokenTooShort extends TokenFailure {
-  /// Minimum required length.
-  final int minLength;
-
-  /// Actual length of the input.
-  final int actualLength;
-
   /// Creates a [TokenTooShort] failure.
   const TokenTooShort({
     required this.minLength,
     required this.actualLength,
   });
+
+  /// Minimum required length.
+  final int minLength;
+
+  /// Actual length of the input.
+  final int actualLength;
 
   /// Creates a copy with the given fields replaced.
   TokenTooShort copyWith({
@@ -76,13 +76,13 @@ final class TokenTooShort extends TokenFailure {
 
 /// Token format is invalid.
 final class TokenInvalidFormat extends TokenFailure {
-  /// Expected format description.
-  final String expectedFormat;
-
   /// Creates a [TokenInvalidFormat] failure.
   const TokenInvalidFormat({
     required this.expectedFormat,
   });
+
+  /// Expected format description.
+  final String expectedFormat;
 
   /// Creates a copy with the given fields replaced.
   TokenInvalidFormat copyWith({

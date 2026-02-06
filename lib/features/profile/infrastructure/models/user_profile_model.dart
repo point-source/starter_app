@@ -10,6 +10,23 @@ part 'user_profile_model.mapper.dart';
 /// Data transfer object for [UserProfile].
 @MappableClass()
 class UserProfileModel with UserProfileModelMappable {
+  /// Creates a [UserProfileModel].
+  const UserProfileModel({
+    required this.id,
+    required this.userId,
+    required this.displayName,
+    this.avatarUrl,
+  });
+
+  /// Creates model from domain entity.
+  factory UserProfileModel.fromDomain(UserProfile profile) {
+    return UserProfileModel(
+      id: profile.id.value.value,
+      userId: profile.userId.value.value,
+      displayName: profile.displayName.getOrCrash(),
+    );
+  }
+
   /// Profile ID.
   final String id;
 
@@ -22,26 +39,9 @@ class UserProfileModel with UserProfileModelMappable {
   /// Avatar URL.
   final String? avatarUrl;
 
-  /// Creates a [UserProfileModel].
-  const UserProfileModel({
-    required this.id,
-    required this.userId,
-    required this.displayName,
-    this.avatarUrl,
-  });
-
   /// Creates model from JSON map.
   static UserProfileModel fromJson(Json json) =>
       UserProfileModelMapper.fromMap(json);
-
-  /// Creates model from domain entity.
-  factory UserProfileModel.fromDomain(UserProfile profile) {
-    return UserProfileModel(
-      id: profile.id.value.value,
-      userId: profile.userId.value.value,
-      displayName: profile.displayName.getOrCrash(),
-    );
-  }
 
   /// Converts model to domain entity.
   UserProfile toDomain() {

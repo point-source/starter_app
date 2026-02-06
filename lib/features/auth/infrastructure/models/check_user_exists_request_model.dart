@@ -7,17 +7,10 @@ part 'check_user_exists_request_model.mapper.dart';
 /// Data transfer object for check user exists requests.
 @MappableClass()
 class CheckUserExistsRequestModel with CheckUserExistsRequestModelMappable {
-  /// User email address to check.
-  final String email;
-
   /// Creates a [CheckUserExistsRequestModel].
   const CheckUserExistsRequestModel({
     required this.email,
   });
-
-  /// Creates model from JSON map (rarely used).
-  static CheckUserExistsRequestModel fromJson(Json json) =>
-      CheckUserExistsRequestModelMapper.fromMap(json);
 
   /// Creates model from domain email.
   factory CheckUserExistsRequestModel.fromDomain(EmailAddress email) {
@@ -25,4 +18,11 @@ class CheckUserExistsRequestModel with CheckUserExistsRequestModelMappable {
       email: email.getOrCrash(),
     );
   }
+
+  /// User email address to check.
+  final String email;
+
+  /// Creates model from JSON map (rarely used).
+  static CheckUserExistsRequestModel fromJson(Json json) =>
+      CheckUserExistsRequestModelMapper.fromMap(json);
 }

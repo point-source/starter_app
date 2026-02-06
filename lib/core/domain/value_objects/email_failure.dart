@@ -35,17 +35,17 @@ final class EmailEmpty extends EmailFailure {
 
 /// Email exceeds maximum length.
 final class EmailTooLong extends EmailFailure {
-  /// Maximum allowed length.
-  final int maxLength;
-
-  /// Actual length of the input.
-  final int actualLength;
-
   /// Creates an [EmailTooLong] failure.
   const EmailTooLong({
     required this.maxLength,
     required this.actualLength,
   });
+
+  /// Maximum allowed length.
+  final int maxLength;
+
+  /// Actual length of the input.
+  final int actualLength;
 
   /// Creates a copy with the given fields replaced.
   EmailTooLong copyWith({
@@ -75,13 +75,13 @@ final class EmailTooLong extends EmailFailure {
 
 /// Email format is invalid.
 final class EmailInvalidFormat extends EmailFailure {
-  /// The invalid email value.
-  final String failedValue;
-
   /// Creates an [EmailInvalidFormat] failure.
   const EmailInvalidFormat({
     required this.failedValue,
   });
+
+  /// The invalid email value.
+  final String failedValue;
 
   /// Creates a copy with the given fields replaced.
   EmailInvalidFormat copyWith({

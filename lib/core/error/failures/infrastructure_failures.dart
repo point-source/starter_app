@@ -40,6 +40,12 @@ sealed class InfrastructureFailure extends TechnicalFailure {
 /// Server error.
 /// Map from ServerException in repository.
 final class ServerFailure extends InfrastructureFailure {
+  /// Creates a [ServerFailure].
+  const ServerFailure({
+    required this.message,
+    this.statusCode,
+    this.stackTrace,
+  });
   @override
   final String message;
 
@@ -48,13 +54,6 @@ final class ServerFailure extends InfrastructureFailure {
 
   @override
   final StackTrace? stackTrace;
-
-  /// Creates a [ServerFailure].
-  const ServerFailure({
-    required this.message,
-    this.statusCode,
-    this.stackTrace,
-  });
 
   @override
   bool get isRetryable => true;
@@ -90,17 +89,16 @@ final class ServerFailure extends InfrastructureFailure {
 /// Network error.
 /// Map from NetworkException in repository.
 final class NetworkFailure extends InfrastructureFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [NetworkFailure].
   const NetworkFailure({
     this.message = 'Network error',
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => true;
@@ -131,17 +129,16 @@ final class NetworkFailure extends InfrastructureFailure {
 /// Cache error.
 /// Map from CacheException in repository.
 final class CacheFailure extends InfrastructureFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [CacheFailure].
   const CacheFailure({
     this.message = 'Cache error',
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -172,17 +169,16 @@ final class CacheFailure extends InfrastructureFailure {
 /// Parse error.
 /// Map from ParseException in repository.
 final class ParseFailure extends InfrastructureFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [ParseFailure].
   const ParseFailure({
     this.message = 'Parse error',
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -213,17 +209,16 @@ final class ParseFailure extends InfrastructureFailure {
 /// Circuit breaker open error.
 /// Map from CircuitBreakerException in repository.
 final class CircuitBreakerFailure extends InfrastructureFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [CircuitBreakerFailure].
   const CircuitBreakerFailure({
     this.message = 'Service temporarily unavailable',
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => true;
@@ -255,17 +250,16 @@ final class CircuitBreakerFailure extends InfrastructureFailure {
 /// Unexpected error.
 /// Fallback for unknown exceptions that don't match other categories.
 final class UnexpectedFailure extends InfrastructureFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates an [UnexpectedFailure].
   const UnexpectedFailure({
     this.message = 'An unexpected error occurred',
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;

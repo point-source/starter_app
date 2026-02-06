@@ -34,17 +34,17 @@ final class NameEmpty extends NameFailure {
 
 /// Name exceeds maximum length.
 final class NameTooLong extends NameFailure {
-  /// Maximum allowed length.
-  final int maxLength;
-
-  /// Actual length of the input.
-  final int actualLength;
-
   /// Creates a [NameTooLong] failure.
   const NameTooLong({
     required this.maxLength,
     required this.actualLength,
   });
+
+  /// Maximum allowed length.
+  final int maxLength;
+
+  /// Actual length of the input.
+  final int actualLength;
 
   /// Creates a copy with the given fields replaced.
   NameTooLong copyWith({

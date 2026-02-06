@@ -14,17 +14,16 @@ sealed class ProfileFailure extends TechnicalFailure {
 
 /// Unexpected error in profile operations.
 final class ProfileUnexpectedFailure extends ProfileFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [ProfileUnexpectedFailure].
   const ProfileUnexpectedFailure({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -54,17 +53,16 @@ final class ProfileUnexpectedFailure extends ProfileFailure {
 
 /// Server error in profile operations.
 final class ProfileServerError extends ProfileFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [ProfileServerError].
   const ProfileServerError({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => true;
@@ -94,17 +92,16 @@ final class ProfileServerError extends ProfileFailure {
 
 /// Profile not found.
 final class ProfileNotFoundFailure extends ProfileFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [ProfileNotFoundFailure].
   const ProfileNotFoundFailure({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;

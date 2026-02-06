@@ -22,20 +22,11 @@ part 'user_model.mapper.dart';
 /// ```
 @MappableClass()
 class UserModel with UserModelMappable {
-  /// User ID.
-  final String id;
-
-  /// User email address.
-  final String email;
-
   /// Creates a [UserModel].
   const UserModel({
     required this.id,
     required this.email,
   });
-
-  /// Creates model from JSON map.
-  static UserModel fromJson(Json json) => UserModelMapper.fromMap(json);
 
   /// Creates model from domain entity.
   factory UserModel.fromDomain(User user) {
@@ -44,6 +35,15 @@ class UserModel with UserModelMappable {
       email: user.email.getOrCrash(),
     );
   }
+
+  /// User ID.
+  final String id;
+
+  /// User email address.
+  final String email;
+
+  /// Creates model from JSON map.
+  static UserModel fromJson(Json json) => UserModelMapper.fromMap(json);
 
   /// Converts model to domain entity.
   ///

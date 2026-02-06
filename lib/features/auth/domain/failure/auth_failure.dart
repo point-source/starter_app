@@ -1,3 +1,7 @@
+import 'package:starter_app/core/error/failures/failures.dart'
+    show InfrastructureFailure;
+import 'package:starter_app/core/error/failures/infrastructure_failures.dart'
+    show InfrastructureFailure;
 import 'package:starter_app/core/error/failures/technical_failure.dart';
 
 /// Authentication domain failures.
@@ -31,17 +35,16 @@ sealed class AuthFailure extends TechnicalFailure {
 
 /// User or resource not found (HTTP 404).
 final class AuthNotFoundFailure extends AuthFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates an [AuthNotFoundFailure].
   const AuthNotFoundFailure({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -71,17 +74,16 @@ final class AuthNotFoundFailure extends AuthFailure {
 
 /// Invalid credentials or expired session (HTTP 401).
 final class UnauthorizedFailure extends AuthFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates an [UnauthorizedFailure].
   const UnauthorizedFailure({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -111,17 +113,16 @@ final class UnauthorizedFailure extends AuthFailure {
 
 /// Access denied or account suspended (HTTP 403).
 final class ForbiddenFailure extends AuthFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates a [ForbiddenFailure].
   const ForbiddenFailure({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -151,17 +152,16 @@ final class ForbiddenFailure extends AuthFailure {
 
 /// Email address is already registered (HTTP 409).
 final class EmailAlreadyInUseFailure extends AuthFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates an [EmailAlreadyInUseFailure].
   const EmailAlreadyInUseFailure({
     this.message = 'Email already in use',
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;
@@ -191,17 +191,16 @@ final class EmailAlreadyInUseFailure extends AuthFailure {
 
 /// Invalid input data (HTTP 400).
 final class InvalidInputFailure extends AuthFailure {
-  @override
-  final String message;
-
-  @override
-  final StackTrace? stackTrace;
-
   /// Creates an [InvalidInputFailure].
   const InvalidInputFailure({
     required this.message,
     this.stackTrace,
   });
+  @override
+  final String message;
+
+  @override
+  final StackTrace? stackTrace;
 
   @override
   bool get isRetryable => false;

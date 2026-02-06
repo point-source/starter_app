@@ -20,17 +20,17 @@ part 'auth_tokens_model.mapper.dart';
 /// ```
 @MappableClass()
 class AuthTokensModel with AuthTokensModelMappable {
-  /// The access token.
-  final String accessToken;
-
-  /// The refresh token.
-  final String refreshToken;
-
   /// Creates an [AuthTokensModel].
   const AuthTokensModel({
     required this.accessToken,
     required this.refreshToken,
   });
+
+  /// The access token.
+  final String accessToken;
+
+  /// The refresh token.
+  final String refreshToken;
 
   /// Creates model from JSON map.
   static AuthTokensModel fromJson(Json json) =>

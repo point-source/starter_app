@@ -17,21 +17,11 @@ part 'login_request_model.mapper.dart';
 /// ```
 @MappableClass()
 class LoginRequestModel with LoginRequestModelMappable {
-  /// User email address.
-  final String email;
-
-  /// User password.
-  final String password;
-
   /// Creates a [LoginRequestModel].
   const LoginRequestModel({
     required this.email,
     required this.password,
   });
-
-  /// Creates model from JSON map (rarely used).
-  static LoginRequestModel fromJson(Json json) =>
-      LoginRequestModelMapper.fromMap(json);
 
   /// Creates model from domain credentials.
   factory LoginRequestModel.fromDomain(AuthCredentials credentials) {
@@ -40,4 +30,14 @@ class LoginRequestModel with LoginRequestModelMappable {
       password: credentials.passwordValue,
     );
   }
+
+  /// User email address.
+  final String email;
+
+  /// User password.
+  final String password;
+
+  /// Creates model from JSON map (rarely used).
+  static LoginRequestModel fromJson(Json json) =>
+      LoginRequestModelMapper.fromMap(json);
 }

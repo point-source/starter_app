@@ -39,17 +39,17 @@ final class PasswordEmpty extends PasswordFailure {
 
 /// Password is too short.
 final class PasswordTooShort extends PasswordFailure {
-  /// Minimum required length.
-  final int minLength;
-
-  /// Actual length of the input.
-  final int actualLength;
-
   /// Creates a [PasswordTooShort] failure.
   const PasswordTooShort({
     required this.minLength,
     required this.actualLength,
   });
+
+  /// Minimum required length.
+  final int minLength;
+
+  /// Actual length of the input.
+  final int actualLength;
 
   /// Creates a copy with the given fields replaced.
   PasswordTooShort copyWith({
@@ -79,17 +79,17 @@ final class PasswordTooShort extends PasswordFailure {
 
 /// Password is too long.
 final class PasswordTooLong extends PasswordFailure {
-  /// Maximum allowed length.
-  final int maxLength;
-
-  /// Actual length of the input.
-  final int actualLength;
-
   /// Creates a [PasswordTooLong] failure.
   const PasswordTooLong({
     required this.maxLength,
     required this.actualLength,
   });
+
+  /// Maximum allowed length.
+  final int maxLength;
+
+  /// Actual length of the input.
+  final int actualLength;
 
   /// Creates a copy with the given fields replaced.
   PasswordTooLong copyWith({

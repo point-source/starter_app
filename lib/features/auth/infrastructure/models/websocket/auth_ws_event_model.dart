@@ -24,6 +24,13 @@ part 'auth_ws_event_model.mapper.dart';
 /// ```
 @MappableClass()
 class AuthWsEventModel with AuthWsEventModelMappable {
+  /// Creates an [AuthWsEventModel].
+  const AuthWsEventModel({
+    required this.event,
+    this.data,
+    this.timestamp,
+  });
+
   /// Event type (
   /// e.g., 'user_authenticated', 'user_updated', 'user_logged_out')
   final String event;
@@ -33,13 +40,6 @@ class AuthWsEventModel with AuthWsEventModelMappable {
 
   /// Optional timestamp of the event
   final DateTime? timestamp;
-
-  /// Creates an [AuthWsEventModel].
-  const AuthWsEventModel({
-    required this.event,
-    this.data,
-    this.timestamp,
-  });
 
   /// Creates model from JSON map.
   static AuthWsEventModel fromJson(Map<String, dynamic> json) =>

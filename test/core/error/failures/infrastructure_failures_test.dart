@@ -604,7 +604,7 @@ void main() {
       });
 
       test('matches server failure with null status code', () {
-        const ServerFailure failure = ServerFailure(
+        const failure = ServerFailure(
           message: 'Server error',
         );
 
